@@ -7,14 +7,21 @@ import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class StopsActivity extends Activity {
+public class StopsActivity extends Activity implements LocationListener {
 
+	private static final String TAG = "StopsActivity";
+	
 	private CountdownApi api;
 	
 	@Override
@@ -28,22 +35,10 @@ public class StopsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		final TextView arrivalsTextView = (TextView) findViewById(R.id.arrivals);
-		try {
-			List<Stop> stops = loadStops();
-			arrivalsTextView.setText(stops.toString());
-			return;
-			
-		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		arrivalsTextView.setText("Failed to load stops");
+        registerForLocationUpdates();
 	}
+
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,8 +61,59 @@ public class StopsActivity extends Activity {
 		return false;
 	}
 	
-	private List<Stop> loadStops() throws HttpFetchException, ParsingException {
-		return api.findStopsWithinApproximateRadiusOf(51.454, -0.351, 200);
+	public void onLocationChanged(Location location) {
+		Log.i(TAG, "Handset location update received: " + location);
+		listNearbyStops(location.getLatitude(), location.getLongitude());
+		turnOffLocationUpdates();
+	}
+
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void listNearbyStops(double latitude, double longtide) {
+		final TextView arrivalsTextView = (TextView) findViewById(R.id.arrivals);
+		try {
+			List<Stop> stops = loadStops(latitude, longtide);
+			arrivalsTextView.setText(stops.toString());
+			return;
+			
+		} catch (HttpFetchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParsingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		arrivalsTextView.setText("Failed to load stops");
+	}
+	
+	private List<Stop> loadStops(double latitude, double longtide) throws HttpFetchException, ParsingException {
+		return api.findStopsWithinApproximateRadiusOf(latitude, longtide, 200);
+	}
+	
+	private void registerForLocationUpdates() {
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 500, this);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 500, this);
+	}
+
+	private void turnOffLocationUpdates() {
+		LocationManager locationManager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.removeUpdates(this);
 	}
 	
 }
