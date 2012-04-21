@@ -7,6 +7,7 @@ import uk.co.eelpieconsulting.countdown.urls.CountdownApiUrlBuilder;
 import uk.co.eelpieconsulting.countdown.util.HttpFetcher;
 
 import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 
 
 import android.app.Activity;
@@ -15,10 +16,19 @@ import android.widget.TextView;
 
 public class CountdownActivity extends Activity {
 
+	private CountdownApi api;
+	private FavouriteStopsDAO favouriteStopsDAO;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);        
+        setContentView(R.layout.main);
+        
+        CountdownApiUrlBuilder countdownApiUrlBuilder = new CountdownApiUrlBuilder("http://countdown.tfl.gov.uk");
+        HttpFetcher httpFetcher = new HttpFetcher();
+        StopBoardParser stopBoardParser = new StopBoardParser();
+        api = new CountdownApi(countdownApiUrlBuilder, httpFetcher, stopBoardParser);
+        favouriteStopsDAO = new FavouriteStopsDAO();
     }
     
 	@Override
@@ -30,10 +40,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private StopBoard loadArrivals() {
-		CountdownApiUrlBuilder countdownApiUrlBuilder = new CountdownApiUrlBuilder("http://countdown.tfl.gov.uk");
-		HttpFetcher httpFetcher = new HttpFetcher();
-		StopBoardParser stopBoardParser = new StopBoardParser();
-		CountdownApi api = new CountdownApi(countdownApiUrlBuilder, httpFetcher, stopBoardParser);
-		return api.getStopBoard(53550);
+		return api.getStopBoard(favouriteStopsDAO.getFavouriteStop());
 	}
+	
 }
