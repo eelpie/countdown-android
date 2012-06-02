@@ -50,8 +50,8 @@ public class CountdownActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, "Arrivals");
-		menu.add(0, 2, 0, "Stops");
+		menu.add(0, 1, 0, "Favourites");
+		menu.add(0, 2, 0, "Find Stops");
 		return true;
 	}
 	
@@ -59,9 +59,8 @@ public class CountdownActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 1:
-			this.startActivity(new Intent(this, CountdownActivity.class));
+			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
-
 		case 2:
 			this.startActivity(new Intent(this, StopsActivity.class));
 			return true;
