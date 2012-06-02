@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class StopsActivity extends Activity implements LocationListener {
@@ -23,15 +26,15 @@ public class StopsActivity extends Activity implements LocationListener {
 	private static final String TAG = "StopsActivity";
 	
 	private CountdownApi api;
-	private TextView arrivalsTextView;
+	private TextView status;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.stops);
         
         api = new CountdownApi("http://countdown.tfl.gov.uk");
-		arrivalsTextView = (TextView) findViewById(R.id.arrivals);
+		status = (TextView) findViewById(R.id.status);
 	}
     
 	@Override
@@ -63,7 +66,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + location);
-		arrivalsTextView.setText("Location found");
+		status.setText("Location found");
 		listNearbyStops(location.getLatitude(), location.getLongitude());
 		turnOffLocationUpdates();
 	}
@@ -82,10 +85,11 @@ public class StopsActivity extends Activity implements LocationListener {
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(double latitude, double longtide) {
+	private void listNearbyStops(double latitude, double longitude) {
 		try {
-			List<Stop> stops = loadStops(latitude, longtide);
-			arrivalsTextView.setText(stops.toString());
+			List<Stop> stops = loadStops(latitude, longitude);
+			status.setText("Stops near: " + latitude + ", " + longitude);
+			showStops(stops);
 			return;
 			
 		} catch (HttpFetchException e) {
@@ -96,16 +100,27 @@ public class StopsActivity extends Activity implements LocationListener {
 			e.printStackTrace();
 		}
 		
-		arrivalsTextView.setText("Failed to load stops");
+		status.setText("Failed to load stops");
 	}
 	
 	private List<Stop> loadStops(double latitude, double longitude) throws HttpFetchException, ParsingException {
-		arrivalsTextView.setText("Searching for stops near: " + latitude + ", " + longitude);
+		status.setText("Searching for stops near: " + latitude + ", " + longitude);
 		return api.findStopsWithinApproximateRadiusOf(latitude, longitude, 200);
 	}
 	
+	private void showStops(List<Stop> favouriteStops) {
+		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		stopsList.removeAllViews();
+		for (Stop stop : favouriteStops) {
+			final TextView stopTextView = new TextView(this.getApplicationContext());
+			stopTextView.setText(stop.toString());
+			stopTextView.setOnClickListener(new StopClicker(stop));
+			stopsList.addView(stopTextView);
+		}
+	}
+	
 	private void registerForLocationUpdates() {
-		arrivalsTextView.setText("Waiting for location");
+		status.setText("Waiting for location");
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 500, this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 500, this);
@@ -114,6 +129,24 @@ public class StopsActivity extends Activity implements LocationListener {
 	private void turnOffLocationUpdates() {
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
+	}
+	
+	private class StopClicker implements OnClickListener {
+		private Stop stop;
+
+		public StopClicker(Stop stop) {
+			this.stop = stop;
+		}
+
+		public void onClick(View view) {
+			Intent intent = getIntentForContentsType(view.getContext(), stop);
+			intent.putExtra("stop", stop.getId());
+			startActivity(intent);
+		}
+
+		private Intent getIntentForContentsType(Context context, Stop stop) {
+			return new Intent(context, CountdownActivity.class);
+		}
 	}
 	
 }

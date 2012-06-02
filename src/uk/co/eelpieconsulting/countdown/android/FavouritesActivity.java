@@ -23,7 +23,10 @@ public class FavouritesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);        
-        favouriteStopsDAO = new FavouriteStopsDAO();        
+        favouriteStopsDAO = new FavouriteStopsDAO();		
+        
+        TextView status = (TextView) findViewById(R.id.status);
+        status.setVisibility(View.GONE);
     }
 	
 	@Override
@@ -54,9 +57,13 @@ public class FavouritesActivity extends Activity {
 	}
 	
 	private void showFavourites() {
+		List<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
+		showStops(favouriteStops);
+	}
+
+	private void showStops(List<Stop> favouriteStops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		List<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		for (Stop stop : favouriteStops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 			stopTextView.setText(stop.toString());
