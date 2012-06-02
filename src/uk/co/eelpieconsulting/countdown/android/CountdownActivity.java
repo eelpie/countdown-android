@@ -7,6 +7,8 @@ import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,8 @@ public class CountdownActivity extends Activity {
 
 	private CountdownApi api;
 	private FavouriteStopsDAO favouriteStopsDAO;
+	private TextView arrivalsTextView;
+	private FetchArrivalsTask fetchArrivalsTask;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,27 +28,24 @@ public class CountdownActivity extends Activity {
         
         api = new CountdownApi("http://countdown.tfl.gov.uk");
         favouriteStopsDAO = new FavouriteStopsDAO();
+        
+        arrivalsTextView = (TextView) findViewById(R.id.arrivals);
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		final TextView arrivalsTextView = (TextView) findViewById(R.id.arrivals);
-		try {
-			StopBoard stopboard = loadArrivals();
-			arrivalsTextView.setText(stopboard.getArrivals().toString());
-			return;
-			
-		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		int favouriteStop = favouriteStopsDAO.getFavouriteStop();
+		arrivalsTextView.setText("Loading arrivals for stop: " + favouriteStop);
+		loadArrivals(favouriteStop);		
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (fetchArrivalsTask != null && fetchArrivalsTask.getStatus().equals(Status.RUNNING)) {
+			fetchArrivalsTask.cancel(true);
 		}
-		
-		arrivalsTextView.setText("Failed to load arrivals");
 	}
 	
 	@Override
@@ -68,8 +69,41 @@ public class CountdownActivity extends Activity {
 		return false;
 	}
 	
-	private StopBoard loadArrivals() throws HttpFetchException, ParsingException {
-		return api.getStopBoard(favouriteStopsDAO.getFavouriteStop());
+	private void loadArrivals(int stopId) {
+		fetchArrivalsTask = new FetchArrivalsTask(api);
+		fetchArrivalsTask.execute(stopId);
+	}
+		
+	private void renderStopboard(StopBoard stopboard) {
+		arrivalsTextView.setText(stopboard.getArrivals().toString());		
+	}
+	
+	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
+
+		private CountdownApi api;
+
+		public FetchArrivalsTask(CountdownApi api) {
+			super();
+			this.api = api;
+		}
+
+		@Override
+		protected StopBoard doInBackground(Integer... params) {
+			final int stopId = params[0];
+			try {				
+				return api.getStopBoard(stopId);
+			} catch (HttpFetchException e) {
+				throw new RuntimeException(e);
+			} catch (ParsingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		protected void onPostExecute(StopBoard stopboard) {
+			renderStopboard(stopboard);
+		}
+		
 	}
 	
 }
