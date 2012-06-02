@@ -1,6 +1,9 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.List;
+
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -50,8 +53,8 @@ public class FavouritesActivity extends Activity {
 	}
 	
 	private void showFavourites() {
-		int favouriteStop = favouriteStopsDAO.getFavouriteStop();
-		arrivalsTextView.setText(Integer.toString(favouriteStop));
+		List<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
+		arrivalsTextView.setText(favouriteStops.toString());
 	}
 	
 }

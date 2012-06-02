@@ -4,6 +4,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
+import uk.co.eelpieconsulting.countdown.model.Stop;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
 import android.content.Intent;
@@ -35,9 +36,9 @@ public class CountdownActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		int favouriteStop = favouriteStopsDAO.getFavouriteStop();
-		arrivalsTextView.setText("Loading arrivals for stop: " + favouriteStop);
-		loadArrivals(favouriteStop);		
+		final Stop favouriteStop = favouriteStopsDAO.getFavouriteStops().get(0);
+		arrivalsTextView.setText("Loading arrivals for stop: " + favouriteStop.getName());
+		loadArrivals(favouriteStop.getId());
 	}
 	
 	@Override
