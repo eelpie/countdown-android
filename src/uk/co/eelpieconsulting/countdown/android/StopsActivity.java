@@ -23,6 +23,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	private static final String TAG = "StopsActivity";
 	
 	private CountdownApi api;
+	private TextView arrivalsTextView;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class StopsActivity extends Activity implements LocationListener {
         setContentView(R.layout.main);
         
         api = new CountdownApi("http://countdown.tfl.gov.uk");
+		arrivalsTextView = (TextView) findViewById(R.id.arrivals);
 	}
     
 	@Override
@@ -37,8 +39,6 @@ public class StopsActivity extends Activity implements LocationListener {
 		super.onResume();
         registerForLocationUpdates();
 	}
-
-	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,6 +63,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + location);
+		arrivalsTextView.setText("Location found");
 		listNearbyStops(location.getLatitude(), location.getLongitude());
 		turnOffLocationUpdates();
 	}
@@ -78,12 +79,10 @@ public class StopsActivity extends Activity implements LocationListener {
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 	
 	private void listNearbyStops(double latitude, double longtide) {
-		final TextView arrivalsTextView = (TextView) findViewById(R.id.arrivals);
 		try {
 			List<Stop> stops = loadStops(latitude, longtide);
 			arrivalsTextView.setText(stops.toString());
@@ -100,19 +99,20 @@ public class StopsActivity extends Activity implements LocationListener {
 		arrivalsTextView.setText("Failed to load stops");
 	}
 	
-	private List<Stop> loadStops(double latitude, double longtide) throws HttpFetchException, ParsingException {
-		return api.findStopsWithinApproximateRadiusOf(latitude, longtide, 200);
+	private List<Stop> loadStops(double latitude, double longitude) throws HttpFetchException, ParsingException {
+		arrivalsTextView.setText("Searching for stops near: " + latitude + ", " + longitude);
+		return api.findStopsWithinApproximateRadiusOf(latitude, longitude, 200);
 	}
 	
 	private void registerForLocationUpdates() {
+		arrivalsTextView.setText("Waiting for location");
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 500, this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 500, this);
 	}
 
 	private void turnOffLocationUpdates() {
-		LocationManager locationManager = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
 	}
 	
