@@ -10,6 +10,7 @@ public class FavouriteStopsDAO {
 	public List<Stop> getFavouriteStops() {
 		List<Stop> stops = new ArrayList<Stop>();
 		stops.add(new Stop(53550, "York Street / Twickenham", 51.44753801609301, -0.32714600966082513));
+		stops.add(new Stop(98001, "Slough Bus Station", 51.51176134396214, -0.5928687139796684));		
 		return stops;
 	}
 	

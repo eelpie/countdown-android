@@ -4,7 +4,6 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
-import uk.co.eelpieconsulting.countdown.model.Stop;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
 import android.content.Intent;
@@ -22,6 +21,8 @@ public class CountdownActivity extends Activity {
 	private TextView arrivalsTextView;
 	private FetchArrivalsTask fetchArrivalsTask;
 	
+	private Integer stopId;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,14 +32,22 @@ public class CountdownActivity extends Activity {
         favouriteStopsDAO = new FavouriteStopsDAO();
         
         arrivalsTextView = (TextView) findViewById(R.id.arrivals);
+        
+        Integer selectedStop = null;
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+        	selectedStop = (Integer) this.getIntent().getExtras().get("stop");
+        }
+        if (selectedStop == null) {
+        	selectedStop = favouriteStopsDAO.getFavouriteStops().get(0).getId();
+        }
+        stopId = selectedStop;        
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		final Stop favouriteStop = favouriteStopsDAO.getFavouriteStops().get(0);
-		arrivalsTextView.setText("Loading arrivals for stop: " + favouriteStop.getName());
-		loadArrivals(favouriteStop.getId());
+		arrivalsTextView.setText("Loading arrivals for stop: " + stopId);
+		loadArrivals(stopId);
 	}
 	
 	@Override
