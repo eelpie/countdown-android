@@ -30,7 +30,7 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.main);
         
         api = new CountdownApi("http://countdown.api.tfl.gov.uk");
-        favouriteStopsDAO = new FavouriteStopsDAO();
+        favouriteStopsDAO = FavouriteStopsDAO.get();
         
         arrivalsTextView = (TextView) findViewById(R.id.arrivals);
      
@@ -44,7 +44,7 @@ public class CountdownActivity extends Activity {
         	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
         }
         if (selectedStop == null) {
-        	selectedStop = favouriteStopsDAO.getFavouriteStops().get(0);
+        	selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
         }
         
 		getWindow().setTitle(selectedStop.getName());
@@ -63,7 +63,9 @@ public class CountdownActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, "Favourites");
-		menu.add(0, 2, 0, "Find Stops");
+		menu.add(0, 2, 0, "Add to Favourites");
+		menu.add(0, 3, 0, "Remove Favourite");
+		menu.add(0, 4, 0, "Find Stops");
 		return true;
 	}
 	
@@ -73,7 +75,16 @@ public class CountdownActivity extends Activity {
 		case 1:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
-		case 2:
+
+		case 2:			
+			favouriteStopsDAO.addFavourite(selectedStop);
+			return true;
+			
+		case 3:			
+			favouriteStopsDAO.removeFavourite(selectedStop);
+			return true;
+			
+		case 4:
 			this.startActivity(new Intent(this, StopsActivity.class));
 			return true;
 		}

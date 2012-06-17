@@ -140,7 +140,7 @@ public class StopsActivity extends Activity implements LocationListener {
 
 		public void onClick(View view) {
 			Intent intent = getIntentForContentsType(view.getContext(), stop);
-			intent.putExtra("stop", stop.getId());
+			intent.putExtra("stop", stop);
 			startActivity(intent);
 		}
 

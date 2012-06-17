@@ -1,6 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.List;
+import java.util.Set;
 
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.model.Stop;
@@ -23,7 +23,7 @@ public class FavouritesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);        
-        favouriteStopsDAO = new FavouriteStopsDAO();		
+        favouriteStopsDAO = FavouriteStopsDAO.get();
         
         TextView status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);
@@ -57,11 +57,10 @@ public class FavouritesActivity extends Activity {
 	}
 	
 	private void showFavourites() {
-		List<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
-		showStops(favouriteStops);
+		showStops(favouriteStopsDAO.getFavouriteStops());
 	}
 
-	private void showStops(List<Stop> favouriteStops) {
+	private void showStops(Set<Stop> favouriteStops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : favouriteStops) {
