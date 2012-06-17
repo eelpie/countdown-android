@@ -28,7 +28,7 @@ public class CountdownActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        api = new CountdownApi("http://countdown.tfl.gov.uk");
+        api = new CountdownApi("http://countdown.api.tfl.gov.uk");
         favouriteStopsDAO = new FavouriteStopsDAO();
         
         arrivalsTextView = (TextView) findViewById(R.id.arrivals);

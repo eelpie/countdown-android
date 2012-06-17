@@ -33,7 +33,7 @@ public class StopsActivity extends Activity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);
         
-        api = new CountdownApi("http://countdown.tfl.gov.uk");
+        api = new CountdownApi("http://countdown.api.tfl.gov.uk");
 		status = (TextView) findViewById(R.id.status);
 	}
     
@@ -105,7 +105,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	private List<Stop> loadStops(double latitude, double longitude) throws HttpFetchException, ParsingException {
 		status.setText("Searching for stops near: " + latitude + ", " + longitude);
-		return api.findStopsWithinApproximateRadiusOf(latitude, longitude, 200);
+		return api.findStopsWithin(latitude, longitude, 200);
 	}
 	
 	private void showStops(List<Stop> favouriteStops) {
