@@ -81,7 +81,7 @@ public class FavouritesActivity extends Activity {
 
 		public void onClick(View view) {
 			Intent intent = getIntentForContentsType(view.getContext(), stop);
-			intent.putExtra("stop", stop.getId());
+			intent.putExtra("stop", stop);
 			startActivity(intent);
 		}
 
