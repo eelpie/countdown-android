@@ -23,7 +23,7 @@ public class FavouritesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);        
-        favouriteStopsDAO = FavouriteStopsDAO.get();
+        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
         
         TextView status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);

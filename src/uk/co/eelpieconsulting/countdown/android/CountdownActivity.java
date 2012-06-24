@@ -30,10 +30,8 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.main);
         
         api = new CountdownApi("http://countdown.api.tfl.gov.uk");
-        favouriteStopsDAO = FavouriteStopsDAO.get();
-        
-        arrivalsTextView = (TextView) findViewById(R.id.arrivals);
-     
+        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
+        arrivalsTextView = (TextView) findViewById(R.id.arrivals);     
         selectedStop = null;
     }
 	
@@ -45,9 +43,13 @@ public class CountdownActivity extends Activity {
         }
         if (selectedStop == null) {
         	selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
+        }        
+        if (selectedStop == null) {
+        	return;
         }
         
-		getWindow().setTitle(selectedStop.getName());
+		final String title = selectedStop.getName() + (selectedStop.getStopIndicator() != null ? " (" + selectedStop.getStopIndicator() + ") " : "");
+		getWindow().setTitle(title);
 		arrivalsTextView.setText("Loading arrivals for stop: " + selectedStop.getId());
 		loadArrivals(selectedStop.getId());
 	}
