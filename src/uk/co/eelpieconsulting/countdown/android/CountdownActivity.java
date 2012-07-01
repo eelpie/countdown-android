@@ -4,6 +4,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
+import uk.co.eelpieconsulting.countdown.model.Arrival;
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
@@ -99,7 +100,21 @@ public class CountdownActivity extends Activity {
 	}
 		
 	private void renderStopboard(StopBoard stopboard) {
-		arrivalsTextView.setText(stopboard.getArrivals().toString());		
+		final StringBuilder output = new StringBuilder();
+		for (Arrival arrival : stopboard.getArrivals()) {
+			output.append(arrival.getRouteName() + " to " + arrival.getDestination() + "\n");
+			output.append("Estimated wait: " + secondsToMinutes(arrival));
+			output.append("\n\n");
+		}
+		arrivalsTextView.setText(output.toString());		
+	}
+
+	private String secondsToMinutes(Arrival arrival) {
+		final long minutes = arrival.getEstimatedWait() / 60;
+		if (minutes == 0) {
+			return "due";			
+		}
+		return minutes + " minutes";
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
