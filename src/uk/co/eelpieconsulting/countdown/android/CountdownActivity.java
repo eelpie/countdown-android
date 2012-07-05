@@ -8,7 +8,10 @@ import uk.co.eelpieconsulting.countdown.model.Arrival;
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -42,9 +45,17 @@ public class CountdownActivity extends Activity {
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
         	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
         }
+        
         if (selectedStop == null) {
-        	selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
-        }        
+        	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);        	
+        	Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        	if (lastKnownLocation != null) {
+        		selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
+        	} else {
+        		selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
+        	}
+        }
+        
         if (selectedStop == null) {
         	return;
         }

@@ -6,15 +6,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.content.Context;
+import android.location.Location;
+import android.util.Log;
 
 public class FavouriteStopsDAO {
 	
+	private static final String TAG = "FavouriteStopsDAO";
+	
 	private static final String FAVOURITE_STOPS_FILENAME = "favourite-stops.ser";
-
+	
 	private static FavouriteStopsDAO dao;
 
 	private Context context;
@@ -69,6 +74,36 @@ public class FavouriteStopsDAO {
 			return favouriteStops.iterator().next();
 		}
 		return null;
+	}
+	
+	public Stop getClosestFavouriteStopTo(Location lastKnownLocation) {
+		Stop closestStop = null;
+		Iterator<Stop> iterator = getFavouriteStops().iterator();
+		while(iterator.hasNext()) {
+			final Stop stop = iterator.next();					
+			if (closestStop == null) {
+				closestStop = stop;
+				Log.i(TAG, "Closed stop set to: " + stop.toString());
+			}
+			
+			final double distanceToStop = distanceApart(lastKnownLocation, stop);
+			Log.i(TAG, "Distance to " + stop.toString() + ": " + distanceToStop);
+			if (distanceToStop < distanceApart(lastKnownLocation, closestStop)) {
+				Log.i(TAG, "Closed stop set to: " + stop.toString());
+				closestStop = stop;
+			}					
+		}
+		return closestStop;
+	}
+	
+	private double distanceApart(Location lastKnownLocation, Stop stop) {	// TODO correct implementation
+		double latitudeDelta = lastKnownLocation.getLatitude() - stop.getLatitude();
+		double longitudeDelta = lastKnownLocation.getLongitude() - stop.getLongitude();
+		double delta = latitudeDelta + longitudeDelta;
+		if (delta < 0) {
+			delta = delta * -1;
+		}		
+		return delta;
 	}
 	
 	private void saveFavouriteStops(Set<Stop> favouriteStops) {
