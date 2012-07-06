@@ -15,12 +15,15 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class CountdownActivity extends Activity {
-
+	
+	private static final String TAG = "CountdownActivity";
+	
 	private CountdownApi api;
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private TextView arrivalsTextView;
@@ -50,7 +53,11 @@ public class CountdownActivity extends Activity {
         	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);        	
         	Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	if (lastKnownLocation != null) {
+        		final String lastKnownLocationMessage = "Last known location is: " + lastKnownLocation.toString() + ", " + ((System.currentTimeMillis() - lastKnownLocation.getTime()) / 1000) + " ago";
+				Log.i(TAG, lastKnownLocationMessage);				
+				arrivalsTextView.setText(lastKnownLocationMessage);				
         		selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
+        		
         	} else {
         		selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
         	}
