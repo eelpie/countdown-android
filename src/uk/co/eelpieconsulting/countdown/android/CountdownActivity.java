@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -54,8 +55,8 @@ public class CountdownActivity extends Activity {
         	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);        	
         	Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	if (lastKnownLocation != null) {
-        		final String lastKnownLocationMessage = "Last known location is: " + lastKnownLocation.toString() + ", " + ((System.currentTimeMillis() - lastKnownLocation.getTime()) / 1000) + " ago";
-				Log.i(TAG, lastKnownLocationMessage);				
+				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
+				Log.i(TAG, lastKnownLocationMessage);
 				arrivalsTextView.setText(lastKnownLocationMessage);				
         		selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
         		

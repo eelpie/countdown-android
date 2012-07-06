@@ -22,7 +22,6 @@ public class FavouriteStopsDAO {
 	private static final String FAVOURITE_STOPS_FILENAME = "favourite-stops.ser";
 	
 	private static FavouriteStopsDAO dao;
-	private static DistanceMeasuringService distanceMeasuringService;
 
 	private Context context;
 	
@@ -88,9 +87,9 @@ public class FavouriteStopsDAO {
 				Log.i(TAG, "Closed stop set to: " + stop.toString());
 			}
 			
-			final double distanceToStop = distanceMeasuringService.distanceTo(lastKnownLocation, stop);
+			final double distanceToStop = DistanceMeasuringService.distanceTo(lastKnownLocation, stop);
 			Log.i(TAG, "Distance to " + stop.toString() + ": " + distanceToStop);
-			if (distanceToStop < distanceMeasuringService.distanceTo(lastKnownLocation, closestStop)) {
+			if (distanceToStop < DistanceMeasuringService.distanceTo(lastKnownLocation, closestStop)) {
 				Log.i(TAG, "Closed stop set to: " + stop.toString());
 				closestStop = stop;
 			}					

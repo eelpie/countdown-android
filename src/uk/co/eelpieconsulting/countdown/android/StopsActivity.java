@@ -29,8 +29,6 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	private static final int STOP_SEARCH_RADIUS = 200;
 	
-	private static DistanceMeasuringService distanceMeasuringService;
-	
 	private CountdownApi api;
 	private TextView status;
 	
@@ -111,7 +109,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	}
 	
 	private List<Stop> loadStops(Location location) throws HttpFetchException, ParsingException {
-		status.setText(getString(R.string.searching_for_stops_near) + ": " + location);
+		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);
 	}
 	
@@ -122,7 +120,7 @@ public class StopsActivity extends Activity implements LocationListener {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
 			String stopDescription = stop.toString();
-			stopDescription = "(" + stopDescription + distanceMeasuringService.distanceTo(location, stop) + " away)";
+			stopDescription = "(" + stopDescription + DistanceMeasuringService.distanceTo(location, stop) + " away)";
 			
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(stop));
