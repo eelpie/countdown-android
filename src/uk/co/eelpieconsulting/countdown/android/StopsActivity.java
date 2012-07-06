@@ -26,6 +26,9 @@ public class StopsActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
+	private static final String API_BASE_URL = "http://countdown.api.tfl.gov.uk";
+	private static final int STOP_SEARCH_RADIUS = 200;
+	
 	private static DistanceMeasuringService distanceMeasuringService;
 	
 	private CountdownApi api;
@@ -37,7 +40,7 @@ public class StopsActivity extends Activity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);
         
-        api = new CountdownApi("http://countdown.api.tfl.gov.uk");
+        api = new CountdownApi(API_BASE_URL);
 		status = (TextView) findViewById(R.id.status);
 	}
     
@@ -91,8 +94,8 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	private void listNearbyStops(Location location) {
 		try {
-			List<Stop> stops = loadStops(location.getLatitude(), location.getLongitude());
-			status.setText("Stops near: " + location);
+			List<Stop> stops = loadStops(location);
+			status.setText("Stops near: " + location.toString());
 			showStops(location, stops);
 			return;
 			
@@ -107,9 +110,9 @@ public class StopsActivity extends Activity implements LocationListener {
 		status.setText("Failed to load stops");
 	}
 	
-	private List<Stop> loadStops(double latitude, double longitude) throws HttpFetchException, ParsingException {
-		status.setText("Searching for stops near: " + latitude + ", " + longitude);
-		return api.findStopsWithin(latitude, longitude, 200);
+	private List<Stop> loadStops(Location location) throws HttpFetchException, ParsingException {
+		status.setText(getString(R.string.searching_for_stops_near) + ": " + location);
+		return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);
 	}
 	
 	private void showStops(Location location, List<Stop> favouriteStops) {
@@ -128,7 +131,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	}
 	
 	private void registerForLocationUpdates() {
-		status.setText("Waiting for location");
+		status.setText(getString(R.string.waiting_for_location));
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 500, this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 500, this);

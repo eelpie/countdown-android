@@ -4,5 +4,7 @@
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>
-
+    <string name="waiting_for_location">waiting for location</string>
+    <string name="searching_for_stops_near">Searching for stops near</string>
+    <string name="estimated_wait">Estimated wait</string>
 </resources>
