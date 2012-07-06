@@ -128,9 +128,12 @@ public class CountdownActivity extends Activity {
 	private String secondsToMinutes(Arrival arrival) {
 		final long minutes = arrival.getEstimatedWait() / 60;
 		if (minutes == 0) {
-			return "due";			
+			return  getString(R.string.due);
 		}
-		return minutes + " minutes";
+		if (minutes == 1) {
+			return getString(R.string.minute);
+		}
+		return minutes + " " +  getString(R.string.minutes);
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {

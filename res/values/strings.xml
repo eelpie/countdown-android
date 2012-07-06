@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Countdown</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
+    <string name="due">due</string>
 
 </resources>
