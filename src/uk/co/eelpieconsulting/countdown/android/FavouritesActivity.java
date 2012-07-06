@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.countdown.android;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
 import android.content.Context;
@@ -60,15 +61,19 @@ public class FavouritesActivity extends Activity {
 		showStops(favouriteStopsDAO.getFavouriteStops());
 	}
 
-	private void showStops(Set<Stop> favouriteStops) {
+	private void showStops(Set<Stop> stops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		for (Stop stop : favouriteStops) {
-			final TextView stopTextView = new TextView(this.getApplicationContext());
-			stopTextView.setText(stop.toString());
-			stopTextView.setOnClickListener(new StopClicker(stop));
-			stopsList.addView(stopTextView);
+		for (Stop stop : stops) {
+			stopsList.addView(makeStopView(stop));
 		}
+	}
+
+	private TextView makeStopView(Stop stop) {
+		final TextView stopTextView = new TextView(this.getApplicationContext());
+		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
+		stopTextView.setOnClickListener(new StopClicker(stop));
+		return stopTextView;
 	}
 	
 	private class StopClicker implements OnClickListener {

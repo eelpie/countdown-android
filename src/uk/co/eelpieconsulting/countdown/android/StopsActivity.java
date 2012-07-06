@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -92,9 +93,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	private void listNearbyStops(Location location) {
 		try {
-			List<Stop> stops = loadStops(location);
-			status.setText("Stops near: " + location.toString());
-			showStops(location, stops);
+			showStops(location, loadStops(location));
 			return;
 			
 		} catch (HttpFetchException e) {
@@ -119,8 +118,8 @@ public class StopsActivity extends Activity implements LocationListener {
 		for (Stop stop : favouriteStops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
-			String stopDescription = stop.toString();
-			stopDescription = "(" + stopDescription + DistanceMeasuringService.distanceTo(location, stop) + " away)";
+			String stopDescription = StopDescriptionService.makeStopDescription(stop);
+			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " away" + "\n\n";
 			
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(stop));
