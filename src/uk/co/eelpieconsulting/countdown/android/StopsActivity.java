@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -26,7 +27,6 @@ public class StopsActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
-	private static final String API_BASE_URL = "http://countdown.api.tfl.gov.uk";
 	private static final int STOP_SEARCH_RADIUS = 200;
 	
 	private static DistanceMeasuringService distanceMeasuringService;
@@ -40,7 +40,7 @@ public class StopsActivity extends Activity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);
         
-        api = new CountdownApi(API_BASE_URL);
+        api = CountdownApiFactory.getApi();        		
 		status = (TextView) findViewById(R.id.status);
 	}
     

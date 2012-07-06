@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -36,7 +37,7 @@ public class CountdownActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        api = new CountdownApi("http://countdown.api.tfl.gov.uk");
+        api = CountdownApiFactory.getApi();
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         arrivalsTextView = (TextView) findViewById(R.id.arrivals);     
         selectedStop = null;
