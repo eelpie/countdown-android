@@ -98,6 +98,10 @@ public class FavouriteStopsDAO {
 		return closestStop;
 	}
 	
+	public boolean isFavourite(Stop stop) {
+		return getFavouriteStops().contains(stop);
+	}
+	
 	private void saveFavouriteStops(Set<Stop> favouriteStops) {
 		try {
             FileOutputStream fos = FileService.getFileOutputStream(context, FAVOURITE_STOPS_FILENAME);

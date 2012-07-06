@@ -77,9 +77,14 @@ public class CountdownActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, "Favourites");
-		menu.add(0, 2, 0, "Add to Favourites");
-		menu.add(0, 3, 0, "Remove Favourite");
 		menu.add(0, 4, 0, "Find Stops");
+		if (selectedStop != null) {
+			if (!favouriteStopsDAO.isFavourite(selectedStop)) {
+				menu.add(0, 2, 0, "Add to Favourites");
+			} else {
+				menu.add(0, 3, 0, "Remove Favourite");
+			}
+		}
 		return true;
 	}
 	
