@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.content.Context;
 import android.location.Location;
@@ -21,6 +22,7 @@ public class FavouriteStopsDAO {
 	private static final String FAVOURITE_STOPS_FILENAME = "favourite-stops.ser";
 	
 	private static FavouriteStopsDAO dao;
+	private static DistanceMeasuringService distanceMeasuringService;
 
 	private Context context;
 	
@@ -86,24 +88,14 @@ public class FavouriteStopsDAO {
 				Log.i(TAG, "Closed stop set to: " + stop.toString());
 			}
 			
-			final double distanceToStop = distanceApart(lastKnownLocation, stop);
+			final double distanceToStop = distanceMeasuringService.distanceTo(lastKnownLocation, stop);
 			Log.i(TAG, "Distance to " + stop.toString() + ": " + distanceToStop);
-			if (distanceToStop < distanceApart(lastKnownLocation, closestStop)) {
+			if (distanceToStop < distanceMeasuringService.distanceTo(lastKnownLocation, closestStop)) {
 				Log.i(TAG, "Closed stop set to: " + stop.toString());
 				closestStop = stop;
 			}					
 		}
 		return closestStop;
-	}
-	
-	private double distanceApart(Location lastKnownLocation, Stop stop) {	// TODO correct implementation
-		double latitudeDelta = lastKnownLocation.getLatitude() - stop.getLatitude();
-		double longitudeDelta = lastKnownLocation.getLongitude() - stop.getLongitude();
-		double delta = latitudeDelta + longitudeDelta;
-		if (delta < 0) {
-			delta = delta * -1;
-		}		
-		return delta;
 	}
 	
 	private void saveFavouriteStops(Set<Stop> favouriteStops) {

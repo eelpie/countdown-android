@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -25,8 +26,11 @@ public class StopsActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
+	private static DistanceMeasuringService distanceMeasuringService;
+	
 	private CountdownApi api;
 	private TextView status;
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + location);
 		status.setText("Location found");
-		listNearbyStops(location.getLatitude(), location.getLongitude());
+		listNearbyStops(location);
 		turnOffLocationUpdates();
 	}
 
@@ -85,11 +89,11 @@ public class StopsActivity extends Activity implements LocationListener {
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(double latitude, double longitude) {
+	private void listNearbyStops(Location location) {
 		try {
-			List<Stop> stops = loadStops(latitude, longitude);
-			status.setText("Stops near: " + latitude + ", " + longitude);
-			showStops(stops);
+			List<Stop> stops = loadStops(location.getLatitude(), location.getLongitude());
+			status.setText("Stops near: " + location);
+			showStops(location, stops);
 			return;
 			
 		} catch (HttpFetchException e) {
@@ -108,12 +112,16 @@ public class StopsActivity extends Activity implements LocationListener {
 		return api.findStopsWithin(latitude, longitude, 200);
 	}
 	
-	private void showStops(List<Stop> favouriteStops) {
+	private void showStops(Location location, List<Stop> favouriteStops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : favouriteStops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
-			stopTextView.setText(stop.toString());
+
+			String stopDescription = stop.toString();
+			stopDescription = "(" + stopDescription + distanceMeasuringService.distanceTo(location, stop) + " away)";
+			
+			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(stop));
 			stopsList.addView(stopTextView);
 		}
