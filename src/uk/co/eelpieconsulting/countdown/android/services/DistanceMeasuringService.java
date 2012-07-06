@@ -5,14 +5,10 @@ import android.location.Location;
 
 public class DistanceMeasuringService {
 	
-	public double distanceTo(Location location, Stop stop) {	// TODO correct implementation
-		double latitudeDelta = location.getLatitude() - stop.getLatitude();
-		double longitudeDelta = location.getLongitude() - stop.getLongitude();
-		double delta = latitudeDelta + longitudeDelta;
-		if (delta < 0) {
-			delta = delta * -1;
-		}
-		return delta;
+	public float distanceTo(Location location, Stop stop) {
+		float[] results = new float[1];
+		Location.distanceBetween(location.getLatitude(), location.getLongitude(), stop.getLatitude(), stop.getLongitude(), results);
+		return results[0];
 	}
 
 }
