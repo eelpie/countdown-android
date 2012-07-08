@@ -18,9 +18,11 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CountdownActivity extends Activity {
 	
@@ -32,6 +34,8 @@ public class CountdownActivity extends Activity {
 	private FetchArrivalsTask fetchArrivalsTask;
 	
 	private Stop selectedStop;
+
+	private MenuItem favouriteMenuItem;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,14 +91,18 @@ public class CountdownActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, R.string.favourites);
 		menu.add(0, 4, 0, R.string.find_stops);
-		if (selectedStop != null) {
-			if (!favouriteStopsDAO.isFavourite(selectedStop)) {
-				menu.add(0, 2, 0, R.string.add_to_favourites);
-			} else {
-				menu.add(0, 3, 0, R.string.remove_favourite);
-			}
-		}
+		favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
 		return true;
+	}
+
+	private int chooseFavouriteAction() {
+		int favouriteAction = R.string.add_to_favourites;
+		if (selectedStop != null) {
+			if (favouriteStopsDAO.isFavourite(selectedStop)) {
+				favouriteAction = R.string.remove_favourite;				
+			}		
+		}
+		return favouriteAction;
 	}
 	
 	@Override
@@ -104,12 +112,25 @@ public class CountdownActivity extends Activity {
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
 
-		case 2:			
-			favouriteStopsDAO.addFavourite(selectedStop);
+		case 2:
+			if (selectedStop != null) {
+				if (favouriteStopsDAO.isFavourite(selectedStop)) {
+					favouriteStopsDAO.removeFavourite(selectedStop);
+					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " removed from favourites", Toast.LENGTH_SHORT);
+					toast.setGravity(Gravity.CENTER, 0, 0);
+					toast.show();
+					
+				} else {
+					favouriteStopsDAO.addFavourite(selectedStop);
+					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " added to favourites", Toast.LENGTH_SHORT);
+					toast.setGravity(Gravity.CENTER, 0, 0);
+					toast.show();
+				}
+			}			
+			favouriteMenuItem.setTitle(getString(chooseFavouriteAction()));
 			return true;
 			
 		case 3:			
-			favouriteStopsDAO.removeFavourite(selectedStop);
 			return true;
 			
 		case 4:
