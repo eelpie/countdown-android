@@ -85,13 +85,13 @@ public class CountdownActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, "Favourites");
-		menu.add(0, 4, 0, "Find Stops");
+		menu.add(0, 1, 0, R.string.favourites);
+		menu.add(0, 4, 0, R.string.find_stops);
 		if (selectedStop != null) {
 			if (!favouriteStopsDAO.isFavourite(selectedStop)) {
-				menu.add(0, 2, 0, "Add to Favourites");
+				menu.add(0, 2, 0, R.string.add_to_favourites);
 			} else {
-				menu.add(0, 3, 0, "Remove Favourite");
+				menu.add(0, 3, 0, R.string.remove_favourite);
 			}
 		}
 		return true;
@@ -140,7 +140,7 @@ public class CountdownActivity extends Activity {
 			return  getString(R.string.due);
 		}
 		if (minutes == 1) {
-			return getString(R.string.minute);
+			return "1 " + getString(R.string.minute);
 		}
 		return minutes + " " +  getString(R.string.minutes);
 	}

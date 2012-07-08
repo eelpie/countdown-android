@@ -4,7 +4,12 @@
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>
-    <string name="waiting_for_location">waiting for location</string>
+    <string name="waiting_for_location">Waiting for location</string>
     <string name="searching_for_stops_near">Searching for stops near</string>
+    <string name="stops_near">Stops near</string>    
     <string name="estimated_wait">Estimated wait</string>
+    <string name="find_stops">Find stops</string>
+    <string name="favourites">Favourites</string>
+    <string name="add_to_favourites">Add to favourites</string>    
+    <string name="remove_favourite">Remove favourite</string>    
 </resources>

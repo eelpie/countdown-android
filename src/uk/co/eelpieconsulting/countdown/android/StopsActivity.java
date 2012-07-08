@@ -46,6 +46,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		getWindow().setTitle(getString(R.string.find_stops));
         registerForLocationUpdates();
 	}
 	
@@ -115,6 +116,8 @@ public class StopsActivity extends Activity implements LocationListener {
 	private void showStops(Location location, List<Stop> favouriteStops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
+		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
+		
 		for (Stop stop : favouriteStops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 

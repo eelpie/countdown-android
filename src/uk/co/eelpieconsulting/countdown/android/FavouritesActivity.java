@@ -33,6 +33,7 @@ public class FavouritesActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		getWindow().setTitle(getString(R.string.favourites));
 		showFavourites();
 	}
 	
