@@ -6,7 +6,7 @@ public class StopDescriptionService {
 
 	public static String makeStopDescription(Stop stop) {
 		StringBuilder description = new StringBuilder(stop.getName() + (stop.getStopIndicator() != null ? " (" + stop.getStopIndicator() + ") " : "") + "\n");
-		description.append(stop.getTowards() + "\n");
+		description.append("Towards " + stop.getTowards() + "\n");
 		description.append("#" + stop.getId() + " " + stop.getLatitude() + ", " + stop.getLongitude());
 		return description.toString();
 	}

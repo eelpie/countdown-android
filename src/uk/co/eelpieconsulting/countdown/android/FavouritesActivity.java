@@ -40,7 +40,7 @@ public class FavouritesActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, "Arrivals");
-		menu.add(0, 2, 0, "Find stops");
+		menu.add(0, 2, 0, R.string.find_stops);
 		return true;
 	}
 	
