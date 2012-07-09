@@ -39,8 +39,7 @@ public class FavouritesActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, "Arrivals");
-		menu.add(0, 2, 0, R.string.find_stops);
+		menu.add(0, 1, 0, R.string.find_stops);
 		return true;
 	}
 	
@@ -48,10 +47,6 @@ public class FavouritesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 1:
-			this.startActivity(new Intent(this, CountdownActivity.class));
-			return true;
-
-		case 2:
 			this.startActivity(new Intent(this, StopsActivity.class));
 			return true;
 		}
