@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
@@ -113,12 +115,14 @@ public class StopsActivity extends Activity implements LocationListener {
 		return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);
 	}
 	
-	private void showStops(Location location, List<Stop> favouriteStops) {
+	private void showStops(Location location, List<Stop> stops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		
-		for (Stop stop : favouriteStops) {
+		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
+		
+		for (Stop stop : stops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
 			String stopDescription = StopDescriptionService.makeStopDescription(stop);
