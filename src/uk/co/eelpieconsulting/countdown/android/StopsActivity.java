@@ -31,7 +31,7 @@ public class StopsActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
-	private static final int STOP_SEARCH_RADIUS = 200;
+	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private CountdownApi api;
 	private TextView status;
@@ -70,7 +70,7 @@ public class StopsActivity extends Activity implements LocationListener {
 	}
 	
 	public void onLocationChanged(Location location) {
-		Log.i(TAG, "Handset location update received: " + location);
+		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setText("Location found");
 		listNearbyStops(location);
 		turnOffLocationUpdates();
@@ -122,7 +122,7 @@ public class StopsActivity extends Activity implements LocationListener {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
 			String stopDescription = StopDescriptionService.makeStopDescription(stop);
-			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " away" + "\n\n";
+			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away" + "\n\n";
 			
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(stop));

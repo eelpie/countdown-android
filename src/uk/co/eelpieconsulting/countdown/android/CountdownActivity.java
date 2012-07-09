@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,21 +32,21 @@ public class CountdownActivity extends Activity {
 	
 	private CountdownApi api;
 	private FavouriteStopsDAO favouriteStopsDAO;
-	private TextView arrivalsTextView;
 	private FetchArrivalsTask fetchArrivalsTask;
 	
 	private Stop selectedStop;
 
 	private MenuItem favouriteMenuItem;
+	private TextView status;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.stops);
+        status = (TextView) findViewById(R.id.status);
         
         api = CountdownApiFactory.getApi();
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
-        arrivalsTextView = (TextView) findViewById(R.id.arrivals);     
         selectedStop = null;
     }
 	
@@ -61,8 +63,11 @@ public class CountdownActivity extends Activity {
         	if (lastKnownLocation != null) {
 				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
 				Log.i(TAG, lastKnownLocationMessage);
-				arrivalsTextView.setText(lastKnownLocationMessage);				
-        		selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
+				final Toast toast = Toast.makeText(getApplicationContext(), lastKnownLocationMessage, Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.CENTER, 0, 0);
+				toast.show();
+				
+				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
         		
         	} else {
         		selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
@@ -75,7 +80,8 @@ public class CountdownActivity extends Activity {
         
 		final String title = selectedStop.getName() + (selectedStop.getStopIndicator() != null ? " (" + selectedStop.getStopIndicator() + ") " : "");
 		getWindow().setTitle(title);
-		arrivalsTextView.setText("Loading arrivals for stop: " + selectedStop.getId());
+		status.setText("Loading arrivals for stop: " + selectedStop.getId());
+		status.setVisibility(View.VISIBLE);
 		loadArrivals(selectedStop.getId());
 	}
 	
@@ -152,7 +158,13 @@ public class CountdownActivity extends Activity {
 			output.append(getText(R.string.estimated_wait) + ": " + secondsToMinutes(arrival));
 			output.append("\n\n");
 		}
-		arrivalsTextView.setText(output.toString());		
+		
+		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		stopsList.removeAllViews();
+		TextView arrivalTextView = new TextView(getApplicationContext());
+		arrivalTextView.setText(output.toString());
+		stopsList.addView(arrivalTextView);
+		status.setVisibility(View.GONE);
 	}
 
 	private String secondsToMinutes(Arrival arrival) {

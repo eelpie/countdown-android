@@ -14,9 +14,9 @@ public class DistanceMeasuringService {
 	public static String makeLocationDescription(Location location) {
 		StringBuilder description = new StringBuilder(location.getLatitude() + ", " + location.getLongitude());
 		if (location.hasAccuracy()) {
-			description.append(" +/- " + location.getAccuracy() + "m, ");
+			description.append(" +/- " + location.getAccuracy() + "m");
 		}		
-		description.append(Long.toString((System.currentTimeMillis() - location.getTime()) / 1000) + " seconds ago");
+		description.append(", " + Long.toString((System.currentTimeMillis() - location.getTime()) / 1000) + " seconds ago");
 		return description.toString();
 	}
 

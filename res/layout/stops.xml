@@ -11,13 +11,15 @@
     
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
-	    <LinearLayout 
-	       	android:id="@+id/stopsList"	        
+
+	    <LinearLayout
+	        android:id="@+id/stopsList"
 	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="fill_parent"
 	        android:orientation="vertical" >
+
 	    </LinearLayout>
     </ScrollView>
 
