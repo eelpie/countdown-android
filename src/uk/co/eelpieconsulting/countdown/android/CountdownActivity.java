@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.countdown.android;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.LocationService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -13,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -48,6 +50,10 @@ public class CountdownActivity extends Activity {
         api = CountdownApiFactory.getApi();
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
+       
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 5000, 2500, new NullLocationListener());
+
     }
 	
 	@Override
@@ -58,8 +64,8 @@ public class CountdownActivity extends Activity {
         }
         
         if (selectedStop == null) {
-        	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);        	
-        	Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        	final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);        	
         	if (lastKnownLocation != null) {
 				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
 				Log.i(TAG, lastKnownLocationMessage);
@@ -202,6 +208,28 @@ public class CountdownActivity extends Activity {
 		@Override
 		protected void onPostExecute(StopBoard stopboard) {
 			renderStopboard(stopboard);
+		}
+		
+	}
+	
+	private class NullLocationListener implements LocationListener {
+
+		public void onLocationChanged(Location location) {
+			Log.i(TAG, "Location changed to: " + DistanceMeasuringService.makeLocationDescription(location));			
+		}
+
+		public void onProviderDisabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void onProviderEnabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// TODO Auto-generated method stub			
 		}
 		
 	}

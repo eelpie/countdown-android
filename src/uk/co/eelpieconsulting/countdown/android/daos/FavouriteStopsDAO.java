@@ -48,11 +48,9 @@ public class FavouriteStopsDAO {
 				return favouriteStops;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage());
 		}		
 		return new HashSet<Stop>();
 	}
@@ -84,13 +82,9 @@ public class FavouriteStopsDAO {
 			final Stop stop = iterator.next();					
 			if (closestStop == null) {
 				closestStop = stop;
-				Log.i(TAG, "Closed stop set to: " + stop.toString());
 			}
-			
 			final double distanceToStop = DistanceMeasuringService.distanceTo(lastKnownLocation, stop);
-			Log.i(TAG, "Distance to " + stop.toString() + ": " + distanceToStop);
 			if (distanceToStop < DistanceMeasuringService.distanceTo(lastKnownLocation, closestStop)) {
-				Log.i(TAG, "Closed stop set to: " + stop.toString());
 				closestStop = stop;
 			}					
 		}
@@ -108,8 +102,7 @@ public class FavouriteStopsDAO {
             out.writeObject(favouriteStops);
             out.close();            
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage());
 		}		
 	}
 	
