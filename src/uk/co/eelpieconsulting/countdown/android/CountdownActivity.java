@@ -21,6 +21,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -157,19 +158,22 @@ public class CountdownActivity extends Activity {
 		fetchArrivalsTask.execute(stopId);
 	}
 		
-	private void renderStopboard(StopBoard stopboard) {
-		final StringBuilder output = new StringBuilder();
-		for (Arrival arrival : stopboard.getArrivals()) {
-			output.append(arrival.getRouteName() + " to " + arrival.getDestination() + "\n");
-			output.append(getText(R.string.estimated_wait) + ": " + secondsToMinutes(arrival));
-			output.append("\n\n");
-		}
-		
+	private void renderStopboard(StopBoard stopboard) {		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		TextView arrivalTextView = new TextView(getApplicationContext());
-		arrivalTextView.setText(output.toString());
-		stopsList.addView(arrivalTextView);
+		
+		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
+		for (Arrival arrival : stopboard.getArrivals()) {		
+			final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
+			final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
+			routeTextView.setText(arrival.getRouteName());
+			
+			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
+			bodyTextView.setText(arrival.getDestination() + "\n" + secondsToMinutes(arrival));
+			
+			stopsList.addView(arrivalView);
+		}
+		
 		status.setVisibility(View.GONE);
 	}
 
