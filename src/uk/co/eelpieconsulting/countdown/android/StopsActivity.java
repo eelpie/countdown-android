@@ -54,6 +54,12 @@ public class StopsActivity extends Activity implements LocationListener {
 	}
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		turnOffLocationUpdates();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, R.string.favourites);
 		return true;
@@ -71,9 +77,15 @@ public class StopsActivity extends Activity implements LocationListener {
 	
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setText("Location found");
+		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
+		
 		listNearbyStops(location);
-		turnOffLocationUpdates();
+		
+		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {	
+				turnOffLocationUpdates();
+		} else {
+			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
+		}	
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -133,8 +145,8 @@ public class StopsActivity extends Activity implements LocationListener {
 	private void registerForLocationUpdates() {
 		status.setText(getString(R.string.waiting_for_location));
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 500, this);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 500, this);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
 	}
 
 	private void turnOffLocationUpdates() {
