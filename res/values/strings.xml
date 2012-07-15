@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Countdown</string>
+    <string name="app_name">Bus stops</string>
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>
@@ -12,5 +12,6 @@
     <string name="favourites">Favourites</string>
   	<string name="towards">Towards</string>    
     <string name="add_to_favourites">Add to favourites</string>    
-    <string name="remove_favourite">Remove favourite</string>    
+    <string name="remove_favourite">Remove favourite</string>
+   	<string name="search_hint">Stop identifer</string>    
 </resources>

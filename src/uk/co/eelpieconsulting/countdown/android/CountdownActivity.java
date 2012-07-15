@@ -82,12 +82,13 @@ public class CountdownActivity extends Activity {
         }
         
         if (selectedStop == null) {
+        	// TODO show welcome text
         	return;
         }
         
 		final String title = selectedStop.getName() + (selectedStop.getStopIndicator() != null ? " (" + selectedStop.getStopIndicator() + ") " : "");
 		getWindow().setTitle(title);
-		status.setText("Loading arrivals for stop: " + selectedStop.getId());
+		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
 		loadArrivals(selectedStop.getId());
 	}
@@ -166,7 +167,7 @@ public class CountdownActivity extends Activity {
 		for (Arrival arrival : stopboard.getArrivals()) {		
 			final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
 			final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
-			routeTextView.setText(arrival.getRouteName());
+			routeTextView.setText(arrival.getRouteName());			
 			
 			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
 			bodyTextView.setText(arrival.getDestination() + "\n" + secondsToMinutes(arrival));
@@ -222,18 +223,13 @@ public class CountdownActivity extends Activity {
 			Log.i(TAG, "Location changed to: " + DistanceMeasuringService.makeLocationDescription(location));			
 		}
 
-		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-			
+		public void onProviderDisabled(String provider) {			
 		}
 
-		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-			
+		public void onProviderEnabled(String provider) {			
 		}
 
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub			
 		}
 		
 	}
