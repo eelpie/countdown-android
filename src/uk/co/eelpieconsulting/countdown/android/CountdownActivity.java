@@ -82,7 +82,7 @@ public class CountdownActivity extends Activity {
         }
         
         if (selectedStop == null) {
-        	// TODO show welcome text
+        	status.setText("No favourite stops set. Use find stops to locate nearby stops.");
         	return;
         }
         

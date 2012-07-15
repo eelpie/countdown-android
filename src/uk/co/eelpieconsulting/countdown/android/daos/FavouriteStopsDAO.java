@@ -75,7 +75,7 @@ public class FavouriteStopsDAO {
 		return null;
 	}
 	
-	public Stop getClosestFavouriteStopTo(Location lastKnownLocation) {
+	public Stop getClosestFavouriteStopTo(Location location) {
 		Stop closestStop = null;
 		Iterator<Stop> iterator = getFavouriteStops().iterator();
 		while(iterator.hasNext()) {
@@ -83,8 +83,8 @@ public class FavouriteStopsDAO {
 			if (closestStop == null) {
 				closestStop = stop;
 			}
-			final double distanceToStop = DistanceMeasuringService.distanceTo(lastKnownLocation, stop);
-			if (distanceToStop < DistanceMeasuringService.distanceTo(lastKnownLocation, closestStop)) {
+			final double distanceToStop = DistanceMeasuringService.distanceTo(location, stop);
+			if (distanceToStop < DistanceMeasuringService.distanceTo(location, closestStop)) {
 				closestStop = stop;
 			}					
 		}
