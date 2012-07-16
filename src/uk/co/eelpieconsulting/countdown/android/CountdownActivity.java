@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -172,6 +173,8 @@ public class CountdownActivity extends Activity {
 			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
 			bodyTextView.setText(arrival.getDestination() + "\n" + secondsToMinutes(arrival));
 			
+			arrivalView.setOnClickListener(new RouteClicker(arrival.getRouteName()));			
+			
 			stopsList.addView(arrivalView);
 		}
 		
@@ -215,6 +218,25 @@ public class CountdownActivity extends Activity {
 			renderStopboard(stopboard);
 		}
 		
+	}
+	
+	private class RouteClicker implements OnClickListener {
+		
+		private String route;
+
+		public RouteClicker(String route) {
+			this.route = route;
+		}
+
+		public void onClick(View view) {
+			Intent intent = getIntentForContentsType(view.getContext(), route);
+			intent.putExtra("route", route);
+			startActivity(intent);
+		}
+
+		private Intent getIntentForContentsType(Context context, String route) {
+			return new Intent(context, RouteActivity.class);
+		}
 	}
 	
 	private class NullLocationListener implements LocationListener {

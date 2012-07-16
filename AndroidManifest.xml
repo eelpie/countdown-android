@@ -34,6 +34,7 @@
         </activity>
         
      	<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
+     	<activity android:name="RouteActivity"></activity>
         
     </application>
     
