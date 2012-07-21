@@ -2,9 +2,9 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.Set;
 
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

@@ -1,6 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android.services;
 
-import uk.co.eelpieconsulting.countdown.model.Stop;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
 
 public class DistanceMeasuringService {

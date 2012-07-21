@@ -2,9 +2,8 @@ package uk.co.eelpieconsulting.countdown.android.services;
 
 import java.util.Comparator;
 
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
-
-import uk.co.eelpieconsulting.countdown.model.Stop;
 
 public class DistanceToStopComparator implements Comparator<Stop> {
 	

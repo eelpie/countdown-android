@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
@@ -11,7 +12,6 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
-import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

@@ -2,11 +2,11 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
-import uk.co.eelpieconsulting.countdown.model.Stop;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -28,35 +28,7 @@ public class SearchActivity extends Activity {
 
 	    // Get the intent, verify the action and get the query
 	    Intent intent = getIntent();
-	    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-	      String query = intent.getStringExtra(SearchManager.QUERY);
-	      try {
-			List<Stop> matches = CountdownApiFactory.getApi().findStopById(Integer.parseInt(query));
-			
-			final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-			stopsList.removeAllViews();
-						
-			for (Stop stop : matches) {
-				final TextView stopTextView = new TextView(this.getApplicationContext());
-
-				String stopDescription = StopDescriptionService.makeStopDescription(stop);
-				stopDescription = stopDescription + "\n\n";
-				
-				stopTextView.setText(stopDescription);
-				stopTextView.setOnClickListener(new StopClicker(stop));
-				stopsList.addView(stopTextView);
-			}
-			
-		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	      
-	      
-	    }
+	    
 	}
 	
 	@Override

@@ -1,15 +1,19 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.io.InputStream;
 import java.util.List;
 
-import uk.co.eelpieconsulting.countdown.android.api.RoutesService;
-import uk.co.eelpieconsulting.countdown.android.model.Route;
+import uk.co.eelpieconsulting.busroutes.model.Route;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.model.Stop;
+import uk.co.eelpieconsulting.countdown.api.CountdownApi;
+import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,20 +25,17 @@ public class RouteActivity extends Activity {
 	
 	private static final String TAG = "RouteActivity";
 		
-	private String selectedRoute;
+	private Route selectedRoute;
 
 	private TextView status;
 
-	private RoutesService routesService;
+	private FetchRouteStopsTask fetchStopsTask;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);
-        status = (TextView) findViewById(R.id.status);
-        
-        routesService = new RoutesService();
-        
+        status = (TextView) findViewById(R.id.status);        
         selectedRoute = null;
     }
 	
@@ -42,21 +43,31 @@ public class RouteActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
-        	selectedRoute = (String) this.getIntent().getExtras().get("route");
+        	selectedRoute = (Route) this.getIntent().getExtras().get("route");
         }
         
         Log.i(TAG, "Selected route: " + selectedRoute);
         
-        final String title = selectedRoute;
+        final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
 		getWindow().setTitle(title);
-		status.setVisibility(View.GONE);
 		
-		final InputStream routes = getResources().openRawResource(R.raw.routes);
-		final Route route = routesService.getRoute(routes, selectedRoute);		
-		showStops(route.getStops());		
+		status.setText("Loading route stops");
+		status.setVisibility(View.VISIBLE);
+		
+		fetchStopsTask = new FetchRouteStopsTask(CountdownApiFactory.getApi());
+		fetchStopsTask.execute(selectedRoute);
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (fetchStopsTask != null && fetchStopsTask.getStatus().equals(Status.RUNNING)) {
+			fetchStopsTask.cancel(true);
+		}
+	}
+		
 	private void showStops(List<Stop> stops) {
+		status.setVisibility(View.GONE);
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
@@ -88,4 +99,32 @@ public class RouteActivity extends Activity {
 			return new Intent(context, CountdownActivity.class);
 		}
 	}
+	
+	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
+
+		private CountdownApi api;
+
+		public FetchRouteStopsTask(CountdownApi api) {
+			super();
+			this.api = api;
+		}
+		
+		@Override
+		protected void onPostExecute(List<Stop> stops) {
+			showStops(stops);
+		}
+		
+		@Override
+		protected List<Stop> doInBackground(Route... params) {
+			final Route route = params[0];
+			try {				
+				return api.getRouteStops(route.getRoute(), route.getRun());
+			} catch (HttpFetchException e) {
+				throw new RuntimeException(e);
+			} catch (ParsingException e) {
+				throw new RuntimeException(e);
+			}
+		}		
+	}	
+	
 }

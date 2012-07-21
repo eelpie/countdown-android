@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import uk.co.eelpieconsulting.busroutes.model.Route;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
@@ -8,7 +10,6 @@ import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import uk.co.eelpieconsulting.countdown.model.Arrival;
-import uk.co.eelpieconsulting.countdown.model.Stop;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
 import android.content.Context;
@@ -87,7 +88,7 @@ public class CountdownActivity extends Activity {
         	return;
         }
         
-		final String title = selectedStop.getName() + (selectedStop.getStopIndicator() != null ? " (" + selectedStop.getStopIndicator() + ") " : "");
+		final String title = selectedStop.getName() + (selectedStop.getIndicator() != null ? " (" + selectedStop.getIndicator() + ") " : "");
 		getWindow().setTitle(title);
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
@@ -168,12 +169,12 @@ public class CountdownActivity extends Activity {
 		for (Arrival arrival : stopboard.getArrivals()) {		
 			final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
 			final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
-			routeTextView.setText(arrival.getRouteName());			
+			routeTextView.setText(arrival.getRoute().getRoute());			
 			
 			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
-			bodyTextView.setText(arrival.getDestination() + "\n" + secondsToMinutes(arrival));
+			bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
 			
-			arrivalView.setOnClickListener(new RouteClicker(arrival.getRouteName()));			
+			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
 			
 			stopsList.addView(arrivalView);
 		}
@@ -222,9 +223,9 @@ public class CountdownActivity extends Activity {
 	
 	private class RouteClicker implements OnClickListener {
 		
-		private String route;
+		private Route route;
 
-		public RouteClicker(String route) {
+		public RouteClicker(Route route) {
 			this.route = route;
 		}
 
@@ -234,7 +235,7 @@ public class CountdownActivity extends Activity {
 			startActivity(intent);
 		}
 
-		private Intent getIntentForContentsType(Context context, String route) {
+		private Intent getIntentForContentsType(Context context, Route route) {
 			return new Intent(context, RouteActivity.class);
 		}
 	}
