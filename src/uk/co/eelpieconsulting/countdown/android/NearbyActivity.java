@@ -8,6 +8,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
+import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -22,8 +23,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -146,7 +145,7 @@ public class NearbyActivity extends Activity implements LocationListener {
 			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away\n\n";
 			
 			stopTextView.setText(stopDescription);
-			stopTextView.setOnClickListener(new StopClicker(stop));
+			stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
 			stopsList.addView(stopTextView);
 		}
 	}
@@ -161,24 +160,6 @@ public class NearbyActivity extends Activity implements LocationListener {
 	private void turnOffLocationUpdates() {
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
-	}
-	
-	private class StopClicker implements OnClickListener {
-		private Stop stop;
-
-		public StopClicker(Stop stop) {
-			this.stop = stop;
-		}
-
-		public void onClick(View view) {
-			Intent intent = getIntentForContentsType(view.getContext(), stop);
-			intent.putExtra("stop", stop);
-			startActivity(intent);
-		}
-
-		private Intent getIntentForContentsType(Context context, Stop stop) {
-			return new Intent(context, CountdownActivity.class);
-		}
 	}
 	
 }

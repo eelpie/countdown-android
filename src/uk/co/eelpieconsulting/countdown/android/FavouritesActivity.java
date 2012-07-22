@@ -4,15 +4,14 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -68,26 +67,8 @@ public class FavouritesActivity extends Activity {
 	private TextView makeStopView(Stop stop) {
 		final TextView stopTextView = new TextView(this.getApplicationContext());
 		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(stop));
+		stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
 		return stopTextView;
-	}
-	
-	private class StopClicker implements OnClickListener {
-		private Stop stop;
-
-		public StopClicker(Stop stop) {
-			this.stop = stop;
-		}
-
-		public void onClick(View view) {
-			Intent intent = getIntentForContentsType(view.getContext(), stop);
-			intent.putExtra("stop", stop);
-			startActivity(intent);
-		}
-
-		private Intent getIntentForContentsType(Context context, Stop stop) {
-			return new Intent(context, CountdownActivity.class);
-		}
 	}
 	
 }

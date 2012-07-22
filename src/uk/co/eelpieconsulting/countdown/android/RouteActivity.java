@@ -5,19 +5,17 @@ import java.util.List;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
+import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -82,26 +80,8 @@ public class RouteActivity extends Activity {
 	private TextView makeStopView(Stop stop) {
 		final TextView stopTextView = new TextView(this.getApplicationContext());
 		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(stop));
+		stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
 		return stopTextView;
-	}
-	
-	private class StopClicker implements OnClickListener {
-		private Stop stop;
-
-		public StopClicker(Stop stop) {
-			this.stop = stop;
-		}
-
-		public void onClick(View view) {
-			Intent intent = getIntentForContentsType(view.getContext(), stop);
-			intent.putExtra("stop", stop);
-			startActivity(intent);
-		}
-
-		private Intent getIntentForContentsType(Context context, Stop stop) {
-			return new Intent(context, CountdownActivity.class);
-		}
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
