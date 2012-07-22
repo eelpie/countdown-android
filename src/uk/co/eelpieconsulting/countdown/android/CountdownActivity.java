@@ -166,7 +166,8 @@ public class CountdownActivity extends Activity {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		
-		status.setText(StopDescriptionService.routesDescription(selectedStop.getRoutes()));
+		final String towards = selectedStop.getTowards() != null ? "Towards " + selectedStop.getTowards() + "\n" : "";
+		status.setText(towards + StopDescriptionService.routesDescription(selectedStop.getRoutes()));
 		status.setVisibility(View.VISIBLE);
 		
 		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
