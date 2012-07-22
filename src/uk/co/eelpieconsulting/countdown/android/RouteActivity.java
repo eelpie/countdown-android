@@ -45,9 +45,7 @@ public class RouteActivity extends Activity {
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
         	selectedRoute = (Route) this.getIntent().getExtras().get("route");
         }
-        
-        Log.i(TAG, "Selected route: " + selectedRoute);
-        
+                
         final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
 		getWindow().setTitle(title);
 		
@@ -67,12 +65,18 @@ public class RouteActivity extends Activity {
 	}
 		
 	private void showStops(List<Stop> stops) {
-		status.setVisibility(View.GONE);
+		Log.i(TAG, "Found " + stops.size() + " stops");
+		
+		status.setText("Displaying");
+		status.setVisibility(View.VISIBLE);
+		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
+			Log.i(TAG, "Found: " + stop.toString());
 			stopsList.addView(makeStopView(stop));
 		}
+		status.setVisibility(View.GONE);
 	}
 
 	private TextView makeStopView(Stop stop) {

@@ -8,14 +8,11 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 public class StopDescriptionService {
 
 	public static String makeStopDescription(Stop stop) {
-		StringBuilder description = new StringBuilder(stop.getName() + (stop.getIndicator() != null ? " (" + stop.getIndicator() + ") " : "") + "\n");
-		description.append(stop.getId() + "\n");
-		
+		final StringBuilder description = new StringBuilder(stop.getName() + (stop.getIndicator() != null ? " (" + stop.getIndicator() + ") " : "") + "\n");		
 		if (stop.getTowards() != null) {
 			description.append("Towards " + stop.getTowards() + "\n");
 		}
-		description.append(routesDescription(stop.getRoutes()) + "\n");	
-		description.append(stop.getLatitude() + ", " + stop.getLongitude());
+		description.append(routesDescription(stop.getRoutes()));	
 		return description.toString();
 	}
 
