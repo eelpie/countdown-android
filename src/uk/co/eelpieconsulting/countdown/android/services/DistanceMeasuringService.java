@@ -15,8 +15,10 @@ public class DistanceMeasuringService {
 		StringBuilder description = new StringBuilder(location.getLatitude() + ", " + location.getLongitude());
 		if (location.hasAccuracy()) {
 			description.append(" +/- " + location.getAccuracy() + "m");
-		}		
-		description.append(", " + Long.toString((System.currentTimeMillis() - location.getTime()) / 1000) + " seconds ago");
+		}
+		if (location.getTime() > 0) {
+			description.append(", " + Long.toString((System.currentTimeMillis() - location.getTime()) / 1000) + " seconds ago");
+		}
 		return description.toString();
 	}
 

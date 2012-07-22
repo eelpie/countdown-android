@@ -19,10 +19,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,16 +35,15 @@ public class NearbyActivity extends Activity implements LocationListener {
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
-	private CountdownApi api;
 	private TextView status;
+
+	private FetchNearbyStopsTask fetchNearbyStopsTask;
 	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);
-        
-        api = CountdownApiFactory.getApi();        		
+        setContentView(R.layout.stops);        
 		status = (TextView) findViewById(R.id.status);
 	}
     
@@ -65,6 +67,9 @@ public class NearbyActivity extends Activity implements LocationListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
+			fetchNearbyStopsTask.cancel(true);
+		}
 		turnOffLocationUpdates();
 	}
 
@@ -111,24 +116,12 @@ public class NearbyActivity extends Activity implements LocationListener {
 	}
 	
 	private void listNearbyStops(Location location) {		
-		try {
-			showStops(location, loadStops(location));
-			return;
-			
-		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		status.setText("Failed to load stops");
-	}
-	
-	private List<Stop> loadStops(Location location) throws HttpFetchException, ParsingException {
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);
+		status.setVisibility(View.VISIBLE);
+		
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(CountdownApiFactory.getApi());
+		fetchNearbyStopsTask.execute(location);		
+		return;		
 	}
 	
 	private void showStops(Location location, List<Stop> stops) {
@@ -160,6 +153,35 @@ public class NearbyActivity extends Activity implements LocationListener {
 	private void turnOffLocationUpdates() {
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
+	}
+	
+	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
+
+		private CountdownApi api;
+		private Location location;
+
+		public FetchNearbyStopsTask(CountdownApi api) {
+			super();
+			this.api = api;
+		}
+		
+		@Override
+		protected void onPostExecute(List<Stop> stops) {
+			showStops(location, stops);
+		}
+		
+		@Override
+		protected List<Stop> doInBackground(Location... params) {
+			final Location location = params[0];
+			this.location = location;
+			try {				
+				return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+			} catch (HttpFetchException e) {
+				throw new RuntimeException(e);
+			} catch (ParsingException e) {
+				throw new RuntimeException(e);
+			}
+		}		
 	}
 	
 }
