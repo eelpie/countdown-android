@@ -108,7 +108,10 @@ public class CountdownActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, R.string.favourites);
 		menu.add(0, 4, 0, R.string.find_stops);
-		favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
+		if (selectedStop != null) {
+			menu.add(0, 5, 0, R.string.near_this);
+			favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
+		}
 		return true;
 	}
 
@@ -152,6 +155,12 @@ public class CountdownActivity extends Activity {
 			
 		case 4:
 			this.startActivity(new Intent(this, NearbyActivity.class));
+			return true;
+			
+		case 5:
+			Intent intent = new Intent(this, NearbyActivity.class);
+			intent.putExtra("stop", selectedStop);
+			this.startActivity(intent);
 			return true;
 		}
 		return false;

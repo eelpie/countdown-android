@@ -50,7 +50,17 @@ public class NearbyActivity extends Activity implements LocationListener {
 	protected void onResume() {
 		super.onResume();
 		getWindow().setTitle(getString(R.string.find_stops));
-        registerForLocationUpdates();
+		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+			final Location stopLocation = new Location("knownStopLocation");
+			stopLocation.setAccuracy(5);
+			stopLocation.setLatitude(selectedStop.getLatitude());
+			stopLocation.setLongitude(selectedStop.getLongitude());
+			listNearbyStops(stopLocation);
+
+		} else {
+			registerForLocationUpdates();
+		}
 	}
 	
 	@Override
@@ -95,14 +105,13 @@ public class NearbyActivity extends Activity implements LocationListener {
 
 	public void onProviderEnabled(String provider) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {
+	private void listNearbyStops(Location location) {		
 		try {
 			showStops(location, loadStops(location));
 			return;
