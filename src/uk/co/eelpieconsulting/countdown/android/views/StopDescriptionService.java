@@ -1,5 +1,8 @@
 package uk.co.eelpieconsulting.countdown.android.views;
 
+import java.util.Set;
+
+import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 
 public class StopDescriptionService {
@@ -11,8 +14,17 @@ public class StopDescriptionService {
 		if (stop.getTowards() != null) {
 			description.append("Towards " + stop.getTowards() + "\n");
 		}
+		description.append(routesDescription(stop.getRoutes()) + "\n");	
 		description.append(stop.getLatitude() + ", " + stop.getLongitude());
 		return description.toString();
+	}
+
+	public static String routesDescription(Set<Route> routes) {
+		StringBuilder routesDescription = new StringBuilder();
+		for (Route route : routes) {
+			routesDescription.append("[" + route.getRoute() + "] ");
+		}
+		return routesDescription.toString().trim();
 	}
 	
 }

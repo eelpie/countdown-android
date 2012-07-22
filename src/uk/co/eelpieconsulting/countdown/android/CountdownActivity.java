@@ -6,6 +6,7 @@ import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
+import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -165,6 +166,9 @@ public class CountdownActivity extends Activity {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		
+		status.setText(StopDescriptionService.routesDescription(selectedStop.getRoutes()));
+		status.setVisibility(View.VISIBLE);
+		
 		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Arrival arrival : stopboard.getArrivals()) {		
 			final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
@@ -177,9 +181,7 @@ public class CountdownActivity extends Activity {
 			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
 			
 			stopsList.addView(arrivalView);
-		}
-		
-		status.setVisibility(View.GONE);
+		}		
 	}
 
 	private String secondsToMinutes(Arrival arrival) {

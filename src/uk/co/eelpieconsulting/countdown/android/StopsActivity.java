@@ -134,7 +134,7 @@ public class StopsActivity extends Activity implements LocationListener {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
 			String stopDescription = StopDescriptionService.makeStopDescription(stop);
-			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away" + "\n\n";
+			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away\n\n";
 			
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(stop));
