@@ -151,7 +151,7 @@ public class CountdownActivity extends Activity {
 			return true;
 			
 		case 4:
-			this.startActivity(new Intent(this, StopsActivity.class));
+			this.startActivity(new Intent(this, NearbyActivity.class));
 			return true;
 		}
 		return false;

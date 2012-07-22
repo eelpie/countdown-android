@@ -27,7 +27,7 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class StopsActivity extends Activity implements LocationListener {
+public class NearbyActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
