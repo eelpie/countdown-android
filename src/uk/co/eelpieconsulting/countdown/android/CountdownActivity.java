@@ -1,5 +1,11 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.List;
+
+import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.model.Arrival;
+import uk.co.eelpieconsulting.buses.client.model.StopBoard;
+import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
@@ -7,11 +13,8 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
-import uk.co.eelpieconsulting.countdown.model.Arrival;
-import uk.co.eelpieconsulting.countdown.model.StopBoard;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +41,9 @@ public class CountdownActivity extends Activity {
 	
 	private CountdownApi api;
 	private FavouriteStopsDAO favouriteStopsDAO;
+	
 	private FetchArrivalsTask fetchArrivalsTask;
+	private FetchMessagesTask fetchMessagesTask;
 	
 	private Stop selectedStop;
 
@@ -94,6 +99,8 @@ public class CountdownActivity extends Activity {
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
 		loadArrivals(selectedStop.getId());
+		
+		loadMessages(selectedStop.getId());
 	}
 	
 	@Override
@@ -102,12 +109,15 @@ public class CountdownActivity extends Activity {
 		if (fetchArrivalsTask != null && fetchArrivalsTask.getStatus().equals(Status.RUNNING)) {
 			fetchArrivalsTask.cancel(true);
 		}
+		if (fetchMessagesTask != null && fetchMessagesTask.getStatus().equals(Status.RUNNING)) {
+			fetchMessagesTask.cancel(true);
+		}
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, 0, R.string.favourites);
-		menu.add(0, 4, 0, R.string.find_stops);
+		menu.add(0, 4, 0, R.string.near_me);
 		if (selectedStop != null) {
 			menu.add(0, 5, 0, R.string.near_this);
 			favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
@@ -170,6 +180,11 @@ public class CountdownActivity extends Activity {
 		fetchArrivalsTask = new FetchArrivalsTask(api);
 		fetchArrivalsTask.execute(stopId);
 	}
+	
+	private void loadMessages(int stopId) {
+		fetchMessagesTask = new FetchMessagesTask(new uk.co.eelpieconsulting.countdown.api.CountdownApi("http://countdown.api.tfl.gov.uk"));
+		fetchMessagesTask.execute(stopId);
+	}
 		
 	private void renderStopboard(StopBoard stopboard) {		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
@@ -193,7 +208,20 @@ public class CountdownActivity extends Activity {
 			stopsList.addView(arrivalView);
 		}		
 	}
-
+	
+	private void renderMessages(List<Message> messages) {		
+		if (messages == null) {
+			return;
+		}
+		final TextView messageText = (TextView) findViewById(R.id.messages);
+		StringBuilder output = new StringBuilder();
+		for (Message message : messages) {
+			output.append(message.getMessage() + "\n");			
+		}
+		messageText.setText(output);
+		messageText.setVisibility(View.VISIBLE);
+	}
+	
 	private String secondsToMinutes(Arrival arrival) {
 		final long minutes = arrival.getEstimatedWait() / 60;
 		if (minutes == 0) {
@@ -217,19 +245,53 @@ public class CountdownActivity extends Activity {
 		@Override
 		protected StopBoard doInBackground(Integer... params) {
 			final int stopId = params[0];
-			try {				
+			try {
 				return api.getStopBoard(stopId);
-			} catch (HttpFetchException e) {
-				throw new RuntimeException(e);
-			} catch (ParsingException e) {
-				throw new RuntimeException(e);
+			} catch (uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (uk.co.eelpieconsulting.buses.client.exceptions.ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return null;
 		}
 
 		@Override
 		protected void onPostExecute(StopBoard stopboard) {
 			renderStopboard(stopboard);
 		}
+		
+	}
+	
+	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
+
+		private uk.co.eelpieconsulting.countdown.api.CountdownApi api;
+
+		public FetchMessagesTask(uk.co.eelpieconsulting.countdown.api.CountdownApi api) {
+			super();
+			this.api = api;
+		}
+
+		@Override
+		protected List<Message> doInBackground(Integer... params) {
+			final int stopId = params[0];
+			try {
+				return api.getStopMessages(stopId);
+			} catch (HttpFetchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(List<Message> messages) {
+			renderMessages(messages);
+		}		
 		
 	}
 	

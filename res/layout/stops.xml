@@ -7,7 +7,15 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text=""
+        android:visibility="gone" />
+        
+     <TextView
+         android:id="@+id/messages"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text=""
+         android:visibility="gone" />
     
     <ScrollView
         android:id="@+id/scrollView1"

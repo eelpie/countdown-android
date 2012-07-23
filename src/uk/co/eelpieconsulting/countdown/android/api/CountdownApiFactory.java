@@ -1,6 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android.api;
 
-import uk.co.eelpieconsulting.countdown.api.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.CountdownApi;
 
 public class CountdownApiFactory {
 

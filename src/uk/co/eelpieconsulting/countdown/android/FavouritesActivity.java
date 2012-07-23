@@ -38,7 +38,7 @@ public class FavouritesActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.find_stops);
+		menu.add(0, 1, 0, R.string.near_me);
 		return true;
 	}
 	
@@ -67,7 +67,7 @@ public class FavouritesActivity extends Activity {
 	private TextView makeStopView(Stop stop) {
 		final TextView stopTextView = new TextView(this.getApplicationContext());
 		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
+		stopTextView.setOnClickListener(new StopClicker(this, stop));
 		return stopTextView;
 	}
 	

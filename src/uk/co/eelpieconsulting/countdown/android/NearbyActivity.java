@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.api.CountdownApi;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,11 +50,10 @@ public class NearbyActivity extends Activity implements LocationListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.find_stops));
+		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			final Location stopLocation = new Location("knownStopLocation");
-			stopLocation.setAccuracy(5);
 			stopLocation.setLatitude(selectedStop.getLatitude());
 			stopLocation.setLongitude(selectedStop.getLongitude());
 			listNearbyStops(stopLocation);
@@ -138,7 +137,7 @@ public class NearbyActivity extends Activity implements LocationListener {
 			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away\n\n";
 			
 			stopTextView.setText(stopDescription);
-			stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
+			stopTextView.setOnClickListener(new StopClicker(this, stop));
 			stopsList.addView(stopTextView);
 		}
 	}

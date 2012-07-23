@@ -2,14 +2,13 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.api.CountdownApi;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -80,15 +79,15 @@ public class RouteActivity extends Activity {
 	private TextView makeStopView(Stop stop) {
 		final TextView stopTextView = new TextView(this.getApplicationContext());
 		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(getApplicationContext(), stop));
+		stopTextView.setOnClickListener(new StopClicker(this, stop));
 		return stopTextView;
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private CountdownApi api;
+		private uk.co.eelpieconsulting.buses.client.CountdownApi api;
 
-		public FetchRouteStopsTask(CountdownApi api) {
+		public FetchRouteStopsTask(uk.co.eelpieconsulting.buses.client.CountdownApi api) {
 			super();
 			this.api = api;
 		}
@@ -101,13 +100,16 @@ public class RouteActivity extends Activity {
 		@Override
 		protected List<Stop> doInBackground(Route... params) {
 			final Route route = params[0];
-			try {				
+			try {
 				return api.getRouteStops(route.getRoute(), route.getRun());
 			} catch (HttpFetchException e) {
-				throw new RuntimeException(e);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch (ParsingException e) {
-				throw new RuntimeException(e);
-			}
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+			return null;
 		}		
 	}	
 	
