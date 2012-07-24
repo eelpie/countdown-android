@@ -1,13 +1,18 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.List;
 import java.util.Set;
 
+import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +58,54 @@ public class AlertsActivity extends Activity {
 		return false;
 	}
 	
+	private void renderMessages(List<Message> messages, TextView messageText) {		
+		if (messages == null) {
+			return;
+		}
+		StringBuilder output = new StringBuilder();
+		for (Message message : messages) {
+			final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
+			if (isCurrent) {			
+				output.append(message.getMessage() + "\n");
+			}
+		}
+		messageText.setText(output);
+		messageText.setVisibility(View.VISIBLE);		
+	}
+	
+	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
+
+		private uk.co.eelpieconsulting.countdown.api.CountdownApi api;
+		private final TextView target;
+
+		public FetchMessagesTask(uk.co.eelpieconsulting.countdown.api.CountdownApi api, TextView target) {
+			super();
+			this.api = api;
+			this.target = target;
+		}
+
+		@Override
+		protected List<Message> doInBackground(Integer... params) {
+			final int stopId = params[0];
+			try {
+				return api.getStopMessages(stopId);
+			} catch (HttpFetchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(List<Message> messages) {
+			renderMessages(messages, target);
+		}	
+		
+	}
+	
 	private void showFavourites() {
 		showStops(favouriteStopsDAO.getFavouriteStops());
 	}
@@ -62,6 +115,12 @@ public class AlertsActivity extends Activity {
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
 			stopsList.addView(makeStopView(stop));
+			TextView messageView = new TextView(getApplicationContext());
+			stopsList.addView(messageView);
+			
+			FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(new uk.co.eelpieconsulting.countdown.api.CountdownApi("http://countdown.api.tfl.gov.uk"), messageView);
+			fetchMessagesTask.execute(stop.getId());
+			// TODO close tasks on pause
 		}
 	}
 
