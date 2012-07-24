@@ -122,6 +122,7 @@ public class CountdownActivity extends Activity {
 			menu.add(0, 5, 0, R.string.near_this);
 			favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
 		}
+		menu.add(0, 6, 0, R.string.alerts);
 		return true;
 	}
 
@@ -172,6 +173,10 @@ public class CountdownActivity extends Activity {
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;
+						
+		case 6:
+			this.startActivity(new Intent(this, AlertsActivity.class));
+			return true;
 		}
 		return false;
 	}
@@ -216,7 +221,10 @@ public class CountdownActivity extends Activity {
 		final TextView messageText = (TextView) findViewById(R.id.messages);
 		StringBuilder output = new StringBuilder();
 		for (Message message : messages) {
-			output.append(message.getMessage() + "\n");			
+			final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
+			if (isCurrent) {			
+				output.append(message.getMessage() + "\n");
+			}
 		}
 		messageText.setText(output);
 		messageText.setVisibility(View.VISIBLE);
