@@ -8,7 +8,7 @@ import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
@@ -56,7 +56,7 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.stops);
         status = (TextView) findViewById(R.id.status);
         
-        api = CountdownApiFactory.getApi();
+        api = ApiFactory.getApi();
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
        
@@ -187,7 +187,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadMessages(int stopId) {
-		fetchMessagesTask = new FetchMessagesTask(CountdownApiFactory.getCountdownApi());
+		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getCountdownApi());
 		fetchMessagesTask.execute(stopId);
 	}
 	

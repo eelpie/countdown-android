@@ -6,7 +6,7 @@ import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
@@ -49,7 +49,7 @@ public class RouteActivity extends Activity {
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
 		
-		fetchStopsTask = new FetchRouteStopsTask(CountdownApiFactory.getApi());
+		fetchStopsTask = new FetchRouteStopsTask(ApiFactory.getApi());
 		fetchStopsTask.execute(selectedRoute);
 	}
 	

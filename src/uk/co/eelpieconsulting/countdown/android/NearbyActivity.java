@@ -8,7 +8,7 @@ import uk.co.eelpieconsulting.buses.client.CountdownApi;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
@@ -118,7 +118,7 @@ public class NearbyActivity extends Activity implements LocationListener {
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 		
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(CountdownApiFactory.getApi());
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}

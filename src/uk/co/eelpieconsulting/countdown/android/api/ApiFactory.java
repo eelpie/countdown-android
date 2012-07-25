@@ -2,7 +2,7 @@ package uk.co.eelpieconsulting.countdown.android.api;
 
 import uk.co.eelpieconsulting.buses.client.CountdownApi;
 
-public class CountdownApiFactory {
+public class ApiFactory {
 
 	private static final String INHOUSE_API_BASE_URL = "http://buses.eelpieconsulting.co.uk";
 	private static final String COUNTDOWN_API_BASE_URL = "http://countdown.api.tfl.gov.uk";
