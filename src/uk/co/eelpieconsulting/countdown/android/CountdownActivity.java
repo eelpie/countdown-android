@@ -3,6 +3,8 @@ package uk.co.eelpieconsulting.countdown.android;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Message;
@@ -13,8 +15,6 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -187,7 +187,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadMessages(int stopId) {
-		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getCountdownApi());
+		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
 		fetchMessagesTask.execute(stopId);
 	}
 	
@@ -274,9 +274,9 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
 
-		private uk.co.eelpieconsulting.countdown.api.CountdownApi api;
+		private CountdownApi api;
 
-		public FetchMessagesTask(uk.co.eelpieconsulting.countdown.api.CountdownApi api) {
+		public FetchMessagesTask(CountdownApi api) {
 			super();
 			this.api = api;
 		}

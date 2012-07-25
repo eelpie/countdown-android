@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -99,7 +100,7 @@ public class AlertsActivity extends Activity {
 	private void showStops(Set<Stop> stops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		final uk.co.eelpieconsulting.countdown.api.CountdownApi api = ApiFactory.getCountdownApi();		
+		final CountdownApi api = ApiFactory.getApi();		
 		for (Stop stop : stops) {
 			final TextView stopView = makeStopView(stop);
 			stopView.setVisibility(View.GONE);
@@ -123,11 +124,11 @@ public class AlertsActivity extends Activity {
 	
 	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
 
-		private uk.co.eelpieconsulting.countdown.api.CountdownApi api;
+		private CountdownApi api;
 		private final TextView stopView;
 		private final TextView messageView;
 
-		public FetchMessagesTask(uk.co.eelpieconsulting.countdown.api.CountdownApi api, TextView stopView, TextView messageView) {
+		public FetchMessagesTask(CountdownApi api, TextView stopView, TextView messageView) {
 			super();
 			this.api = api;
 			this.stopView = stopView;
