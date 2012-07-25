@@ -6,6 +6,7 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.api.CountdownApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
@@ -98,8 +99,7 @@ public class AlertsActivity extends Activity {
 	private void showStops(Set<Stop> stops) {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		final uk.co.eelpieconsulting.countdown.api.CountdownApi api = new uk.co.eelpieconsulting.countdown.api.CountdownApi("http://countdown.api.tfl.gov.uk");
-		
+		final uk.co.eelpieconsulting.countdown.api.CountdownApi api = CountdownApiFactory.getCountdownApi();		
 		for (Stop stop : stops) {
 			final TextView stopView = makeStopView(stop);
 			stopView.setVisibility(View.GONE);

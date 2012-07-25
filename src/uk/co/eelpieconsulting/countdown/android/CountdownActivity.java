@@ -187,10 +187,10 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadMessages(int stopId) {
-		fetchMessagesTask = new FetchMessagesTask(new uk.co.eelpieconsulting.countdown.api.CountdownApi("http://countdown.api.tfl.gov.uk"));
+		fetchMessagesTask = new FetchMessagesTask(CountdownApiFactory.getCountdownApi());
 		fetchMessagesTask.execute(stopId);
 	}
-		
+	
 	private void renderStopboard(StopBoard stopboard) {		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
