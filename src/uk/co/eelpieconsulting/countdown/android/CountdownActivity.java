@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.Collections;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.CountdownApi;
@@ -14,6 +15,8 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
+import uk.co.eelpieconsulting.countdown.android.services.MessageStartDateComparator;
+import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Context;
@@ -49,6 +52,8 @@ public class CountdownActivity extends Activity {
 
 	private MenuItem favouriteMenuItem;
 	private TextView status;
+
+	private LinearLayout stopsList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,8 @@ public class CountdownActivity extends Activity {
         api = ApiFactory.getApi();
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
+        
+		stopsList = (LinearLayout) findViewById(R.id.stopsList);
        
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 5000, 2500, new NullLocationListener());
@@ -192,7 +199,6 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void renderStopboard(StopBoard stopboard) {		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		
 		final String towards = selectedStop.getTowards() != null ? "Towards " + selectedStop.getTowards() + "\n" : "";
@@ -210,7 +216,7 @@ public class CountdownActivity extends Activity {
 			
 			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
 			
-			stopsList.addView(arrivalView);
+			stopsList.addView(arrivalView, 0);
 		}		
 	}
 	
@@ -218,16 +224,15 @@ public class CountdownActivity extends Activity {
 		if (messages == null) {
 			return;
 		}
-		final TextView messageText = (TextView) findViewById(R.id.messages);
-		StringBuilder output = new StringBuilder();
+		
+		Collections.sort(messages, new MessageStartDateComparator());
+		
 		for (Message message : messages) {
 			final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
 			if (isCurrent) {			
-				output.append(message.getMessage() + "\n");
+				stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));
 			}
-		}
-		messageText.setText(output);
-		messageText.setVisibility(View.VISIBLE);
+		}		
 	}
 	
 	private String secondsToMinutes(Arrival arrival) {

@@ -1,6 +1,8 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +16,8 @@ import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
-import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
-import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.services.MessageStartDateComparator;
+import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -80,29 +82,52 @@ public class AlertsActivity extends Activity {
 		return false;
 	}
 	
-	private void renderMessages(Map<Stop, List<Message>> messages) {		
-		if (messages == null) {
+	private void renderMessages(Map<Stop, List<Message>> messagesMap) {		
+		if (messagesMap == null) {
 			return;
 		}	
 		
+		Map<String, Message> uniqueMessages = new HashMap<String, Message>();			
+		final Map<String, List<Stop>> messageStops = new HashMap<String, List<Stop>>();
+		for (Stop stop : messagesMap.keySet()) {
+			for (Message message : messagesMap.get(stop)) {
+				final String hash = getMessageHash(message);
+				final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
+				if (isCurrent) {
+					uniqueMessages.put(hash, message);
+				}
+				messageStops.put(hash, new ArrayList<Stop>());
+			}
+		}
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		
-		Set<Stop> stops = messages.keySet();
-		for (Stop stop : stops) {
-			if (!messages.get(stop).isEmpty()) {
-				stopsList.addView(makeStopView(stop));			
-				for (Message message : messages.get(stop)) {
-					final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
-					if (isCurrent) {
-						TextView messageView = new TextView(getApplicationContext());
-						messageView.setText(message.getMessage());
-						messageView.setVisibility(View.VISIBLE);
-						stopsList.addView(messageView);
-					}
-				}
+	
+		for (Stop stop : messagesMap.keySet()) {
+			for (Message message : messagesMap.get(stop)) {
+				final String hash = getMessageHash(message);
+				List<Stop> list = messageStops.get(hash);
+				list.add(stop);
+				messageStops.put(hash, list);
 			}
-		}				
+		}
+	
+		final List<Message> messagesToDisplay = new ArrayList<Message>(uniqueMessages.values());		
+		Collections.sort(messagesToDisplay, new MessageStartDateComparator());
+		
+		for (Message message : messagesToDisplay) {			
+			final StringBuilder output = new StringBuilder(message.getMessage() + "\n");
+			output.append(new Date(message.getStartDate()) + " - " + new Date(message.getEndDate()) + "\n\n");
+			for (Stop stop : messageStops.get(getMessageHash(message))) {
+				output.append(stop.getName() + ", ");
+			}
+			
+			final TextView messageView = MessageDescriptionService.makeStopDescription(message, getApplicationContext(), messageStops.get(getMessageHash(message)));			
+			stopsList.addView(messageView);
+		}
+	}
+
+	private String getMessageHash(Message message) {
+		return message.getId().split("_")[0];
 	}
 	
 	private void showFavourites() {
@@ -112,13 +137,6 @@ public class AlertsActivity extends Activity {
 	private void showStops(Set<Stop> stops) {
 		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
 		fetchMessagesTask.execute(stops);
-	}
-
-	private TextView makeStopView(Stop stop) {
-		final TextView stopTextView = new TextView(this.getApplicationContext());
-		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(this, stop));
-		return stopTextView;
 	}
 	
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, Map<Stop, List<Message>>> {
@@ -155,8 +173,7 @@ public class AlertsActivity extends Activity {
 					List<Message> list = result.get(messageStop);
 					list.add(message);
 					result.put(messageStop, list);
-				}
-				
+				}				
 				
 			} catch (HttpFetchException e) {
 				// TODO Auto-generated catch block

@@ -23,5 +23,4 @@ public class DistanceToStopComparator implements Comparator<Stop> {
 		return 1;
 	}
 	
-
 }
