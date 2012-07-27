@@ -1,7 +1,10 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.buses.client.CountdownApi;
@@ -77,20 +80,29 @@ public class AlertsActivity extends Activity {
 		return false;
 	}
 	
-	private void renderMessages(List<Message> messages, TextView stopTextView, TextView messageText) {		
+	private void renderMessages(Map<Stop, List<Message>> messages) {		
 		if (messages == null) {
 			return;
-		}
-		StringBuilder output = new StringBuilder();
-		for (Message message : messages) {
-			final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
-			if (isCurrent) {
-				output.append(message.getMessage() + "\n");
-				stopTextView.setVisibility(View.VISIBLE);
+		}	
+		
+		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		stopsList.removeAllViews();
+		
+		Set<Stop> stops = messages.keySet();
+		for (Stop stop : stops) {
+			if (!messages.get(stop).isEmpty()) {
+				stopsList.addView(makeStopView(stop));			
+				for (Message message : messages.get(stop)) {
+					final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
+					if (isCurrent) {
+						TextView messageView = new TextView(getApplicationContext());
+						messageView.setText(message.getMessage());
+						messageView.setVisibility(View.VISIBLE);
+						stopsList.addView(messageView);
+					}
+				}
 			}
-		}
-		messageText.setText(output);
-		messageText.setVisibility(View.VISIBLE);		
+		}				
 	}
 	
 	private void showFavourites() {
@@ -98,21 +110,8 @@ public class AlertsActivity extends Activity {
 	}
 
 	private void showStops(Set<Stop> stops) {
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
-		final CountdownApi api = ApiFactory.getApi();		
-		for (Stop stop : stops) {
-			final TextView stopView = makeStopView(stop);
-			stopView.setVisibility(View.GONE);
-			
-			stopsList.addView(stopView);
-			TextView messageView = new TextView(getApplicationContext());
-			stopsList.addView(messageView);
-			
-			FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(api, stopView, messageView);
-			fetchMessagesTask.execute(stop.getId());
-			// TODO close tasks on pause
-		}
+		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
+		fetchMessagesTask.execute(stops);
 	}
 
 	private TextView makeStopView(Stop stop) {
@@ -122,25 +121,43 @@ public class AlertsActivity extends Activity {
 		return stopTextView;
 	}
 	
-	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
+	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, Map<Stop, List<Message>>> {
 
 		private CountdownApi api;
-		private final TextView stopView;
-		private final TextView messageView;
 
-		public FetchMessagesTask(CountdownApi api, TextView stopView, TextView messageView) {
+		public FetchMessagesTask(CountdownApi api) {
 			super();
 			this.api = api;
-			this.stopView = stopView;
-			this.messageView = messageView;
 		}
 
 		@Override
-		protected List<Message> doInBackground(Integer... params) {
+		protected Map<Stop, List<Message>> doInBackground(Set<Stop>... params) {
 			fetchMessagesTasks.add(this);
-			final int stopId = params[0];
+			
+			Map<Stop, List<Message>> result = new HashMap<Stop, List<Message>>();
+			final Set<Stop> stops = params[0];
 			try {				
-				return api.getStopMessages(stopId);
+				int[] stopIds = new int[stops.size()];
+				Iterator<Stop> iterator = stops.iterator();
+				for (int i = 0; i < stops.size(); i++) {
+					stopIds[i] = iterator.next().getId();
+				}				
+				
+				List<Message> messages = api.getMultipleStopMessages(stopIds);
+				Map<Integer, Stop> stopsById = new HashMap<Integer, Stop>();
+				for (Stop stop : stops) {
+					stopsById.put(stop.getId(), stop);
+					result.put(stop, new ArrayList<Message>());
+				}
+				
+				for (Message message : messages) {
+					final Stop messageStop = stopsById.get(message.getStopId());
+					List<Message> list = result.get(messageStop);
+					list.add(message);
+					result.put(messageStop, list);
+				}
+				
+				
 			} catch (HttpFetchException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -148,16 +165,15 @@ public class AlertsActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return result;
 		}
 
 		@Override
-		protected void onPostExecute(List<Message> messages) {
-			renderMessages(messages, stopView, messageView);
+		protected void onPostExecute(Map<Stop, List<Message>> messages) {
+			renderMessages(messages);
 			fetchMessagesTasks.remove(this);
 		}	
 		
 	}
-	
-	
+		
 }
