@@ -1,22 +1,17 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.buses.client.CountdownApi;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
-import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
-import uk.co.eelpieconsulting.countdown.android.services.MessageStartDateComparator;
+import uk.co.eelpieconsulting.countdown.android.model.MultiStopMessage;
+import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
@@ -82,52 +77,17 @@ public class AlertsActivity extends Activity {
 		return false;
 	}
 	
-	private void renderMessages(Map<Stop, List<Message>> messagesMap) {		
-		if (messagesMap == null) {
+	private void renderMessages(List<MultiStopMessage> messages) {		
+		if (messages == null) {
 			return;
-		}	
-		
-		Map<String, Message> uniqueMessages = new HashMap<String, Message>();			
-		final Map<String, List<Stop>> messageStops = new HashMap<String, List<Stop>>();
-		for (Stop stop : messagesMap.keySet()) {
-			for (Message message : messagesMap.get(stop)) {
-				final String hash = getMessageHash(message);
-				final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
-				if (isCurrent) {
-					uniqueMessages.put(hash, message);
-				}
-				messageStops.put(hash, new ArrayList<Stop>());
-			}
 		}
+		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
-	
-		for (Stop stop : messagesMap.keySet()) {
-			for (Message message : messagesMap.get(stop)) {
-				final String hash = getMessageHash(message);
-				List<Stop> list = messageStops.get(hash);
-				list.add(stop);
-				messageStops.put(hash, list);
-			}
-		}
-	
-		final List<Message> messagesToDisplay = new ArrayList<Message>(uniqueMessages.values());		
-		Collections.sort(messagesToDisplay, new MessageStartDateComparator());
-		
-		for (Message message : messagesToDisplay) {			
-			final StringBuilder output = new StringBuilder(message.getMessage() + "\n");
-			output.append(new Date(message.getStartDate()) + " - " + new Date(message.getEndDate()) + "\n\n");
-			for (Stop stop : messageStops.get(getMessageHash(message))) {
-				output.append(stop.getName() + ", ");
-			}
-			
-			final TextView messageView = MessageDescriptionService.makeStopDescription(message, getApplicationContext(), messageStops.get(getMessageHash(message)));			
+		stopsList.removeAllViews();		
+		for (MultiStopMessage messageToDisplay : messages) {			
+			final TextView messageView = MessageDescriptionService.makeMessageView(messageToDisplay, getApplicationContext());			
 			stopsList.addView(messageView);
 		}
-	}
-
-	private String getMessageHash(Message message) {
-		return message.getId().split("_")[0];
 	}
 	
 	private void showFavourites() {
@@ -139,7 +99,7 @@ public class AlertsActivity extends Activity {
 		fetchMessagesTask.execute(stops);
 	}
 	
-	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, Map<Stop, List<Message>>> {
+	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
 
 		private CountdownApi api;
 
@@ -149,31 +109,12 @@ public class AlertsActivity extends Activity {
 		}
 
 		@Override
-		protected Map<Stop, List<Message>> doInBackground(Set<Stop>... params) {
-			fetchMessagesTasks.add(this);
-			
-			Map<Stop, List<Message>> result = new HashMap<Stop, List<Message>>();
+		protected List<MultiStopMessage> doInBackground(Set<Stop>... params) {
+			fetchMessagesTasks.add(this);			
 			final Set<Stop> stops = params[0];
-			try {				
-				int[] stopIds = new int[stops.size()];
-				Iterator<Stop> iterator = stops.iterator();
-				for (int i = 0; i < stops.size(); i++) {
-					stopIds[i] = iterator.next().getId();
-				}				
-				
-				List<Message> messages = api.getMultipleStopMessages(stopIds);
-				Map<Integer, Stop> stopsById = new HashMap<Integer, Stop>();
-				for (Stop stop : stops) {
-					stopsById.put(stop.getId(), stop);
-					result.put(stop, new ArrayList<Message>());
-				}
-				
-				for (Message message : messages) {
-					final Stop messageStop = stopsById.get(message.getStopId());
-					List<Message> list = result.get(messageStop);
-					list.add(message);
-					result.put(messageStop, list);
-				}				
+			try {							
+				MessageService messageService = new MessageService(api);
+				return messageService.getMessages(stops);
 				
 			} catch (HttpFetchException e) {
 				// TODO Auto-generated catch block
@@ -181,12 +122,12 @@ public class AlertsActivity extends Activity {
 			} catch (ParsingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			return result;
+			}			
+			return null;
 		}
 
 		@Override
-		protected void onPostExecute(Map<Stop, List<Message>> messages) {
+		protected void onPostExecute(List<MultiStopMessage> messages) {
 			renderMessages(messages);
 			fetchMessagesTasks.remove(this);
 		}	
