@@ -31,6 +31,8 @@ import android.widget.TextView;
 
 public class AlertsActivity extends Activity {
 
+	private static final int NOTIFICATION_ID = 1;
+	
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private List<FetchMessagesTask> fetchMessagesTasks;
 	private TextView status;
@@ -50,7 +52,11 @@ public class AlertsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.alerts));		
+		getWindow().setTitle(getString(R.string.alerts));
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancel(NOTIFICATION_ID);
+		
 		showAlerts();
 	}
 	
@@ -99,18 +105,16 @@ public class AlertsActivity extends Activity {
 	
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		int icon = R.drawable.notification_icon;
 		final CharSequence tickerText = "New alerts";
-		Notification notification = new Notification(icon, tickerText, new Date().getTime());
-
+		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
+		
 		CharSequence contentTitle = messages.size() + " new alerts";
 		CharSequence contentText =  messages.get(0).getMessage();
 
 		Intent notificationIntent = new Intent(context, AlertsActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);		
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-		notificationManager.notify(0, notification);
+		notificationManager.notify(NOTIFICATION_ID, notification);
 	}
 	
 	private void showAlerts() {
