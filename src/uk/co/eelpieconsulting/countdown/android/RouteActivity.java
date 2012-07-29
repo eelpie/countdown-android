@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -85,9 +86,9 @@ public class RouteActivity extends Activity {
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private uk.co.eelpieconsulting.buses.client.CountdownApi api;
+		private BusesClient api;
 
-		public FetchRouteStopsTask(uk.co.eelpieconsulting.buses.client.CountdownApi api) {
+		public FetchRouteStopsTask(BusesClient api) {
 			super();
 			this.api = api;
 		}

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -156,10 +156,10 @@ public class NearbyActivity extends Activity implements LocationListener {
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private CountdownApi api;
+		private BusesClient api;
 		private Location location;
 
-		public FetchNearbyStopsTask(CountdownApi api) {
+		public FetchNearbyStopsTask(BusesClient api) {
 			super();
 			this.api = api;
 		}

@@ -1,17 +1,17 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
+import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
-import uk.co.eelpieconsulting.countdown.android.model.MultiStopMessage;
-import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
@@ -28,6 +28,7 @@ public class AlertsActivity extends Activity {
 
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private List<FetchMessagesTask> fetchMessagesTasks;
+	private TextView status;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,16 +38,15 @@ public class AlertsActivity extends Activity {
         
         fetchMessagesTasks = new ArrayList<FetchMessagesTask>();
         
-        TextView status = (TextView) findViewById(R.id.status);
+        status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);        
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.alerts));
-		
-		showFavourites();
+		getWindow().setTitle(getString(R.string.alerts));		
+		showAlerts();
 	}
 	
 	@Override
@@ -90,20 +90,22 @@ public class AlertsActivity extends Activity {
 		}
 	}
 	
-	private void showFavourites() {
-		showStops(favouriteStopsDAO.getFavouriteStops());
+	private void showAlerts() {
+		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
+		if (favouriteStops.isEmpty()) {
+			status.setText("You have no favourite stops set for which to display alerts.");
+			return;
+		}
+		
+		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
+		fetchMessagesTask.execute(favouriteStops);
 	}
 
-	private void showStops(Set<Stop> stops) {
-		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
-		fetchMessagesTask.execute(stops);
-	}
-	
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
 
-		private CountdownApi api;
+		private BusesClient api;
 
-		public FetchMessagesTask(CountdownApi api) {
+		public FetchMessagesTask(BusesClient api) {
 			super();
 			this.api = api;
 		}
@@ -112,9 +114,15 @@ public class AlertsActivity extends Activity {
 		protected List<MultiStopMessage> doInBackground(Set<Stop>... params) {
 			fetchMessagesTasks.add(this);			
 			final Set<Stop> stops = params[0];
-			try {							
-				MessageService messageService = new MessageService(api);
-				return messageService.getMessages(stops);
+			int[] stopIds = new int[stops.size()];
+			
+			Iterator<Stop> iterator = stops.iterator();
+			for (int i = 0; i < stops.size(); i++) {
+				stopIds[i] = iterator.next().getId();				
+			}
+			
+			try {
+				return api.getMultipleStopMessages(stopIds);
 				
 			} catch (HttpFetchException e) {
 				// TODO Auto-generated catch block

@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
+import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.model.MultiStopMessage;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;

@@ -1,21 +1,20 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.Collections;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.CountdownApi;
+import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Message;
+import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
-import uk.co.eelpieconsulting.countdown.android.services.MessageStartDateComparator;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
@@ -42,7 +41,7 @@ public class CountdownActivity extends Activity {
 	
 	private static final String TAG = "CountdownActivity";
 	
-	private CountdownApi api;
+	private BusesClient api;
 	private FavouriteStopsDAO favouriteStopsDAO;
 	
 	private FetchArrivalsTask fetchArrivalsTask;
@@ -220,19 +219,14 @@ public class CountdownActivity extends Activity {
 		}		
 	}
 	
-	private void renderMessages(List<Message> messages) {		
+	private void renderMessages(List<MultiStopMessage> messages) {		
 		if (messages == null) {
 			return;
 		}
-		
-		Collections.sort(messages, new MessageStartDateComparator());
-		
+				
 		for (Message message : messages) {
-			final boolean isCurrent = message.getStartDate() < (System.currentTimeMillis()) && message.getEndDate() > (System.currentTimeMillis());
-			if (isCurrent) {			
-				stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));
-			}
-		}		
+			stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
+		}
 	}
 	
 	private String secondsToMinutes(Arrival arrival) {
@@ -248,9 +242,9 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
 
-		private CountdownApi api;
+		private BusesClient api;
 
-		public FetchArrivalsTask(CountdownApi api) {
+		public FetchArrivalsTask(BusesClient api) {
 			super();
 			this.api = api;
 		}
@@ -277,17 +271,17 @@ public class CountdownActivity extends Activity {
 		
 	}
 	
-	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<Message>> {
+	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<MultiStopMessage>> {
 
-		private CountdownApi api;
+		private BusesClient api;
 
-		public FetchMessagesTask(CountdownApi api) {
+		public FetchMessagesTask(BusesClient api) {
 			super();
 			this.api = api;
 		}
 
 		@Override
-		protected List<Message> doInBackground(Integer... params) {
+		protected List<MultiStopMessage> doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
 				return api.getStopMessages(stopId);
@@ -302,7 +296,7 @@ public class CountdownActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(List<Message> messages) {
+		protected void onPostExecute(List<MultiStopMessage> messages) {
 			renderMessages(messages);
 		}		
 		
@@ -341,7 +335,6 @@ public class CountdownActivity extends Activity {
 
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
-		
 	}
 	
 }
