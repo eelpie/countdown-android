@@ -91,6 +91,7 @@ public class NearbyActivity extends Activity implements LocationListener {
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
+		status.setVisibility(View.VISIBLE);
 		
 		listNearbyStops(location);
 		
@@ -144,6 +145,8 @@ public class NearbyActivity extends Activity implements LocationListener {
 	
 	private void registerForLocationUpdates() {
 		status.setText(getString(R.string.waiting_for_location));
+		status.setVisibility(View.VISIBLE);
+		
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);

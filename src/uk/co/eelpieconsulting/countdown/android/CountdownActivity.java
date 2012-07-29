@@ -96,7 +96,8 @@ public class CountdownActivity extends Activity {
         }
         
         if (selectedStop == null) {
-        	status.setText("No favourite stops set. Use find stops to locate nearby stops.");
+        	status.setText(R.string.no_favourites_warning);
+        	status.setVisibility(View.VISIBLE);
         	return;
         }
         

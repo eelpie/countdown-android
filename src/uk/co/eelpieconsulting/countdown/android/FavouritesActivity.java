@@ -18,6 +18,7 @@ import android.widget.TextView;
 public class FavouritesActivity extends Activity {
 
 	private FavouriteStopsDAO favouriteStopsDAO;
+	private TextView status;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,7 @@ public class FavouritesActivity extends Activity {
         setContentView(R.layout.stops);        
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
         
-        TextView status = (TextView) findViewById(R.id.status);
-        status.setVisibility(View.GONE);
+        status = (TextView) findViewById(R.id.status);
     }
 	
 	@Override
@@ -53,7 +53,13 @@ public class FavouritesActivity extends Activity {
 	}
 	
 	private void showFavourites() {
-		showStops(favouriteStopsDAO.getFavouriteStops());
+		Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
+		if (favouriteStops.isEmpty()) {
+			status.setText(R.string.no_favourites_warning);
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		showStops(favouriteStops);
 	}
 
 	private void showStops(Set<Stop> stops) {
