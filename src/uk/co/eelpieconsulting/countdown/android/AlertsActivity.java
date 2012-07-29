@@ -1,7 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -15,10 +14,7 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -31,7 +27,7 @@ import android.widget.TextView;
 
 public class AlertsActivity extends Activity {
 
-	private static final int NOTIFICATION_ID = 1;
+	public static final int NOTIFICATION_ID = 1;
 	
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private List<FetchMessagesTask> fetchMessagesTasks;
@@ -98,23 +94,7 @@ public class AlertsActivity extends Activity {
 		for (MultiStopMessage messageToDisplay : messages) {			
 			final TextView messageView = MessageDescriptionService.makeMessageView(messageToDisplay, getApplicationContext());			
 			stopsList.addView(messageView);
-		}
-		
-		sendNotification(getApplicationContext(), messages);
-	}
-	
-	private void sendNotification(Context context, List<MultiStopMessage> messages) {
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		final CharSequence tickerText = "New alerts";
-		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
-		
-		CharSequence contentTitle = messages.size() + " new alerts";
-		CharSequence contentText =  messages.get(0).getMessage();
-
-		Intent notificationIntent = new Intent(context, AlertsActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);		
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-		notificationManager.notify(NOTIFICATION_ID, notification);
+		}		
 	}
 	
 	private void showAlerts() {
@@ -143,7 +123,6 @@ public class AlertsActivity extends Activity {
 			fetchMessagesTasks.add(this);			
 			final Set<Stop> stops = params[0];
 			int[] stopIds = new int[stops.size()];
-			
 			Iterator<Stop> iterator = stops.iterator();
 			for (int i = 0; i < stops.size(); i++) {
 				stopIds[i] = iterator.next().getId();				
