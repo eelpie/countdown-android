@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-	<uses-sdk android:minSdkVersion="3" />
+	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="8"/>
 
   	<uses-permission android:name="android.permission.INTERNET" />
   	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />  	
@@ -28,7 +28,6 @@
        
         <receiver android:name=".updates.AlertCheckerAlarmReceiver"></receiver>
                 
-       	<!-- 
         <activity android:name=".SearchActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -39,7 +38,7 @@
         </activity>
        
      	<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
-       	 --> 
+     	
      	<activity android:name="RouteActivity"></activity>
      	<activity android:name="AlertsActivity"></activity>
         

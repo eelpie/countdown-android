@@ -8,7 +8,6 @@ import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -72,16 +71,9 @@ public class RouteActivity extends Activity {
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
 			Log.i(TAG, "Found: " + stop.toString());
-			stopsList.addView(makeStopView(stop));
+			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
 		status.setVisibility(View.GONE);
-	}
-
-	private TextView makeStopView(Stop stop) {
-		final TextView stopTextView = new TextView(this.getApplicationContext());
-		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(this, stop));
-		return stopTextView;
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {

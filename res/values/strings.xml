@@ -8,6 +8,7 @@
     <string name="new_alerts_tikcer">New alerts</string>
     <string name="new_alert">new alert</string>
     <string name="new_alerts">new alerts</string>
+  	<string name="no_alerts">There are currently no alerts effecting your favourite stops.</string>    
     <string name="waiting_for_location">Waiting for location</string>
     <string name="searching_for_stops_near">Searching for stops near</string>
     <string name="stops_near">Stops near</string>    
@@ -20,5 +21,6 @@
     <string name="add_to_favourites">Add to favourites</string>    
     <string name="remove_favourite">Remove favourite</string>
    	<string name="search_hint">Stop identifer</string>
-   	<string name="no_favourites_warning">No favourite stops set. Use find stops to locate nearby stops.</string>    
+   	<string name="no_favourites_warning">No favourite stops set. Use near my or search to locate stops you are interested in.</string>
+   	<string name="search">Search</string>   	
 </resources>

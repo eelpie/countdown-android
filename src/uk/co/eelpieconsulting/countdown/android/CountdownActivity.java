@@ -130,6 +130,7 @@ public class CountdownActivity extends Activity {
 			favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
 		}
 		menu.add(0, 6, 0, R.string.alerts);
+		menu.add(0, 7, 0, R.string.search);
 		return true;
 	}
 
@@ -184,6 +185,9 @@ public class CountdownActivity extends Activity {
 		case 6:
 			this.startActivity(new Intent(this, AlertsActivity.class));
 			return true;
+			
+		case 7:
+			onSearchRequested();			
 		}
 		return false;
 	}

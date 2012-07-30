@@ -87,8 +87,26 @@ public class AlertsActivity extends Activity {
 		return false;
 	}
 	
+	private void showAlerts() {
+		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
+		if (favouriteStops.isEmpty()) {
+			status.setText(R.string.no_favourites_warning);
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
+		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(messageService);
+		fetchMessagesTask.execute(favouriteStops);
+	}
+	
 	private void renderMessages(List<MultiStopMessage> messages) {		
 		if (messages == null) {
+			return;
+		}
+		
+		if (messages.isEmpty()) {
+			status.setText(R.string.no_alerts);
+			status.setVisibility(View.VISIBLE);
 			return;
 		}
 		
@@ -102,17 +120,6 @@ public class AlertsActivity extends Activity {
 		messageService.markAsSeen(messages);		
 	}
 	
-	private void showAlerts() {
-		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
-		if (favouriteStops.isEmpty()) {
-			status.setText(R.string.no_favourites_warning);
-			status.setVisibility(View.VISIBLE);
-			return;
-		}
-		
-		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(messageService);
-		fetchMessagesTask.execute(favouriteStops);
-	}
 
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
 

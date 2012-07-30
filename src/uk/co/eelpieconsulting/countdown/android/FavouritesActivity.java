@@ -4,7 +4,6 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
-import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
@@ -66,15 +65,8 @@ public class FavouritesActivity extends Activity {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
-			stopsList.addView(makeStopView(stop));
+			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
-	}
-
-	private TextView makeStopView(Stop stop) {
-		final TextView stopTextView = new TextView(this.getApplicationContext());
-		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
-		stopTextView.setOnClickListener(new StopClicker(this, stop));
-		return stopTextView;
 	}
 	
 }
