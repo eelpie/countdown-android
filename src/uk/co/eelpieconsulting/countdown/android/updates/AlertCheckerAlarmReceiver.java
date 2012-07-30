@@ -48,10 +48,10 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		final CharSequence tickerText = messages.size() > 0 ? "New alerts" : "New alert";	// TODO can be moved to strings?
+		final CharSequence tickerText = messages.size() > 1 ? "New alerts" : "New alert";	// TODO can be moved to strings?
 		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
 		
-		CharSequence contentTitle = messages.size() + " " + (messages.size() > 0 ? "new alerts" : "new alert");
+		CharSequence contentTitle = messages.size() + " " + (messages.size() > 1 ? "new alerts" : "new alert");
 		CharSequence contentText =  messages.get(0).getMessage();
 		
 		Intent notificationIntent = new Intent(context, AlertsActivity.class);
