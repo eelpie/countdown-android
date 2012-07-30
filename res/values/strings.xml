@@ -4,6 +4,10 @@
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>
+   	<string name="new_alert_ticker">New alert</string>
+    <string name="new_alerts_tikcer">New alerts</string>
+    <string name="new_alert">new alert</string>
+    <string name="new_alerts">new alerts</string>
     <string name="waiting_for_location">Waiting for location</string>
     <string name="searching_for_stops_near">Searching for stops near</string>
     <string name="stops_near">Stops near</string>    

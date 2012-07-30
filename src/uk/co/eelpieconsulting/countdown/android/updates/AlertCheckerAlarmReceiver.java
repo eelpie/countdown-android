@@ -5,15 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.AlertsActivity;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -35,16 +34,11 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		if (!favouriteStops.isEmpty()) {
 			final int[] stopIds = getIdsFrom(favouriteStops);			
-			final BusesClient api = ApiFactory.getApi();
-			try {
-				List<MultiStopMessage> messages = api.getMultipleStopMessages(stopIds);
-				sendNotification(context, messages);				
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			final MessageService messageService = new MessageService(ApiFactory.getApi(), new SeenMessagesDAO(context));
+			
+			final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
+			if (!newMessages.isEmpty()) {
+				sendNotification(context, newMessages);
 			}
 		}
 	
@@ -54,10 +48,10 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		final CharSequence tickerText = "New alerts";
+		final CharSequence tickerText = messages.size() > 0 ? "New alerts" : "New alert";	// TODO can be moved to strings?
 		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
 		
-		CharSequence contentTitle = messages.size() + " new alerts";
+		CharSequence contentTitle = messages.size() + " " + (messages.size() > 0 ? "new alerts" : "new alert");
 		CharSequence contentText =  messages.get(0).getMessage();
 		
 		Intent notificationIntent = new Intent(context, AlertsActivity.class);
@@ -66,7 +60,6 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		notificationManager.notify(AlertsActivity.NOTIFICATION_ID, notification);
 	}
 	
-
 	private int[] getIdsFrom(final Set<Stop> favouriteStops) {
 		int[] stopIds = new int[favouriteStops.size()];
 		
@@ -77,5 +70,4 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		return stopIds;
 	}
 	
-
 }

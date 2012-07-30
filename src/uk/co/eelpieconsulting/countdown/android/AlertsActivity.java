@@ -5,13 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -32,13 +31,17 @@ public class AlertsActivity extends Activity {
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private List<FetchMessagesTask> fetchMessagesTasks;
 	private TextView status;
+
+	private MessageService messageService;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);        
-        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
+        setContentView(R.layout.stops);
         
+        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
+		messageService = new MessageService(ApiFactory.getApi(), new SeenMessagesDAO(getApplicationContext()));
+
         fetchMessagesTasks = new ArrayList<FetchMessagesTask>();
         
         status = (TextView) findViewById(R.id.status);
@@ -94,7 +97,9 @@ public class AlertsActivity extends Activity {
 		for (MultiStopMessage messageToDisplay : messages) {			
 			final TextView messageView = MessageDescriptionService.makeMessageView(messageToDisplay, getApplicationContext());			
 			stopsList.addView(messageView);
-		}		
+		}
+		
+		messageService.markAsSeen(messages);		
 	}
 	
 	private void showAlerts() {
@@ -105,17 +110,17 @@ public class AlertsActivity extends Activity {
 			return;
 		}
 		
-		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
+		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(messageService);
 		fetchMessagesTask.execute(favouriteStops);
 	}
 
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
 
-		private BusesClient api;
+		private MessageService messageService;
 
-		public FetchMessagesTask(BusesClient api) {
+		public FetchMessagesTask(MessageService messageService) {
 			super();
-			this.api = api;
+			this.messageService = messageService;
 		}
 
 		@Override
@@ -128,17 +133,7 @@ public class AlertsActivity extends Activity {
 				stopIds[i] = iterator.next().getId();				
 			}
 			
-			try {
-				return api.getMultipleStopMessages(stopIds);
-				
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-			return null;
+			return messageService.getStopMessages(stopIds);			
 		}
 
 		@Override
