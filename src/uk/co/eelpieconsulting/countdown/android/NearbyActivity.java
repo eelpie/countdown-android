@@ -11,11 +11,13 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
+import uk.co.eelpieconsulting.countdown.android.views.GeoPointFactory;
+import uk.co.eelpieconsulting.countdown.android.views.SimpleItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,7 +31,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class NearbyActivity extends Activity implements LocationListener {
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+
+public class NearbyActivity extends MapActivity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
@@ -38,13 +46,18 @@ public class NearbyActivity extends Activity implements LocationListener {
 	private TextView status;
 
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
-	
-	
+
+	private MapView mapView;
+		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);        
+        setContentView(R.layout.mapstops);        
 		status = (TextView) findViewById(R.id.status);
+		mapView = (MapView) findViewById(R.id.map);
+		
+		mapView.setBuiltInZoomControls(false);
+		mapView.setClickable(true);		
 	}
     
 	@Override
@@ -119,18 +132,23 @@ public class NearbyActivity extends Activity implements LocationListener {
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 		
+		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
+        mapView.getController().setZoom(18);
+				
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}
 	
-	private void showStops(Location location, List<Stop> stops) {
+	private void showStops(Location location, List<Stop> stops) {		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
+		Drawable drawable = getResources().getDrawable(R.drawable.marker);
+		final SimpleItemizedOverlay itemizedOverlay = new SimpleItemizedOverlay(drawable, mapView);
 		for (Stop stop : stops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
@@ -140,7 +158,15 @@ public class NearbyActivity extends Activity implements LocationListener {
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(this, stop));
 			stopsList.addView(stopTextView);
+			
+			final GeoPoint point = GeoPointFactory.createGeoPointForLatLong(stop.getLatitude(), stop.getLongitude());
+			OverlayItem overlayItem = new OverlayItem(point, stop.getName(), "Towards " + stop.getTowards());
+			itemizedOverlay.addOverlay(overlayItem);
 		}
+
+		final List<Overlay> overlays = mapView.getOverlays();
+		overlays.add(itemizedOverlay);
+		mapView.refreshDrawableState();
 	}
 	
 	private void registerForLocationUpdates() {
@@ -184,6 +210,12 @@ public class NearbyActivity extends Activity implements LocationListener {
 				throw new RuntimeException(e);
 			}
 		}		
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

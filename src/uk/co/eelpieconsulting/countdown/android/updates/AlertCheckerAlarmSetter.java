@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class AlertCheckerAlarmSetter {
 
-	private static final long ONE_MINUTE = 60 * 1000;
+	private static final long ONE_HOUR = 60 * 60 * 1000;
 	
 	private static final String TAG = "AlertCheckerAlarmSetter";
 
@@ -21,7 +21,7 @@ public class AlertCheckerAlarmSetter {
 
 		final long timeInMillis = getNextSyncTime();
 		Log.i(TAG, "Setting next sync alarm for: " + new Date(timeInMillis).toLocaleString());
-		alarmManager.setRepeating(AlarmManager.RTC, timeInMillis, ONE_MINUTE, pi);
+		alarmManager.setRepeating(AlarmManager.RTC, timeInMillis, ONE_HOUR, pi);
 	}
 	
 	private PendingIntent makeIntent(Context context) {
@@ -32,7 +32,7 @@ public class AlertCheckerAlarmSetter {
 	
 	private long getNextSyncTime() {
 		Calendar time = Calendar.getInstance();
-		long timeInMillis = time.getTimeInMillis() + ONE_MINUTE;
+		long timeInMillis = time.getTimeInMillis() + ONE_HOUR;
 		return timeInMillis;
 	}
 	

@@ -187,7 +187,8 @@ public class CountdownActivity extends Activity {
 			return true;
 			
 		case 7:
-			onSearchRequested();			
+			onSearchRequested();
+			return true;
 		}
 		return false;
 	}
@@ -220,7 +221,7 @@ public class CountdownActivity extends Activity {
 			
 			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
 			
-			stopsList.addView(arrivalView, 0);
+			stopsList.addView(arrivalView);
 		}		
 	}
 	

@@ -2,6 +2,8 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import com.google.android.maps.MapActivity;
+
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
@@ -18,7 +20,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class RouteActivity extends Activity {
+public class RouteActivity extends MapActivity {
 	
 	private static final String TAG = "RouteActivity";
 		
@@ -104,6 +106,12 @@ public class RouteActivity extends Activity {
 			}		
 			return null;
 		}		
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		// TODO Auto-generated method stub
+		return false;
 	}	
 	
 }

@@ -34,7 +34,7 @@ public class SearchActivity extends Activity {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			try {				
-				final List<Stop> results = ApiFactory.getApi().searchStops(query);
+				final List<Stop> results = ApiFactory.getApi().searchStops(query.trim());
 				showStops(results);
 				
 			} catch (HttpFetchException e) {
@@ -48,8 +48,7 @@ public class SearchActivity extends Activity {
 	}
 	
 	private void showStops(List<Stop> stops) {
-		Log.i(TAG, "Found " + stops.size() + " stops");		
-		status.setText("Found " + stops.size() + " stops");
+		status.setText("Found " + stops.size() + " " + (stops.size() != 1 ? "stops" : "stop"));
 		status.setVisibility(View.VISIBLE);
 		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
@@ -58,7 +57,6 @@ public class SearchActivity extends Activity {
 			Log.i(TAG, "Found: " + stop.toString());
 			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
-		status.setVisibility(View.GONE);
 	}
 	
 	@Override

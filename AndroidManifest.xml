@@ -42,6 +42,8 @@
      	<activity android:name="RouteActivity"></activity>
      	<activity android:name="AlertsActivity"></activity>
         
+        <uses-library android:name="com.google.android.maps" />
+        
     </application>
     
 </manifest>
