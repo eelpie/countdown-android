@@ -312,13 +312,9 @@ public class CountdownActivity extends Activity {
 		}
 
 		public void onClick(View view) {
-			Intent intent = getIntentForContentsType(view.getContext(), route);
+			Intent intent = new Intent(view.getContext(), RouteTabActivity.class);
 			intent.putExtra("route", route);
 			startActivity(intent);
-		}
-
-		private Intent getIntentForContentsType(Context context, Route route) {
-			return new Intent(context, RouteActivity.class);
 		}
 	}
 	

@@ -39,12 +39,14 @@
        
      	<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
      	
-     	<activity android:name="RouteActivity"></activity>
+     	<activity android:name=".RouteStopsActivity"></activity>
      	<activity android:name="AlertsActivity"></activity>
         
         <uses-library android:name="com.google.android.maps" />
         <activity android:name="NearbyStopsListActivity"></activity>
         <activity android:name="NearbyTabActivity"></activity>
+        <activity android:name="RouteTabActivity"></activity>
+        <activity android:name="RouteMapActivity"></activity>
         
     </application>
     

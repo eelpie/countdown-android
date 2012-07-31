@@ -11,9 +11,10 @@ public class NearbyTabActivity extends TabActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.near);		
+        setContentView(R.layout.near);
+        
+        setTitle(getString(R.string.near_me));
         setupTabs();
-		getWindow().setTitle(getString(R.string.near_me));
     }
 
 	private void setupTabs() {

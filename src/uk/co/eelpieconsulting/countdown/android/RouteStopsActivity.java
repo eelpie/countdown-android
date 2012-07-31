@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 
-public class RouteActivity extends MapActivity {
+public class RouteStopsActivity extends MapActivity {
 	
 	private static final String TAG = "RouteActivity";
 		
