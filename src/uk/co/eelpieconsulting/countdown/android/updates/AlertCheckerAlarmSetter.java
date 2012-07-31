@@ -11,17 +11,21 @@ import android.util.Log;
 
 public class AlertCheckerAlarmSetter {
 
-	private static final long ONE_HOUR = 60 * 60 * 1000;
+	private static final long TEN_MINUTES = 10 * 60 * 1000;
 	
 	private static final String TAG = "AlertCheckerAlarmSetter";
 
-	public void setDailyContentUpdateAlarm(Context context) {
+	public void setSyncAlarm(Context context, long interval) {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		final PendingIntent pi = makeIntent(context);
 
-		final long timeInMillis = getNextSyncTime();
+		final long timeInMillis = getNextSyncTime(interval);
 		Log.i(TAG, "Setting next sync alarm for: " + new Date(timeInMillis).toLocaleString());
-		alarmManager.setRepeating(AlarmManager.RTC, timeInMillis, ONE_HOUR, pi);
+		alarmManager.setRepeating(AlarmManager.RTC, timeInMillis, TEN_MINUTES, pi);
+	}
+	
+	public void setSyncAlarm(Context context) {
+		setSyncAlarm(context, TEN_MINUTES);
 	}
 	
 	private PendingIntent makeIntent(Context context) {
@@ -30,9 +34,9 @@ public class AlertCheckerAlarmSetter {
 		return pi;
 	}
 	
-	private long getNextSyncTime() {
+	private long getNextSyncTime(long interval) {
 		Calendar time = Calendar.getInstance();
-		long timeInMillis = time.getTimeInMillis() + ONE_HOUR;
+		long timeInMillis = time.getTimeInMillis() + interval;
 		return timeInMillis;
 	}
 	

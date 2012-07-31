@@ -27,7 +27,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(TAG, "Received alarm");
+		Log.i(TAG, "Received alarm; checking for new alert messages");
 		
 		final FavouriteStopsDAO favouriteStopsDAO = FavouriteStopsDAO.get(context);
 				
@@ -39,11 +39,13 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 			final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
 			if (!newMessages.isEmpty()) {
 				sendNotification(context, newMessages);
+			} else {
+				Log.i(TAG, "No new messages seen; not notifying");
 			}
 		}
 	
 		AlertCheckerAlarmSetter alarmSetter = new AlertCheckerAlarmSetter();
-		alarmSetter.setDailyContentUpdateAlarm(context);
+		alarmSetter.setSyncAlarm(context);
 	}
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {

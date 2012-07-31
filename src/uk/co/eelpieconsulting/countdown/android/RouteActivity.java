@@ -2,8 +2,6 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import com.google.android.maps.MapActivity;
-
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
@@ -11,7 +9,6 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -19,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.maps.MapActivity;
 
 public class RouteActivity extends MapActivity {
 	
