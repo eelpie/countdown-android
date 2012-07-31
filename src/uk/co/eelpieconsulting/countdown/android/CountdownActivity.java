@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -65,10 +64,6 @@ public class CountdownActivity extends Activity {
         selectedStop = null;
         
 		stopsList = (LinearLayout) findViewById(R.id.stopsList);
-       
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 5000, 2500, new NullLocationListener());
-
     }
 	
 	@Override
@@ -173,11 +168,11 @@ public class CountdownActivity extends Activity {
 			return true;
 			
 		case 4:
-			this.startActivity(new Intent(this, NearbyActivity.class));
+			this.startActivity(new Intent(this, NearbyTabActivity.class));
 			return true;
 			
 		case 5:
-			Intent intent = new Intent(this, NearbyActivity.class);
+			Intent intent = new Intent(this, NearbyStopsListActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;
@@ -324,22 +319,6 @@ public class CountdownActivity extends Activity {
 
 		private Intent getIntentForContentsType(Context context, Route route) {
 			return new Intent(context, RouteActivity.class);
-		}
-	}
-	
-	private class NullLocationListener implements LocationListener {
-
-		public void onLocationChanged(Location location) {
-			Log.i(TAG, "Location changed to: " + DistanceMeasuringService.makeLocationDescription(location));			
-		}
-
-		public void onProviderDisabled(String provider) {			
-		}
-
-		public void onProviderEnabled(String provider) {			
-		}
-
-		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
 	}
 	

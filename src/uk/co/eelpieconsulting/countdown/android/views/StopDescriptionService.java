@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android.views;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
@@ -28,11 +29,19 @@ public class StopDescriptionService {
 	}
 
 	public static String routesDescription(Set<Route> routes) {
-		StringBuilder routesDescription = new StringBuilder();
-		for (Route route : routes) {
-			routesDescription.append("[" + route.getRoute() + "] ");
+		final StringBuilder routesDescription = new StringBuilder();		
+		for (String routeName : filterOutDuplicateRouteNamesAtTerminals(routes)) {
+			routesDescription.append("[" + routeName + "] ");			
 		}
 		return routesDescription.toString().trim();
+	}
+
+	private static Set<String> filterOutDuplicateRouteNamesAtTerminals(Set<Route> routes) {
+		final Set<String> routeNames = new HashSet<String>();
+		for (Route route : routes) {
+			routeNames.add(route.getRoute());
+		}
+		return routeNames;
 	}
 	
 }

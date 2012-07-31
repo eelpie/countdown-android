@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.BusesClient;
@@ -10,11 +8,9 @@ import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
-import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
-import uk.co.eelpieconsulting.countdown.android.views.GeoPointFactory;
-import uk.co.eelpieconsulting.countdown.android.views.SimpleItemizedOverlay;
-import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
-import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
+import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -28,16 +24,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
-public class NearbyActivity extends MapActivity implements LocationListener {
+public class NearbyMapActivity extends MapActivity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
 	
@@ -57,7 +50,7 @@ public class NearbyActivity extends MapActivity implements LocationListener {
 		mapView = (MapView) findViewById(R.id.map);
 		
 		mapView.setBuiltInZoomControls(false);
-		mapView.setClickable(true);		
+		mapView.setClickable(true);
 	}
     
 	@Override
@@ -141,29 +134,14 @@ public class NearbyActivity extends MapActivity implements LocationListener {
 	}
 	
 	private void showStops(Location location, List<Stop> stops) {		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
 		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		
-		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
-		
 		Drawable drawable = getResources().getDrawable(R.drawable.marker);
-		final SimpleItemizedOverlay itemizedOverlay = new SimpleItemizedOverlay(drawable, mapView);
-		for (Stop stop : stops) {
-			final TextView stopTextView = new TextView(this.getApplicationContext());
-
-			String stopDescription = StopDescriptionService.makeStopDescription(stop);
-			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away\n\n";
-			
-			stopTextView.setText(stopDescription);
-			stopTextView.setOnClickListener(new StopClicker(this, stop));
-			stopsList.addView(stopTextView);
-			
-			final GeoPoint point = GeoPointFactory.createGeoPointForLatLong(stop.getLatitude(), stop.getLongitude());
-			OverlayItem overlayItem = new OverlayItem(point, stop.getName(), "Towards " + stop.getTowards());
-			itemizedOverlay.addOverlay(overlayItem);
+		final StopsItemizedOverlay itemizedOverlay = new StopsItemizedOverlay(drawable, mapView);
+		for (Stop stop : stops) {		
+			itemizedOverlay.addOverlay(new StopOverlayItem(stop));
 		}
-
+		
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
 		mapView.refreshDrawableState();
@@ -172,15 +150,22 @@ public class NearbyActivity extends MapActivity implements LocationListener {
 	private void registerForLocationUpdates() {
 		status.setText(getString(R.string.waiting_for_location));
 		status.setVisibility(View.VISIBLE);
-		
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
+		try {
+			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
+		} catch (Exception e) {
+			Log.w(TAG, e);
+		}
 	}
 
-	private void turnOffLocationUpdates() {
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.removeUpdates(this);
+	private void turnOffLocationUpdates() {	// TODO Warn if not location
+		try {
+			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+			locationManager.removeUpdates(this);
+		} catch (Exception e) {
+			Log.w(TAG, e);
+		}
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
@@ -214,7 +199,6 @@ public class NearbyActivity extends MapActivity implements LocationListener {
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	

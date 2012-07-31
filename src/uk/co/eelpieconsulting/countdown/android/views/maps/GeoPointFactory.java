@@ -1,4 +1,4 @@
-package uk.co.eelpieconsulting.countdown.android.views;
+package uk.co.eelpieconsulting.countdown.android.views.maps;
 
 import com.google.android.maps.GeoPoint;
 

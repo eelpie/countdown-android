@@ -81,7 +81,7 @@ public class AlertsActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 1:
-			this.startActivity(new Intent(this, NearbyActivity.class));
+			this.startActivity(new Intent(this, NearbyMapActivity.class));
 			return true;
 		}
 		return false;

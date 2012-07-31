@@ -2,14 +2,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-  
-    
-      <FrameLayout android:id="@+id/map_frame"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="0.3" >    
-     
      
      <com.google.android.maps.MapView
 		         android:id="@+id/map"
@@ -17,9 +9,7 @@
                  android:layout_height="fill_parent"
                  android:apiKey="0jcBgjvEKL5WE9KrFjDcUtwnd4-7Vm3Hrxj8lag"
                  />
-     
-      </FrameLayout>
-     
+          
         <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
@@ -27,28 +17,4 @@
         android:text=""
         android:visibility="gone" />
         
-     <TextView
-         android:id="@+id/messages"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text=""
-         android:visibility="gone" />
-      
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
-      	android:layout_gravity="bottom"
-    	android:layout_weight="0.7"         
-        >
-
-	    <LinearLayout
-	        android:id="@+id/stopsList"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:orientation="vertical" >
-
-	    </LinearLayout>
-    </ScrollView>
-
 </LinearLayout>
