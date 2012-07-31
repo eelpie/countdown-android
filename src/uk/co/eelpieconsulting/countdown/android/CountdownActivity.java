@@ -100,9 +100,7 @@ public class CountdownActivity extends Activity {
 		getWindow().setTitle(title);
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
-		loadArrivals(selectedStop.getId());
-		
-		loadMessages(selectedStop.getId());
+		loadArrivals(selectedStop.getId());		
 	}
 	
 	@Override
@@ -217,7 +215,9 @@ public class CountdownActivity extends Activity {
 			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
 			
 			stopsList.addView(arrivalView);
-		}		
+		}
+		
+		loadMessages(selectedStop.getId());
 	}
 	
 	private void renderMessages(List<MultiStopMessage> messages) {		
