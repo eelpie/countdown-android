@@ -39,8 +39,8 @@ public class AlertsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);
         
-        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
-		messageService = new MessageService(ApiFactory.getApi(), new SeenMessagesDAO(getApplicationContext()));
+        favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
+		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
 
         fetchMessagesTasks = new ArrayList<FetchMessagesTask>();
         

@@ -2,12 +2,12 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -62,7 +62,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		super.onResume();
 		registerForLocationUpdates();
 		
-		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(ApiFactory.getApi());
+		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchRouteStopsTask.execute(selectedRoute);
 	}
 	
@@ -159,9 +159,9 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 
-		public FetchRouteStopsTask(BusesClient api) {
+		public FetchRouteStopsTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}

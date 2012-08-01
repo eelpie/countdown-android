@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
@@ -16,7 +16,6 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -119,7 +118,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 				
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}
@@ -131,7 +130,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
-		Drawable drawable = getResources().getDrawable(R.drawable.marker);
 		for (Stop stop : stops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
@@ -167,10 +165,10 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 		private Location location;
 
-		public FetchNearbyStopsTask(BusesClient api) {
+		public FetchNearbyStopsTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}

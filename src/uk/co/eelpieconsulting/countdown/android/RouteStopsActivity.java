@@ -2,12 +2,12 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -50,7 +50,7 @@ public class RouteStopsActivity extends MapActivity {
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
 		
-		fetchStopsTask = new FetchRouteStopsTask(ApiFactory.getApi());
+		fetchStopsTask = new FetchRouteStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchStopsTask.execute(selectedRoute);
 	}
 	
@@ -79,9 +79,9 @@ public class RouteStopsActivity extends MapActivity {
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 
-		public FetchRouteStopsTask(BusesClient api) {
+		public FetchRouteStopsTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}

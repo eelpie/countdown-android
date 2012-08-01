@@ -34,7 +34,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		if (!favouriteStops.isEmpty()) {
 			final int[] stopIds = getIdsFrom(favouriteStops);			
-			final MessageService messageService = new MessageService(ApiFactory.getApi(), new SeenMessagesDAO(context));
+			final MessageService messageService = new MessageService(ApiFactory.getApi(context), new SeenMessagesDAO(context));
 			
 			final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
 			if (!newMessages.isEmpty()) {

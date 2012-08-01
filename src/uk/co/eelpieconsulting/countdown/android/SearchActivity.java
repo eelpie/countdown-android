@@ -34,7 +34,7 @@ public class SearchActivity extends Activity {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			try {				
-				final List<Stop> results = ApiFactory.getApi().searchStops(query.trim());
+				final List<Stop> results = ApiFactory.getApi(getApplicationContext()).searchStops(query.trim());
 				showStops(results);
 				
 			} catch (HttpFetchException e) {

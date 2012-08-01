@@ -2,16 +2,15 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
-import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
@@ -32,7 +31,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +39,7 @@ public class CountdownActivity extends Activity {
 	
 	private static final String TAG = "CountdownActivity";
 	
-	private BusesClient api;
+	private BusesClientService api;
 	private FavouriteStopsDAO favouriteStopsDAO;
 	
 	private FetchArrivalsTask fetchArrivalsTask;
@@ -60,7 +58,7 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.stops);
         status = (TextView) findViewById(R.id.status);
         
-        api = ApiFactory.getApi();
+        api = ApiFactory.getApi(getApplicationContext());
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
         
@@ -193,7 +191,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadMessages(int stopId) {
-		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi());
+		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi(getApplicationContext()));
 		fetchMessagesTask.execute(stopId);
 	}
 	
@@ -244,9 +242,9 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
 
-		private BusesClient api;
+		private BusesClientService api;
 
-		public FetchArrivalsTask(BusesClient api) {
+		public FetchArrivalsTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}
@@ -275,9 +273,9 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<MultiStopMessage>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 
-		public FetchMessagesTask(BusesClient api) {
+		public FetchMessagesTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}

@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.json.JSONException;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import android.app.Activity;
@@ -116,7 +116,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 				
-		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(ApiFactory.getApi());
+		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyRoutesTask.execute(location);		
 		return;		
 	}
@@ -158,10 +158,10 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	
 	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 		private Location location;
 
-		public FetchNearbyRoutesTask(BusesClient api) {
+		public FetchNearbyRoutesTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}

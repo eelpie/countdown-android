@@ -4,22 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import android.util.Log;
-
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import android.util.Log;
 
 public class MessageService {
 	
 	private static final String TAG = "MessageService";
 	
-	private final BusesClient api;
+	private final BusesClientService api;
 	private final SeenMessagesDAO seenMessagesDAO;
 	
-	public MessageService(BusesClient api, SeenMessagesDAO seenMessagesDAO) {
+	public MessageService(BusesClientService api, SeenMessagesDAO seenMessagesDAO) {
 		this.api = api;
 		this.seenMessagesDAO = seenMessagesDAO;
 	}

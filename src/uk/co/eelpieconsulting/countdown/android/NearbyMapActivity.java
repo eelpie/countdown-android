@@ -2,11 +2,11 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -128,7 +128,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
         mapView.getController().setZoom(18);
 				
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}
@@ -170,10 +170,10 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private BusesClient api;
+		private BusesClientService api;
 		private Location location;
 
-		public FetchNearbyStopsTask(BusesClient api) {
+		public FetchNearbyStopsTask(BusesClientService api) {
 			super();
 			this.api = api;
 		}
