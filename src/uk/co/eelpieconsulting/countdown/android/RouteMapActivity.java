@@ -115,7 +115,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 	
 	private void zoomToUserLocation(Location location) {		
 		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-        mapView.getController().setZoom(14);
+        mapView.getController().setZoom(12);
 		return;
 	}
 	

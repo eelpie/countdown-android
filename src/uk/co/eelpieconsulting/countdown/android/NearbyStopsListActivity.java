@@ -32,7 +32,8 @@ import android.widget.TextView;
 public class NearbyStopsListActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
-	
+
+	private static final String KNOWN_STOP_LOCATION = "knownStopLocation";	
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private TextView status;
@@ -52,7 +53,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			final Location stopLocation = new Location("knownStopLocation");
+			final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
 			stopLocation.setLatitude(selectedStop.getLatitude());
 			stopLocation.setLongitude(selectedStop.getLongitude());
 			listNearbyStops(stopLocation);
@@ -114,10 +115,11 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {		
-		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setVisibility(View.VISIBLE);
-				
+	private void listNearbyStops(Location location) {
+		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+			status.setText(getString(R.string.stops_near) + DistanceMeasuringService.makeLocationDescription(location));
+			status.setVisibility(View.VISIBLE);
+		}
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
 		fetchNearbyStopsTask.execute(location);		
 		return;		

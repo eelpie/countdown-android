@@ -31,6 +31,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private static final String TAG = "StopsActivity";
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
+	private static final String KNOWN_STOP_LOCATION = "knownStopLocation";
 	
 	private TextView status;
 
@@ -111,9 +112,11 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {		
-		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setVisibility(View.VISIBLE);
+	private void listNearbyStops(Location location) {
+		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+			status.setText(getString(R.string.routes_near) + DistanceMeasuringService.makeLocationDescription(location));
+			status.setVisibility(View.VISIBLE);
+		}
 				
 		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(ApiFactory.getApi());
 		fetchNearbyRoutesTask.execute(location);		

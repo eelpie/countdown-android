@@ -95,11 +95,11 @@ public class CountdownActivity extends Activity {
         	return;
         }
         
-		final String title = selectedStop.getName() + (selectedStop.getIndicator() != null ? " (" + selectedStop.getIndicator() + ") " : "");
+		final String title = StopDescriptionService.makeStopTitle(selectedStop);
 		getWindow().setTitle(title);
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
-		loadArrivals(selectedStop.getId());		
+		loadArrivals(selectedStop.getId());
 	}
 	
 	@Override
@@ -169,7 +169,7 @@ public class CountdownActivity extends Activity {
 			return true;
 			
 		case 5:
-			Intent intent = new Intent(this, NearbyStopsListActivity.class);
+			Intent intent = new Intent(this, NearThisTabActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;
