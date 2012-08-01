@@ -16,7 +16,6 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -131,7 +130,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
-		Drawable drawable = getResources().getDrawable(R.drawable.marker);
 		for (Stop stop : stops) {
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 

@@ -2,10 +2,9 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import org.json.JSONException;
-
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
@@ -179,7 +178,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 				return api.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
 			} catch (HttpFetchException e) {
 				throw new RuntimeException(e);
-			} catch (JSONException e) {	// TODO needs to be caught in client
+			} catch (ParsingException e) {	// TODO needs to be caught in client
 				throw new RuntimeException(e);
 			}
 		}		
