@@ -118,7 +118,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	
 	private void listNearbyStops(Location location) {
 		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
-			status.setText(getString(R.string.stops_near) + DistanceMeasuringService.makeLocationDescription(location));
+			status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		}
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi());
