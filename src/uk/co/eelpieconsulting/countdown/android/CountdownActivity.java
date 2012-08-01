@@ -16,6 +16,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Context;
@@ -212,7 +213,7 @@ public class CountdownActivity extends Activity {
 			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
 			bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
 			
-			arrivalView.setOnClickListener(new RouteClicker(arrival.getRoute()));			
+			arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute()));			
 			
 			stopsList.addView(arrivalView);
 		}
@@ -300,22 +301,6 @@ public class CountdownActivity extends Activity {
 		protected void onPostExecute(List<MultiStopMessage> messages) {
 			renderMessages(messages);
 		}		
-		
-	}
-	
-	private class RouteClicker implements OnClickListener {
-		
-		private Route route;
-
-		public RouteClicker(Route route) {
-			this.route = route;
-		}
-
-		public void onClick(View view) {
-			Intent intent = new Intent(view.getContext(), RouteTabActivity.class);
-			intent.putExtra("route", route);
-			startActivity(intent);
-		}
 	}
 	
 }

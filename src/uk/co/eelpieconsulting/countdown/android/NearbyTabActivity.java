@@ -27,7 +27,7 @@ public class NearbyTabActivity extends TabActivity {
  
         TabSpec routesSpec = tabHost.newTabSpec("Routes");
         routesSpec.setIndicator("Routes");
-        Intent routesIntent = new Intent(this, NearbyStopsListActivity.class);
+        Intent routesIntent = new Intent(this, NearbyRoutesListActivity.class);
         routesSpec.setContent(routesIntent);
         
         TabSpec tabSpec = tabHost.newTabSpec("Map");

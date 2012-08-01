@@ -47,6 +47,7 @@
         <activity android:name="NearbyTabActivity"></activity>
         <activity android:name="RouteTabActivity"></activity>
         <activity android:name="RouteMapActivity"></activity>
+        <activity android:name="NearbyRoutesListActivity"></activity>
         
     </application>
     
