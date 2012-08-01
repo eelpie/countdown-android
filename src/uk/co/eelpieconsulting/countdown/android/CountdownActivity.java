@@ -14,6 +14,7 @@ import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
@@ -192,8 +193,12 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void renderStopboard(StopBoard stopboard) {
-		// TODO null check
 		stopsList.removeAllViews();
+		if (stopboard == null) {
+			status.setText("Arrivals could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
 		
 		final String towards = selectedStop.getTowards() != null ? "Towards " + selectedStop.getTowards() + "\n" : "";
 		status.setText(towards + StopDescriptionService.routesDescription(selectedStop.getRoutes()));
@@ -253,10 +258,13 @@ public class CountdownActivity extends Activity {
 			final int stopId = params[0];
 			try {
 				return api.getStopBoard(stopId);
-			} catch (uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException e) {
+			} catch (HttpFetchException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (uk.co.eelpieconsulting.buses.client.exceptions.ParsingException e) {
+			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NetworkNotAvailableException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -288,6 +296,9 @@ public class CountdownActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NetworkNotAvailableException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

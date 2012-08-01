@@ -6,6 +6,7 @@ import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.app.SearchManager;
@@ -41,6 +42,9 @@ public class SearchActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NetworkNotAvailableException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

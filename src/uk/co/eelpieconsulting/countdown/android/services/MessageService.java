@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import android.util.Log;
 
 public class MessageService {
@@ -26,11 +27,12 @@ public class MessageService {
 	public List<MultiStopMessage> getStopMessages(int[] stopIds) {
 		try {
 			return api.getMultipleStopMessages(stopIds);
+		} catch (NetworkNotAvailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		
 		} catch (HttpFetchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
-			e.getCause().printStackTrace();
-			
 		} catch (ParsingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -11,6 +11,7 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
@@ -125,7 +126,13 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		return;		
 	}
 	
-	private void showStops(Location location, List<Stop> stops) {		
+	private void showStops(Location location, List<Stop> stops) {
+		if (stops == null) {
+			status.setText("Stops could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
@@ -187,10 +194,14 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			try {				
 				return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
 			} catch (HttpFetchException e) {
-				throw new RuntimeException(e);
+				e.printStackTrace();
 			} catch (ParsingException e) {
-				throw new RuntimeException(e);
+				e.printStackTrace();
+			} catch (NetworkNotAvailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return null;
 		}		
 	}
 	

@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import android.app.Activity;
 import android.content.Context;
@@ -124,7 +125,13 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		return;		
 	}
 	
-	private void showRoutes(Location location, List<Route> routes) {		
+	private void showRoutes(Location location, List<Route> routes) {
+		if (routes == null) {
+			status.setText("Routes could not be loaded");   // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		final LinearLayout routesList = (LinearLayout) findViewById(R.id.stopsList);
 		routesList.removeAllViews();
 		
@@ -193,7 +200,11 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 				throw new RuntimeException(e);
 			} catch (ParsingException e) {
 				throw new RuntimeException(e);
+			} catch (NetworkNotAvailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return null;
 		}		
 	}
 	

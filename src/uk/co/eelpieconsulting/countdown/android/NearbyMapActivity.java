@@ -8,6 +8,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
@@ -134,6 +135,12 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	}
 	
 	private void showStops(Location location, List<Stop> stops) {		
+		if (stops == null) {
+			status.setText("Stops could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		
 		Drawable drawable = getResources().getDrawable(R.drawable.marker);
@@ -193,7 +200,11 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 				throw new RuntimeException(e);
 			} catch (ParsingException e) {
 				throw new RuntimeException(e);
+			} catch (NetworkNotAvailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return null;
 		}		
 	}
 

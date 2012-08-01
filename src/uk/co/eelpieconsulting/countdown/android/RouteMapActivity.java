@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
@@ -119,7 +120,13 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		return;
 	}
 	
-	private void showStops(List<Stop> stops) {				
+	private void showStops(List<Stop> stops) {
+		if (stops == null) {
+			status.setText("Stops could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		Drawable drawable = getResources().getDrawable(R.drawable.marker);
 		final StopsItemizedOverlay itemizedOverlay = new StopsItemizedOverlay(drawable, mapView);
 		for (Stop stop : stops) {		
@@ -182,7 +189,10 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 			} catch (ParsingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}		
+			} catch (NetworkNotAvailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return null;
 		}		
 	}

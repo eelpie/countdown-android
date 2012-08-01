@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkStatusService;
 
 public class BusesClientService {
@@ -21,55 +22,55 @@ public class BusesClientService {
 		this.networkStatusService = networkStatusService;
 	}
 
-	public List<MultiStopMessage> getStopMessages(int stopId) throws HttpFetchException, ParsingException {
+	public List<MultiStopMessage> getStopMessages(int stopId) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getStopMessages(stopId);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 	}
 
-	public StopBoard getStopBoard(int stopId) throws HttpFetchException, ParsingException {
+	public StopBoard getStopBoard(int stopId) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getStopBoard(stopId);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 	}
 
-	public List<MultiStopMessage> getMultipleStopMessages(int[] stopIds) throws HttpFetchException, ParsingException {
+	public List<MultiStopMessage> getMultipleStopMessages(int[] stopIds) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getMultipleStopMessages(stopIds);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 	}
 
-	public List<Stop> findStopsWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException {
+	public List<Stop> findStopsWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.findStopsWithin(latitude, longitude, radius);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 	}
 
-	public List<Route> findRoutesWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException {
+	public List<Route> findRoutesWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.findRoutesWithin(latitude, longitude, radius);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 
 	}
 
-	public List<Stop> searchStops(String q) throws HttpFetchException, ParsingException {
+	public List<Stop> searchStops(String q) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.searchStops(q);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 
 	}
 
-	public List<Stop> getRouteStops(String route, int run) throws HttpFetchException, ParsingException {
+	public List<Stop> getRouteStops(String route, int run) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getRouteStops(route, run);
 		}
-		return null;	// TODO
+		throw new NetworkNotAvailableException();
 	}
 	
 }

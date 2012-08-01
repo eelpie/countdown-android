@@ -8,6 +8,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
+import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -63,6 +64,12 @@ public class RouteStopsActivity extends MapActivity {
 	}
 		
 	private void showStops(List<Stop> stops) {
+		if (stops == null) {
+			status.setText("Stops could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		Log.i(TAG, "Found " + stops.size() + " stops");
 		
 		status.setText("Displaying");
@@ -100,6 +107,9 @@ public class RouteStopsActivity extends MapActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParsingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NetworkNotAvailableException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
