@@ -54,6 +54,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
+			stopLocation.setAccuracy(1);
 			stopLocation.setLatitude(selectedStop.getLatitude());
 			stopLocation.setLongitude(selectedStop.getLongitude());
 			listNearbyStops(stopLocation);
@@ -128,7 +129,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private void showStops(Location location, List<Stop> stops) {		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
-		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
+		status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 		
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
@@ -136,7 +137,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			final TextView stopTextView = new TextView(this.getApplicationContext());
 
 			String stopDescription = StopDescriptionService.makeStopDescription(stop);
-			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceTo(location, stop) + " metres away\n\n";
+			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
 			
 			stopTextView.setText(stopDescription);
 			stopTextView.setOnClickListener(new StopClicker(this, stop));
