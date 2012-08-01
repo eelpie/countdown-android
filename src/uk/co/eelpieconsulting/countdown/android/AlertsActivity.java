@@ -1,6 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -29,10 +28,10 @@ public class AlertsActivity extends Activity {
 	public static final int NOTIFICATION_ID = 1;
 	
 	private FavouriteStopsDAO favouriteStopsDAO;
-	private List<FetchMessagesTask> fetchMessagesTasks;
-	private TextView status;
-
 	private MessageService messageService;
+	
+	private TextView status;	
+	private FetchMessagesTask fetchMessageTask;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,8 +41,6 @@ public class AlertsActivity extends Activity {
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
 
-        fetchMessagesTasks = new ArrayList<FetchMessagesTask>();
-        
         status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);        
     }
@@ -62,12 +59,8 @@ public class AlertsActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (!fetchMessagesTasks.isEmpty()) {
-			for (FetchMessagesTask fetchMessagesTask : fetchMessagesTasks) {
-				if (fetchMessagesTask != null && fetchMessagesTask.getStatus().equals(Status.RUNNING)) {
-					fetchMessagesTask.cancel(true);
-				}				
-			}
+		if (fetchMessageTask != null && fetchMessageTask.getStatus().equals(Status.RUNNING)) {
+			fetchMessageTask.cancel(true);
 		}
 	}
 		
@@ -132,7 +125,7 @@ public class AlertsActivity extends Activity {
 
 		@Override
 		protected List<MultiStopMessage> doInBackground(Set<Stop>... params) {
-			fetchMessagesTasks.add(this);			
+			fetchMessageTask = this;		
 			final Set<Stop> stops = params[0];
 			int[] stopIds = new int[stops.size()];
 			Iterator<Stop> iterator = stops.iterator();
@@ -146,7 +139,6 @@ public class AlertsActivity extends Activity {
 		@Override
 		protected void onPostExecute(List<MultiStopMessage> messages) {
 			renderMessages(messages);
-			fetchMessagesTasks.remove(this);
 		}	
 		
 	}

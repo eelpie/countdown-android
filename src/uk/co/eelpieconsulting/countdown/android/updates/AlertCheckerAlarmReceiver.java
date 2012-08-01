@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android.updates;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -19,36 +20,36 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "AlertCheckerAlarmReceiver";
+	
+	private FetchUnreadMessagesTask fetchUnreadMessagesTask;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "Received alarm; checking for new alert messages");
 		
+		final MessageService messageService = new MessageService(ApiFactory.getApi(context), new SeenMessagesDAO(context));
 		final FavouriteStopsDAO favouriteStopsDAO = FavouriteStopsDAO.get(context);
-				
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
-		if (!favouriteStops.isEmpty()) {
-			final int[] stopIds = getIdsFrom(favouriteStops);			
-			final MessageService messageService = new MessageService(ApiFactory.getApi(context), new SeenMessagesDAO(context));
-			
-			final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
-			if (!newMessages.isEmpty()) {
-				sendNotification(context, newMessages);
-			} else {
-				Log.i(TAG, "No new messages seen; not notifying");
-			}
-		}
-	
+		
+		fetchUnreadMessagesTask = new FetchUnreadMessagesTask(messageService, context);
+		fetchUnreadMessagesTask.execute(favouriteStops);
+		
 		AlertCheckerAlarmSetter alarmSetter = new AlertCheckerAlarmSetter();
 		alarmSetter.setSyncAlarm(context);
 	}
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {
+		if (messages.isEmpty()) {
+			Log.i(TAG, "No new messages seen; not notifying");
+			return;
+		}
+		
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		final CharSequence tickerText = messages.size() > 1 ? "New alerts" : "New alert";	// TODO can be moved to strings?
 		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
@@ -70,6 +71,36 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 			stopIds[i] = iterator.next().getId();				
 		}
 		return stopIds;
+	}
+	
+	private class FetchUnreadMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
+
+		private final MessageService messageService;
+		private final Context context;
+
+		public FetchUnreadMessagesTask(MessageService messageService, Context context) {
+			super();
+			this.messageService = messageService;
+			this.context = context;
+		}
+
+		@Override
+		protected List<MultiStopMessage> doInBackground(Set<Stop>... params) {
+			fetchUnreadMessagesTask = this;		
+			final Set<Stop> favouriteStops = params[0];
+			if (!favouriteStops.isEmpty()) {
+				final int[] stopIds = getIdsFrom(favouriteStops);				
+				final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
+				return newMessages;
+			}						
+			return new ArrayList<MultiStopMessage>();
+		}
+		
+		@Override
+		protected void onPostExecute(List<MultiStopMessage> messages) {
+			sendNotification(context, messages);			
+		}
+		
 	}
 	
 }

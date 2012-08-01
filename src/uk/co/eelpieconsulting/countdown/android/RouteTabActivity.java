@@ -29,21 +29,21 @@ public class RouteTabActivity extends TabActivity {
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
  
+		final TabSpec stopsSpec = tabHost.newTabSpec("Stops");
+		stopsSpec.setIndicator("Stops");
+		Intent stopsIntent = new Intent(this, RouteStopsActivity.class);
+		stopsIntent.putExtra("route", selectedRoute);
+		stopsSpec.setContent(stopsIntent);
+		
 		final TabSpec mapSpec = tabHost.newTabSpec("Map");
 		mapSpec.setIndicator("Map");
 		Intent mapIntent = new Intent(this, RouteMapActivity.class);
 		mapIntent.putExtra("route", selectedRoute);
 		mapSpec.setContent(mapIntent);
 		
-        final TabSpec stopsSpec = tabHost.newTabSpec("Stops");
-        stopsSpec.setIndicator("Stops");
-        Intent stopsIntent = new Intent(this, RouteStopsActivity.class);
-        stopsIntent.putExtra("route", selectedRoute);
-        stopsSpec.setContent(stopsIntent);
         
-        
-        tabHost.addTab(mapSpec);
         tabHost.addTab(stopsSpec);
+        tabHost.addTab(mapSpec);
 	}
 	
 }

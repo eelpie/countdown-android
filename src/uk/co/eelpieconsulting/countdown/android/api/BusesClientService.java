@@ -2,8 +2,6 @@ package uk.co.eelpieconsulting.countdown.android.api;
 
 import java.util.List;
 
-import org.json.JSONException;
-
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
@@ -51,7 +49,7 @@ public class BusesClientService {
 		return null;	// TODO
 	}
 
-	public List<Route> findRoutesWithin(double latitude, double longitude, int radius) throws HttpFetchException, JSONException {
+	public List<Route> findRoutesWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.findRoutesWithin(latitude, longitude, radius);
 		}

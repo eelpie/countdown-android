@@ -28,7 +28,9 @@ public class MessageService {
 			return api.getMultipleStopMessages(stopIds);
 		} catch (HttpFetchException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();			
+			e.getCause().printStackTrace();
+			
 		} catch (ParsingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

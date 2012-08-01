@@ -2,9 +2,8 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import org.json.JSONException;
-
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
@@ -21,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +32,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private static final String TAG = "StopsActivity";
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
+	private static final String KNOWN_STOP_LOCATION = "knownStopLocation";
 	
 	private TextView status;
 
@@ -112,9 +113,11 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {		
-		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setVisibility(View.VISIBLE);
+	private void listNearbyStops(Location location) {
+		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
+			status.setVisibility(View.VISIBLE);
+		}
 				
 		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyRoutesTask.execute(location);		
@@ -124,15 +127,24 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private void showRoutes(Location location, List<Route> routes) {		
 		final LinearLayout routesList = (LinearLayout) findViewById(R.id.stopsList);
 		routesList.removeAllViews();
-		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-				
+		
+		final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Route route : routes) {
-			final TextView routeTextView = new TextView(this.getApplicationContext());
-			final String description = route.getRoute() + " towards " + route.getTowards();			
-			routeTextView.setText(description);
-			routeTextView.setOnClickListener(new RouteClicker(this, route));
-			routesList.addView(routeTextView);	
+			routesList.addView(createRouteView(mInflater, route));	
 		}
+	}
+	
+	private View createRouteView(LayoutInflater mInflater, Route route) {
+		final View routeView = mInflater.inflate(R.layout.arrival, null);		
+
+		final TextView routeTextView = (TextView) routeView.findViewById(R.id.routeName);
+		routeTextView.setText(route.getRoute());			
+		
+		final TextView bodyTextView = (TextView) routeView.findViewById(R.id.body);
+		bodyTextView.setText(getString(R.string.towards) + " " + route.getTowards());
+		
+		routeView.setOnClickListener(new RouteClicker(this, route));
+		return routeView;
 	}
 	
 	private void registerForLocationUpdates() {
@@ -179,7 +191,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 				return api.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
 			} catch (HttpFetchException e) {
 				throw new RuntimeException(e);
-			} catch (JSONException e) {	// TODO needs to be caught in client
+			} catch (ParsingException e) {
 				throw new RuntimeException(e);
 			}
 		}		

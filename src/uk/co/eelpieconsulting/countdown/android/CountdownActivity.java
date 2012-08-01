@@ -77,11 +77,7 @@ public class CountdownActivity extends Activity {
         	final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);        	
         	if (lastKnownLocation != null) {
 				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
-				Log.i(TAG, lastKnownLocationMessage);
-				final Toast toast = Toast.makeText(getApplicationContext(), lastKnownLocationMessage, Toast.LENGTH_SHORT);
-				toast.setGravity(Gravity.CENTER, 0, 0);
-				toast.show();
-				
+				Log.i(TAG, lastKnownLocationMessage);				
 				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
         		
         	} else {
@@ -95,11 +91,11 @@ public class CountdownActivity extends Activity {
         	return;
         }
         
-		final String title = selectedStop.getName() + (selectedStop.getIndicator() != null ? " (" + selectedStop.getIndicator() + ") " : "");
+		final String title = StopDescriptionService.makeStopTitle(selectedStop);
 		getWindow().setTitle(title);
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
-		loadArrivals(selectedStop.getId());		
+		loadArrivals(selectedStop.getId());
 	}
 	
 	@Override
@@ -169,7 +165,7 @@ public class CountdownActivity extends Activity {
 			return true;
 			
 		case 5:
-			Intent intent = new Intent(this, NearbyStopsListActivity.class);
+			Intent intent = new Intent(this, NearThisTabActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;
@@ -195,7 +191,8 @@ public class CountdownActivity extends Activity {
 		fetchMessagesTask.execute(stopId);
 	}
 	
-	private void renderStopboard(StopBoard stopboard) {		
+	private void renderStopboard(StopBoard stopboard) {
+		// TODO null check
 		stopsList.removeAllViews();
 		
 		final String towards = selectedStop.getTowards() != null ? "Towards " + selectedStop.getTowards() + "\n" : "";
@@ -204,19 +201,21 @@ public class CountdownActivity extends Activity {
 		
 		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Arrival arrival : stopboard.getArrivals()) {		
-			final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
-			final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
-			routeTextView.setText(arrival.getRoute().getRoute());			
-			
-			final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
-			bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
-			
-			arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute()));			
-			
-			stopsList.addView(arrivalView);
-		}
-		
+			stopsList.addView(createArrivalView(mInflater, arrival));
+		}		
 		loadMessages(selectedStop.getId());
+	}
+
+	private View createArrivalView(LayoutInflater mInflater, Arrival arrival) {
+		final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
+		final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
+		routeTextView.setText(arrival.getRoute().getRoute());			
+		
+		final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
+		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
+		
+		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute()));
+		return arrivalView;
 	}
 	
 	private void renderMessages(List<MultiStopMessage> messages) {		
