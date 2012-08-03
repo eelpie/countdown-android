@@ -42,12 +42,15 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 
 	private Stop selectedStop;
+
+	private LinearLayout stopsList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);        
-		status = (TextView) findViewById(R.id.status);	
+		status = (TextView) findViewById(R.id.status);
+		stopsList = (LinearLayout) findViewById(R.id.stopsList);
 	}
     
 	@Override
@@ -121,9 +124,14 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	
 	private void listNearbyStops(Location location) {
 		if (selectedStop != null) {
+			status.setText(getString(R.string.searching_for_stops_near) + ": " + StopDescriptionService.makeStopTitle(selectedStop));
+			status.setVisibility(View.VISIBLE);
+		} else {
 			status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		}
+		
+		stopsList.removeAllViews();
 		
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
@@ -137,10 +145,13 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			return;
 		}
 		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
-		status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
-		
+		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+			status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
+			status.setVisibility(View.VISIBLE);
+		} else {
+			status.setVisibility(View.GONE);
+		}
+				
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
 		for (Stop stop : stops) {			
