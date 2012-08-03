@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.Collections;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
@@ -9,6 +10,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.RouteNameComparator;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
@@ -43,6 +45,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private Stop selectedStop;
 
 	private LinearLayout routesList;
+
+	private RouteNameComparator routeNameComparator;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
         setContentView(R.layout.stops);        
 		status = (TextView) findViewById(R.id.status);
 		routesList = (LinearLayout) findViewById(R.id.stopsList);
+		routeNameComparator = new RouteNameComparator();
 	}
     
 	@Override
@@ -153,14 +158,15 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			return;
 		}
 		
-
 		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
 			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		} else {
 			status.setVisibility(View.GONE);
 		}
-				
+						
+		Collections.sort(routes, routeNameComparator);
+		
 		final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Route route : routes) {
 			routesList.addView(createRouteView(mInflater, route));	
