@@ -10,17 +10,19 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.maps.MapActivity;
-
-public class RouteStopsActivity extends MapActivity {
+public class RouteStopsActivity extends Activity {
 	
 	private static final String TAG = "RouteActivity";
 		
@@ -122,9 +124,29 @@ public class RouteStopsActivity extends MapActivity {
 	}
 
 	@Override
-	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, 1, 0, R.string.favourites);		
+		menu.add(0, 6, 0, R.string.alerts);
+		menu.add(0, 7, 0, R.string.search);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 1:
+			this.startActivity(new Intent(this, FavouritesActivity.class));
+			return true;	
+			
+		case 6:
+			this.startActivity(new Intent(this, AlertsActivity.class));
+			return true;
+			
+		case 7:
+			onSearchRequested();
+			return true;
+		}
 		return false;
-	}	
+	}
 	
 }

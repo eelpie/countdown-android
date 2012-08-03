@@ -43,15 +43,25 @@ public class FavouritesActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.near_me);
+		menu.add(0, 4, 0, R.string.near_me);	
+		menu.add(0, 6, 0, R.string.alerts);
+		menu.add(0, 7, 0, R.string.search);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 1:
-			this.startActivity(new Intent(this, NearbyMapActivity.class));
+		switch (item.getItemId()) {			
+		case 4:
+			this.startActivity(new Intent(this, NearbyTabActivity.class));
+			return true;	
+						
+		case 6:
+			this.startActivity(new Intent(this, AlertsActivity.class));
+			return true;
+			
+		case 7:
+			onSearchRequested();
 			return true;
 		}
 		return false;

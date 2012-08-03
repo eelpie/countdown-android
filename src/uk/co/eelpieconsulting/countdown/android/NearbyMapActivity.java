@@ -78,10 +78,12 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		}
 		turnOffLocationUpdates();
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.favourites);
+		menu.add(0, 1, 0, R.string.favourites);		
+		menu.add(0, 6, 0, R.string.alerts);
+		menu.add(0, 7, 0, R.string.search);
 		return true;
 	}
 	
@@ -90,6 +92,14 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		switch (item.getItemId()) {
 		case 1:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
+			return true;	
+			
+		case 6:
+			this.startActivity(new Intent(this, AlertsActivity.class));
+			return true;
+			
+		case 7:
+			onSearchRequested();
 			return true;
 		}
 		return false;

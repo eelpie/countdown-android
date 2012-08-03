@@ -158,9 +158,6 @@ public class CountdownActivity extends Activity {
 			favouriteMenuItem.setTitle(getString(chooseFavouriteAction()));
 			return true;
 			
-		case 3:			
-			return true;
-			
 		case 4:
 			this.startActivity(new Intent(this, NearbyTabActivity.class));
 			return true;
