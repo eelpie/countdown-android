@@ -1,9 +1,13 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.services.StopNameComparator;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 public class FavouritesActivity extends Activity {
 
 	private FavouriteStopsDAO favouriteStopsDAO;
+	private StopNameComparator stopNameComparator;
 	private TextView status;
 	
 	@Override
@@ -24,6 +29,7 @@ public class FavouritesActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stops);        
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
+		stopNameComparator = new StopNameComparator();
         
         status = (TextView) findViewById(R.id.status);
     }
@@ -62,10 +68,13 @@ public class FavouritesActivity extends Activity {
 	}
 
 	private void showStops(Set<Stop> stops) {
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
+		final LinearLayout stopsLayout = (LinearLayout) findViewById(R.id.stopsList);
+		stopsLayout.removeAllViews();
+		
+		final List<Stop> sortedStops = new ArrayList<Stop>(stops);
+		Collections.sort(sortedStops, stopNameComparator);		
 		for (Stop stop : stops) {
-			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
+			stopsLayout.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
 	}
 	
