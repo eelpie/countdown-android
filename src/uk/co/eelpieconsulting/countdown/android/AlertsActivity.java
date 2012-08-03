@@ -124,7 +124,6 @@ public class AlertsActivity extends Activity {
 		
 		status.setText(R.string.alerts_effecting_your_stops);
 		status.setVisibility(View.VISIBLE);
-
 		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();		
@@ -132,6 +131,10 @@ public class AlertsActivity extends Activity {
 			final TextView messageView = MessageDescriptionService.makeMessageView(messageToDisplay, getApplicationContext());			
 			stopsList.addView(messageView);
 		}
+		
+		final TextView credit = new TextView(getApplicationContext());
+		credit.setText(getString(R.string.tfl_credit));
+		stopsList.addView(credit);
 		
 		messageService.markAsSeen(messages);		
 	}

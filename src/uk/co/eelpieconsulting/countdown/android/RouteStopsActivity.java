@@ -82,6 +82,10 @@ public class RouteStopsActivity extends MapActivity {
 			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
 		status.setVisibility(View.GONE);
+		
+		final TextView credit = new TextView(getApplicationContext());
+		credit.setText(getString(R.string.tfl_credit));
+		stopsList.addView(credit);
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {

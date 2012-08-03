@@ -155,6 +155,10 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		for (Route route : routes) {
 			routesList.addView(createRouteView(mInflater, route));	
 		}
+		
+		final TextView credit = new TextView(getApplicationContext());
+		credit.setText(getString(R.string.tfl_credit));
+		routesList.addView(credit);
 	}
 	
 	private View createRouteView(LayoutInflater mInflater, Route route) {

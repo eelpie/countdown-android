@@ -167,6 +167,10 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 				stopsList.addView(stopTextView);				
 			}
 		}
+		
+		final TextView credit = new TextView(getApplicationContext());
+		credit.setText(getString(R.string.tfl_credit));
+		stopsList.addView(credit);
 	}
 	
 	private void registerForLocationUpdates() {

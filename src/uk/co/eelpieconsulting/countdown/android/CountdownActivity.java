@@ -231,6 +231,10 @@ public class CountdownActivity extends Activity {
 		for (Message message : messages) {
 			stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
 		}
+		
+		final TextView credit = new TextView(getApplicationContext());
+		credit.setText(getString(R.string.tfl_credit));
+		stopsList.addView(credit);
 	}
 	
 	private String secondsToMinutes(Arrival arrival) {
