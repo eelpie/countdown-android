@@ -13,6 +13,7 @@ import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -45,6 +46,11 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 	}
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {
+		if (messages == null) {
+			Log.w(TAG, "Messages could not be fetched; skipping check");
+			return;
+		}
+		
 		if (messages.isEmpty()) {
 			Log.i(TAG, "No new messages seen; not notifying");
 			return;
@@ -90,8 +96,13 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 			final Set<Stop> favouriteStops = params[0];
 			if (!favouriteStops.isEmpty()) {
 				final int[] stopIds = getIdsFrom(favouriteStops);				
-				final List<MultiStopMessage> newMessages = messageService.getNewMessagesFor(stopIds);
-				return newMessages;
+				List<MultiStopMessage> newMessages;
+				try {
+					return messageService.getNewMessagesFor(stopIds);
+				} catch (ContentNotAvailableException e) {
+					Log.w(TAG, "Could not get unread messages. Cause: " + e.getMessage());
+					return null;
+				}
 			}						
 			return new ArrayList<MultiStopMessage>();
 		}

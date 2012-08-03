@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class AlertsActivity extends Activity {
-
+	
+	private static final String TAG = "AlertsActivity";
+	
 	public static final int NOTIFICATION_ID = 1;
 	
 	private FavouriteStopsDAO favouriteStopsDAO;
@@ -88,12 +92,16 @@ public class AlertsActivity extends Activity {
 			return;
 		}
 		
+		status.setText(R.string.loading_messages);
+		status.setVisibility(View.VISIBLE);
 		FetchMessagesTask fetchMessagesTask = new FetchMessagesTask(messageService);
 		fetchMessagesTask.execute(favouriteStops);
 	}
 	
 	private void renderMessages(List<MultiStopMessage> messages) {		
 		if (messages == null) {
+			status.setText(R.string.could_not_load_messages);
+			status.setVisibility(View.GONE);
 			return;
 		}
 		
@@ -113,10 +121,9 @@ public class AlertsActivity extends Activity {
 		messageService.markAsSeen(messages);		
 	}
 	
-
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
 
-		private MessageService messageService;
+		private final MessageService messageService;
 
 		public FetchMessagesTask(MessageService messageService) {
 			super();
@@ -133,7 +140,12 @@ public class AlertsActivity extends Activity {
 				stopIds[i] = iterator.next().getId();				
 			}
 			
-			return messageService.getStopMessages(stopIds);			
+			try {
+				return messageService.getStopMessages(stopIds);
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Messages could not be fetched: Cause: " + e.getMessage());
+				return null;
+			}
 		}
 
 		@Override

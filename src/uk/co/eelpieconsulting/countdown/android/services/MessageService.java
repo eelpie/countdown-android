@@ -24,23 +24,19 @@ public class MessageService {
 		this.seenMessagesDAO = seenMessagesDAO;
 	}
 	
-	public List<MultiStopMessage> getStopMessages(int[] stopIds) {
+	public List<MultiStopMessage> getStopMessages(int[] stopIds) throws ContentNotAvailableException {
 		try {
 			return api.getMultipleStopMessages(stopIds);
 		} catch (NetworkNotAvailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();		
+			throw new ContentNotAvailableException(e);
 		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
+			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ContentNotAvailableException(e);
 		}
-		return new ArrayList<MultiStopMessage>();
 	}
 
-	public List<MultiStopMessage> getNewMessagesFor(int[] stopIds) {
+	public List<MultiStopMessage> getNewMessagesFor(int[] stopIds) throws ContentNotAvailableException {
 		List<MultiStopMessage> stopMessages = getStopMessages(stopIds);
 		Set<String> seenMessages = seenMessagesDAO.getSeenMessages();
 		List<MultiStopMessage> unseenMessages = new ArrayList<MultiStopMessage>();
