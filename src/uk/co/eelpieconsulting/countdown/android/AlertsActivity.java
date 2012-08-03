@@ -11,6 +11,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -43,7 +44,7 @@ public class AlertsActivity extends Activity {
         setContentView(R.layout.stops);
         
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
-		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
+		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
 
         status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);        
@@ -101,7 +102,7 @@ public class AlertsActivity extends Activity {
 	private void renderMessages(List<MultiStopMessage> messages) {		
 		if (messages == null) {
 			status.setText(R.string.could_not_load_messages);
-			status.setVisibility(View.GONE);
+			status.setVisibility(View.VISIBLE);
 			return;
 		}
 		
@@ -110,6 +111,10 @@ public class AlertsActivity extends Activity {
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
+		
+		status.setText(R.string.alerts_effecting_your_stops);
+		status.setVisibility(View.VISIBLE);
+
 		
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();		

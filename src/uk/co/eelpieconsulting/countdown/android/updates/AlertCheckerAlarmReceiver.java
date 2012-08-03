@@ -15,6 +15,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,7 +35,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "Received alarm; checking for new alert messages");
 		
-		final MessageService messageService = new MessageService(ApiFactory.getApi(context), new SeenMessagesDAO(context));
+		final MessageService messageService = new MessageService(ApiFactory.getApi(context), new MessageCache(context), new SeenMessagesDAO(context));
 		final FavouriteStopsDAO favouriteStopsDAO = FavouriteStopsDAO.get(context);
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		

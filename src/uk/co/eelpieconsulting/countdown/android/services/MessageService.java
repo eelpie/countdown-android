@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import android.util.Log;
 
@@ -17,16 +18,28 @@ public class MessageService {
 	private static final String TAG = "MessageService";
 	
 	private final BusesClientService api;
+	private final MessageCache messageCache;
 	private final SeenMessagesDAO seenMessagesDAO;
-	
-	public MessageService(BusesClientService api, SeenMessagesDAO seenMessagesDAO) {
+
+	public MessageService(BusesClientService api, MessageCache messageCache, SeenMessagesDAO seenMessagesDAO) {
 		this.api = api;
+		this.messageCache = messageCache;
 		this.seenMessagesDAO = seenMessagesDAO;
 	}
 	
 	public List<MultiStopMessage> getStopMessages(int[] stopIds) throws ContentNotAvailableException {
-		try {
-			return api.getMultipleStopMessages(stopIds);
+		try {			
+			final List<MultiStopMessage> cachedMessages = messageCache.getStopMessages(stopIds);
+			final boolean cachedMessagesAreAvailable = cachedMessages != null;
+			if (cachedMessagesAreAvailable) {
+				Log.i(TAG, "Returning messages from cache");
+				return cachedMessages;
+			}
+			
+			final List<MultiStopMessage> messages = api.getMultipleStopMessages(stopIds);
+			messageCache.cache(stopIds, messages);			
+			return messages;
+			
 		} catch (NetworkNotAvailableException e) {
 			throw new ContentNotAvailableException(e);
 		} catch (HttpFetchException e) {
