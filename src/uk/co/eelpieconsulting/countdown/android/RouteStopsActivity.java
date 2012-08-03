@@ -2,13 +2,12 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
@@ -53,7 +52,7 @@ public class RouteStopsActivity extends Activity {
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
 		
-		fetchStopsTask = new FetchRouteStopsTask(ApiFactory.getApi(getApplicationContext()));
+		fetchStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 		fetchStopsTask.execute(selectedRoute);
 	}
 	
@@ -92,11 +91,23 @@ public class RouteStopsActivity extends Activity {
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private BusesClientService api;
+		private StopsService stopsService;
 
-		public FetchRouteStopsTask(BusesClientService api) {
+		public FetchRouteStopsTask(StopsService stopsService) {
 			super();
-			this.api = api;
+			this.stopsService = stopsService;
+		}
+				
+		@Override
+		protected List<Stop> doInBackground(Route... params) {
+			final Route route = params[0];
+			try {
+				return stopsService.getRouteStops(route.getRoute(), route.getRun());
+				
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not load route stops: " + e.getMessage());
+			}
+			return null;
 		}
 		
 		@Override
@@ -104,23 +115,6 @@ public class RouteStopsActivity extends Activity {
 			showStops(stops);
 		}
 		
-		@Override
-		protected List<Stop> doInBackground(Route... params) {
-			final Route route = params[0];
-			try {
-				return api.getRouteStops(route.getRoute(), route.getRun());
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
-			return null;
-		}		
 	}
 
 	@Override

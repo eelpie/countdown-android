@@ -25,8 +25,7 @@ public class MessageCache {
 
 	public List<MultiStopMessage> getStopMessages(int[] stopIds) {
 		final String cacheFilename = getCacheFilenameFor(stopIds);
-		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename,
-				TEN_MINUTES)) {
+		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename, TEN_MINUTES)) {
 			try {
 				FileInputStream fileInputStream = FileService.getFileInputStream(context, cacheFilename);
 				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);

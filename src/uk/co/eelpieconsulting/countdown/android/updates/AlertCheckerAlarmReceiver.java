@@ -97,7 +97,6 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 			final Set<Stop> favouriteStops = params[0];
 			if (!favouriteStops.isEmpty()) {
 				final int[] stopIds = getIdsFrom(favouriteStops);				
-				List<MultiStopMessage> newMessages;
 				try {
 					return messageService.getNewMessagesFor(stopIds);
 				} catch (ContentNotAvailableException e) {

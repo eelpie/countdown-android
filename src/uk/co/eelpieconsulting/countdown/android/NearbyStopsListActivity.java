@@ -4,14 +4,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
@@ -143,7 +142,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		stopsList.removeAllViews();
 		
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}
@@ -206,12 +205,12 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private BusesClientService api;
+		private StopsService stopsService;
 		private Location location;
 
-		public FetchNearbyStopsTask(BusesClientService api) {
+		public FetchNearbyStopsTask(StopsService stopsService) {
 			super();
-			this.api = api;
+			this.stopsService = stopsService;
 		}
 		
 		@Override
@@ -224,14 +223,9 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
-			} catch (HttpFetchException e) {
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not load nearby stops: " + e.getMessage());
 			}
 			return null;
 		}		
