@@ -40,6 +40,8 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private TextView status;
 
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
+
+	private Stop selectedStop;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		super.onResume();
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
-			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
 			stopLocation.setAccuracy(1);
 			stopLocation.setLatitude(selectedStop.getLatitude());
@@ -117,10 +119,12 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {		
-		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setVisibility(View.VISIBLE);
-				
+	private void listNearbyStops(Location location) {
+		if (selectedStop != null) {
+			status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
+			status.setVisibility(View.VISIBLE);
+		}
+		
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
@@ -139,15 +143,18 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
 		
-		for (Stop stop : stops) {
-			final TextView stopTextView = new TextView(this.getApplicationContext());
-
-			String stopDescription = StopDescriptionService.makeStopDescription(stop);
-			stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
+		for (Stop stop : stops) {			
+			if (selectedStop == null || !stop.equals(selectedStop)) {
+				final TextView stopTextView = new TextView(this.getApplicationContext());
+				
+				String stopDescription = StopDescriptionService.makeStopDescription(stop);
+				stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
 			
-			stopTextView.setText(stopDescription);
-			stopTextView.setOnClickListener(new StopClicker(this, stop));
-			stopsList.addView(stopTextView);		
+				stopTextView.setText(stopDescription);
+				stopTextView.setOnClickListener(new StopClicker(this, stop));
+			
+				stopsList.addView(stopTextView);				
+			}
 		}
 	}
 	
