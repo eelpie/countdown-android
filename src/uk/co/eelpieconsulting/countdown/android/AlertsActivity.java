@@ -68,10 +68,12 @@ public class AlertsActivity extends Activity {
 			fetchMessageTask.cancel(true);
 		}
 	}
-		
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.near_me);
+		menu.add(0, 1, 0, R.string.favourites);
+		menu.add(0, 4, 0, R.string.near_me);		
+		menu.add(0, 7, 0, R.string.search);
 		return true;
 	}
 	
@@ -79,7 +81,15 @@ public class AlertsActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 1:
-			this.startActivity(new Intent(this, NearbyMapActivity.class));
+			this.startActivity(new Intent(this, FavouritesActivity.class));
+			return true;
+			
+		case 4:
+			this.startActivity(new Intent(this, NearbyTabActivity.class));
+			return true;
+			
+		case 7:
+			onSearchRequested();
 			return true;
 		}
 		return false;
