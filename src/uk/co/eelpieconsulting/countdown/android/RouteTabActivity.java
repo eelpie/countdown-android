@@ -4,6 +4,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.app.TabActivity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -12,6 +13,7 @@ public class RouteTabActivity extends TabActivity {
 	
 	private Route selectedRoute;
 	private Stop selectedStop;
+	private Location location;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,9 @@ public class RouteTabActivity extends TabActivity {
         }
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
         	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+        }
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("location") != null) {
+        	location = (Location) this.getIntent().getExtras().get("location");
         }
 
         final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
@@ -39,6 +44,7 @@ public class RouteTabActivity extends TabActivity {
 		Intent stopsIntent = new Intent(this, RouteStopsActivity.class);
 		stopsIntent.putExtra("route", selectedRoute);
 		stopsIntent.putExtra("stop", selectedStop);
+		stopsIntent.putExtra("location", location);
 		stopsSpec.setContent(stopsIntent);
 		
 		final TabSpec mapSpec = tabHost.newTabSpec("Map");
