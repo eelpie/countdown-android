@@ -55,7 +55,7 @@ public class MessageCache {
 			Log.e(TAG, "Failed to write to cache file: " + e.getMessage());
 			Log.e(TAG, e.getMessage());
 		}
-		Log.d(TAG, "Finished writing to disk :" + cacheFilename);
+		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
 
 	private String getCacheFilenameFor(int[] stopIds) {

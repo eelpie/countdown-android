@@ -15,7 +15,7 @@ public class StopsCache {
 	
 	private static final String TAG = "StopsCache";
 	
-	private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+	private static final long ONE_DAY = 1 * 24 * 60 * 60 * 1000;
 
 	private Context context;
 	
@@ -48,7 +48,8 @@ public class StopsCache {
 	}
 	
 	private List<Stop> getFromCache(final String cacheFilename) {
-		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename, ONE_WEEK)) {
+		Log.i(TAG, "Looking for cache file: " + cacheFilename);
+		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename, ONE_DAY)) {
 			try {
 				FileInputStream fileInputStream = FileService.getFileInputStream(context, cacheFilename);
 				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -77,7 +78,7 @@ public class StopsCache {
 			Log.e(TAG, "Failed to write to cache file: " + e.getMessage());
 			Log.e(TAG, e.getMessage());
 		}
-		Log.d(TAG, "Finished writing to disk :" + cacheFilename);
+		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
 
 }

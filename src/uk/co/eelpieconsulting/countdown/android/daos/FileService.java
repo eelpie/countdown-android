@@ -34,9 +34,11 @@ public class FileService {
 		if (localFile.exists() && localFile.canRead()) {
 			Log.d(TAG, "Cache file exists and is readable: " + filename);		
 			final long age = System.currentTimeMillis() - localFile.lastModified();
-			if (age >= ttl) {
+			if (age <= ttl) {
 				Log.d(TAG, "Cache file is more recent than the ttl: " + age + "/" + ttl);
 				return true;
+			} else {
+				Log.d(TAG, "File is older than TTL: " + age + "/" + ttl);
 			}
 		}
 		

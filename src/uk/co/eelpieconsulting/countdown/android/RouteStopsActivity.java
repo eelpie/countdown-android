@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 public class RouteStopsActivity extends Activity {
 	
-	private static final String TAG = "RouteActivity";
+	private static final String TAG = "RouteStopsActivity";
 		
 	private Route selectedRoute;
 
@@ -79,7 +79,6 @@ public class RouteStopsActivity extends Activity {
 		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		stopsList.removeAllViews();
 		for (Stop stop : stops) {
-			Log.i(TAG, "Found: " + stop.toString());
 			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
 		status.setVisibility(View.GONE);
