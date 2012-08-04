@@ -74,15 +74,15 @@ public class FavouritesActivity extends Activity {
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
-		showStops(favouriteStops);
+		
+		final List<Stop> sortedStops = new ArrayList<Stop>(favouriteStops);
+		Collections.sort(sortedStops, stopNameComparator);		
+		showStops(sortedStops);
 	}
 
-	private void showStops(Set<Stop> stops) {
+	private void showStops(List<Stop> stops) {
 		final LinearLayout stopsLayout = (LinearLayout) findViewById(R.id.stopsList);
-		stopsLayout.removeAllViews();
-		
-		final List<Stop> sortedStops = new ArrayList<Stop>(stops);
-		Collections.sort(sortedStops, stopNameComparator);		
+		stopsLayout.removeAllViews();		
 		for (Stop stop : stops) {
 			stopsLayout.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
 		}
