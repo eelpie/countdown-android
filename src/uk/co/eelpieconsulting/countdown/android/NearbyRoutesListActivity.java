@@ -123,8 +123,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	}
 
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	public void onProviderEnabled(String provider) {
@@ -169,7 +168,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Route route : routes) {
-			routesList.addView(createRouteView(mInflater, route));	
+			routesList.addView(createRouteView(mInflater, route, location));	
 		}
 		
 		final TextView credit = new TextView(getApplicationContext());
@@ -177,7 +176,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		routesList.addView(credit);
 	}
 	
-	private View createRouteView(LayoutInflater mInflater, Route route) {
+	private View createRouteView(LayoutInflater mInflater, Route route, Location location) {
 		final View routeView = mInflater.inflate(R.layout.arrival, null);		
 
 		final TextView routeTextView = (TextView) routeView.findViewById(R.id.routeName);
@@ -186,7 +185,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		final TextView bodyTextView = (TextView) routeView.findViewById(R.id.body);
 		bodyTextView.setText(getString(R.string.towards) + " " + route.getTowards());
 		
-		routeView.setOnClickListener(new RouteClicker(this, route, selectedStop));
+		routeView.setOnClickListener(new RouteClicker(this, route, selectedStop, location));
 		return routeView;
 	}
 	

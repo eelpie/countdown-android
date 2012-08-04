@@ -3,12 +3,13 @@ package uk.co.eelpieconsulting.countdown.android.views;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
-import android.content.Context;
-import android.widget.TextView;
-
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.widget.TextView;
 
 public class StopDescriptionService {
 	
@@ -26,6 +27,16 @@ public class StopDescriptionService {
 		}
 		description.append(routesDescription(stop.getRoutes()));	
 		return description.toString();
+	}
+	
+	public static String makeStopDescription(Stop stop, Location location) {
+		String description = makeStopDescription(stop);
+		if (location != null) {
+			if (DistanceMeasuringService.distanceTo(location, stop) < 1000) {
+				description = description + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
+			}
+		}
+		return description;
 	}
 	
 	public static String makeStopTitle(Stop stop) {

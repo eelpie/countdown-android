@@ -216,7 +216,7 @@ public class CountdownActivity extends Activity {
 		final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
 		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
 		
-		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop));
+		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop, null));
 		return arrivalView;
 	}
 	
