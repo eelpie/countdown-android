@@ -186,7 +186,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		final TextView bodyTextView = (TextView) routeView.findViewById(R.id.body);
 		bodyTextView.setText(getString(R.string.towards) + " " + route.getTowards());
 		
-		routeView.setOnClickListener(new RouteClicker(this, route));
+		routeView.setOnClickListener(new RouteClicker(this, route, selectedStop));
 		return routeView;
 	}
 	

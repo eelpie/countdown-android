@@ -203,12 +203,12 @@ public class CountdownActivity extends Activity {
 		
 		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Arrival arrival : stopboard.getArrivals()) {		
-			stopsList.addView(createArrivalView(mInflater, arrival));
+			stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
 		}		
 		loadMessages(selectedStop.getId());
 	}
 
-	private View createArrivalView(LayoutInflater mInflater, Arrival arrival) {
+	private View createArrivalView(LayoutInflater mInflater, Arrival arrival, Stop stop) {
 		final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
 		final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
 		routeTextView.setText(arrival.getRoute().getRoute());			
@@ -216,7 +216,7 @@ public class CountdownActivity extends Activity {
 		final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
 		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
 		
-		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute()));
+		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop));
 		return arrivalView;
 	}
 	

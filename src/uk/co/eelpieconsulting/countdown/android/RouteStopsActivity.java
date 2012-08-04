@@ -18,7 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class RouteStopsActivity extends Activity {
@@ -30,11 +31,13 @@ public class RouteStopsActivity extends Activity {
 	private TextView status;
 
 	private FetchRouteStopsTask fetchStopsTask;
+
+	private Stop selectedStop;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);
+        setContentView(R.layout.stopslist);
         status = (TextView) findViewById(R.id.status);        
         selectedRoute = null;
     }
@@ -44,6 +47,10 @@ public class RouteStopsActivity extends Activity {
 		super.onResume();
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
         	selectedRoute = (Route) this.getIntent().getExtras().get("route");
+        }
+        
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+        	selectedStop= (Stop) this.getIntent().getExtras().get("stop");
         }
                 
         final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
@@ -71,21 +78,24 @@ public class RouteStopsActivity extends Activity {
 			return;
 		}
 		
-		Log.i(TAG, "Found " + stops.size() + " stops");
-		
-		status.setText("Displaying");
-		status.setVisibility(View.VISIBLE);
-		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
-		for (Stop stop : stops) {
-			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
-		}
+		Log.i(TAG, "Found " + stops.size() + " stops");		
 		status.setVisibility(View.GONE);
 		
-		final TextView credit = new TextView(getApplicationContext());
-		credit.setText(getString(R.string.tfl_credit));
-		stopsList.addView(credit);
+		Integer selectedPosition = null;
+		final ListView stopsList = (ListView) findViewById(R.id.list);
+		final ArrayAdapter<String> stopsListAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.stoprow);
+		int i = 0;		
+		for (Stop stop : stops) {
+			stopsListAdapter.add(StopDescriptionService.makeStopDescription(stop));			
+			if (selectedStop != null && selectedStop.equals(stop)) {
+				selectedPosition = i;
+			}
+			i++;
+		}
+		stopsList.setAdapter(stopsListAdapter);
+		if (selectedPosition != null) {
+			stopsList.setSelection(selectedPosition);
+		}		
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
