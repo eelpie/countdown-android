@@ -8,7 +8,7 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
-import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -83,10 +82,10 @@ public class RouteStopsActivity extends Activity {
 		
 		Integer selectedPosition = null;
 		final ListView stopsList = (ListView) findViewById(R.id.list);
-		final ArrayAdapter<String> stopsListAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.stoprow);
-		int i = 0;		
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this);
+		int i = 0;
 		for (Stop stop : stops) {
-			stopsListAdapter.add(StopDescriptionService.makeStopDescription(stop));			
+			stopsListAdapter.add(stop);
 			if (selectedStop != null && selectedStop.equals(stop)) {
 				selectedPosition = i;
 			}
