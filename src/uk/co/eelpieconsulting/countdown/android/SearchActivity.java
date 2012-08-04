@@ -6,12 +6,15 @@ import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,29 +28,41 @@ public class SearchActivity extends Activity {
 	
 	private TextView status;
 
+	private FetchSearchResultsTask fetchSearchResultsTask;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stops);
-        status = (TextView) findViewById(R.id.status);        
-        
+        status = (TextView) findViewById(R.id.status);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();		
+        getWindow().setTitle(getString(R.string.search));
+		
 		final Intent intent = getIntent();
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			try {				
-				final List<Stop> results = ApiFactory.getApi(getApplicationContext()).searchStops(query.trim());
-				showStops(results);
-				
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			final String query = intent.getStringExtra(SearchManager.QUERY);
+			
+			Log.i(TAG, "Searching for: " + query);
+			status.setText(getString(R.string.searching));
+			status.setVisibility(View.VISIBLE);
+			
+			fetchSearchResultsTask = new FetchSearchResultsTask(ApiFactory.getApi(getApplicationContext()));
+			fetchSearchResultsTask.execute(query);
+			
+		} else {
+			onSearchRequested();		
+		}
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (fetchSearchResultsTask != null && fetchSearchResultsTask.getStatus().equals(Status.RUNNING)) {
+			fetchSearchResultsTask.cancel(true);
 		}
 	}
 	
@@ -77,6 +92,37 @@ public class SearchActivity extends Activity {
 			return true;
 		}
 		return false;
+	}
+	
+	private class FetchSearchResultsTask extends AsyncTask<String, Integer, List<Stop>> {
+
+		private BusesClientService busesClientService;
+
+		public FetchSearchResultsTask(BusesClientService busesClientService) {
+			super();
+			this.busesClientService = busesClientService;
+		}
+		
+		@Override
+		protected List<Stop> doInBackground(String... params) {
+			fetchSearchResultsTask = this;
+			final String query = params[0];
+			try {				
+				return busesClientService.searchStops(query);			
+			} catch (HttpFetchException e) {
+				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
+			} catch (ParsingException e) {
+				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
+			} catch (NetworkNotAvailableException e) {
+				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(List<Stop> stops) {
+			showStops(stops);
+		}
 	}
 
 }

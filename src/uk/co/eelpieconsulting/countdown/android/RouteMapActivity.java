@@ -93,7 +93,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 			return true;
 			
 		case 7:
-			onSearchRequested();
+			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}
 		return false;

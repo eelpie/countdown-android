@@ -102,7 +102,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			return true;
 			
 		case 7:
-			onSearchRequested();
+			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}
 		return false;

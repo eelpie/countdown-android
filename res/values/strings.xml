@@ -30,5 +30,6 @@
    	<string name="alerts_effecting_your_stops">Alerts effecting your favourite stops:</string>    	
   	<string name="stop">stop</string>
     <string name="stops">stops</string>
+    <string name="searching">Searching for stops</string>      
     <string name="tfl_credit">Data supplied by Transport for London.</string>  	
 </resources>

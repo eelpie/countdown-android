@@ -136,7 +136,7 @@ public class RouteStopsActivity extends Activity {
 			return true;
 			
 		case 7:
-			onSearchRequested();
+			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}
 		return false;
