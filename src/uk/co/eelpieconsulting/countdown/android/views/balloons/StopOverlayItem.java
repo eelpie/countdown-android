@@ -9,9 +9,9 @@ import com.google.android.maps.OverlayItem;
 public class StopOverlayItem extends OverlayItem {
 
 	private final Stop stop;
-	
+		
 	public StopOverlayItem(Stop stop) {
-		super(GeoPointFactory.createGeoPointForLatLong(stop.getLatitude(), stop.getLongitude()), stop.getName(), (stop.getTowards() != null ? "Towards " + stop.getTowards() + "\n" : "") + StopDescriptionService.routesDescription(stop.getRoutes()));
+		super(GeoPointFactory.createGeoPointForLatLong(stop.getLatitude(), stop.getLongitude()), StopDescriptionService.makeStopTitle(stop), (stop.getTowards() != null ? "Towards " + stop.getTowards() + "\n" : "") + StopDescriptionService.routesDescription(stop.getRoutes()));
 		this.stop = stop;
 	}
 	
