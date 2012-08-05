@@ -8,6 +8,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FileService;
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import android.content.Context;
 import android.util.Log;
 
@@ -44,7 +45,7 @@ public class StopsCache {
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
-		return "stopsnear-" + latitude + "-" + longitude + "-" + radius;
+		return "stopsnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius;
 	}
 	
 	private List<Stop> getFromCache(final String cacheFilename) {

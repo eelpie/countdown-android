@@ -44,11 +44,15 @@ public class DistanceMeasuringService {
 	}
 		
 	public static String makeLocationDescription(Location location) {
-		StringBuilder description = new StringBuilder(LAT_LONG_FORMAT.format(location.getLatitude()) + ", " + LAT_LONG_FORMAT.format(location.getLongitude()));
+		StringBuilder description = new StringBuilder(roundLatLong(location.getLatitude()) + ", " + roundLatLong(location.getLongitude()));
 		if (location.hasAccuracy()) {
 			description.append(" +/- " + location.getAccuracy() + "m");
 		}
 		return description.toString();
 	}
-
+	
+	public static String roundLatLong(double value) {
+		return LAT_LONG_FORMAT.format(value);
+	}
+	
 }

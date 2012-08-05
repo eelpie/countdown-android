@@ -8,6 +8,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.countdown.android.daos.FileService;
+import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import android.content.Context;
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class RoutesCache {
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
-		return "routesnear-" + latitude + "-" + longitude + "-" + radius;
+		return "routesnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius;
 	}
 	
 	private List<Route> getFromCache(final String cacheFilename) {
