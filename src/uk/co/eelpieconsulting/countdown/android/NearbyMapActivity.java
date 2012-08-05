@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
@@ -33,6 +34,8 @@ import com.google.android.maps.Overlay;
 
 public class NearbyMapActivity extends MapActivity implements LocationListener {
 
+	private static final int FIVE_SECONDS = 5 * 1000;
+
 	private static final String TAG = "StopsActivity";
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
@@ -42,6 +45,10 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 
 	private MapView mapView;
+
+	private LocationCircleOverlay locationCircleOverlay;
+
+	private Location currentLocation;
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,8 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		
 		mapView.setBuiltInZoomControls(false);
 		mapView.setClickable(true);
+		
+		locationCircleOverlay = new LocationCircleOverlay();
 	}
     
 	@Override
@@ -110,15 +119,21 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 		
-		listNearbyStops(location);
+		if (currentLocation == null) {
+			mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
+			mapView.getController().setZoom(17);		
+		}
 		
-		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {	
-				turnOffLocationUpdates();
-		} else {
-			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
-		}	
+		locationCircleOverlay.setPoint(location);
+		mapView.refreshDrawableState();
+		
+		boolean newLocationIsBetterEnoughToJustifyReload = currentLocation == null;	// TODO	Improves to be had here
+		if (newLocationIsBetterEnoughToJustifyReload) {
+			listNearbyStops(location);		
+		}
+		currentLocation = location;
 	}
-
+	
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
 		
@@ -135,10 +150,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	private void listNearbyStops(Location location) {		
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
-		
-		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-        mapView.getController().setZoom(18);
-				
+						
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
@@ -161,6 +173,9 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
+				
+		overlays.add(locationCircleOverlay);
+		
 		mapView.refreshDrawableState();
 	}
 	
@@ -169,8 +184,8 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		status.setVisibility(View.VISIBLE);
 		try {
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FIVE_SECONDS, 2500, this);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FIVE_SECONDS, STOP_SEARCH_RADIUS, this);
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
