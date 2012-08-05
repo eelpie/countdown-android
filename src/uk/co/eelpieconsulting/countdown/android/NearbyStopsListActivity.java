@@ -160,7 +160,10 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 
 		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
 		for (Stop stop : stops) {
-			stopsListAdapter.add(stop);
+			final boolean isTheNearThisStopItself = selectedStop != null && selectedStop.equals(stop);
+			if (!isTheNearThisStopItself) {
+				stopsListAdapter.add(stop);
+			}
 		}
 		
 		final ListView stopsList = (ListView) findViewById(R.id.list);
