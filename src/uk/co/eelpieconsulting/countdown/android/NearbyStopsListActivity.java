@@ -40,18 +40,23 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private TextView status;
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 	private Stop selectedStop;
+
+	private ListView stopsList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stopslist);        
 		status = (TextView) findViewById(R.id.status);
+		stopsList = (ListView) findViewById(R.id.list);
 	}
     
 	@Override
 	protected void onResume() {
 		super.onResume();
 		getWindow().setTitle(getString(R.string.near_me));
+		stopsList.setVisibility(View.GONE);
+		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			listNearbyStops(makeLocationForSelectedStop(selectedStop));
@@ -161,8 +166,8 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			}
 		}
 		
-		final ListView stopsList = (ListView) findViewById(R.id.list);
 		stopsList.setAdapter(stopsListAdapter);	
+		stopsList.setVisibility(View.VISIBLE);
 	}
 	
 	private void registerForLocationUpdates() {

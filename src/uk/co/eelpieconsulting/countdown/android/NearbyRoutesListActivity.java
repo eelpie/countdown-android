@@ -61,6 +61,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	protected void onResume() {
 		super.onResume();
 		getWindow().setTitle(getString(R.string.near_me));
+		routesList.setVisibility(View.GONE);
+		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			listNearbyStops(makeLocationForSelectedStop(selectedStop));
@@ -171,6 +173,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		final TextView credit = new TextView(getApplicationContext());
 		credit.setText(getString(R.string.tfl_credit));
 		routesList.addView(credit);
+		
+		routesList.setVisibility(View.VISIBLE);
 	}
 	
 	private View createRouteView(LayoutInflater mInflater, Route route, Location location) {
