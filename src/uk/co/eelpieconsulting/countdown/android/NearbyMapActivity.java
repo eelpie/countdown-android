@@ -2,13 +2,12 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -34,22 +33,21 @@ import com.google.android.maps.Overlay;
 
 public class NearbyMapActivity extends MapActivity implements LocationListener {
 
-	private static final int FIVE_SECONDS = 5 * 1000;
-
 	private static final String TAG = "StopsActivity";
-	
+
+	private static final int FIVE_SECONDS = 5 * 1000;
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
-	private TextView status;
-
+	private StopsCache stopsCache;
+	private StopsService stopsService;
+	
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
-
-	private MapView mapView;
-
-	private LocationCircleOverlay locationCircleOverlay;
-
 	private Location currentLocation;
-		
+
+	private TextView status;
+	private MapView mapView;
+	private LocationCircleOverlay locationCircleOverlay;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +60,10 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		
 		locationCircleOverlay = new LocationCircleOverlay();		
 		mapView.getOverlays().add(locationCircleOverlay);
+		
+		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
+		stopsCache = new StopsCache(getApplicationContext());
+
 	}
     
 	@Override
@@ -152,7 +154,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 						
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(ApiFactory.getApi(getApplicationContext()));
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(stopsService);
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}
@@ -190,7 +192,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		}
 	}
 
-	private void turnOffLocationUpdates() {	// TODO Warn if not location
+	private void turnOffLocationUpdates() {	// TODO Warn if no location
 		try {
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 			locationManager.removeUpdates(this);
@@ -201,17 +203,12 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private BusesClientService api;
+		private StopsService stospService;
 		private Location location;
 
-		public FetchNearbyStopsTask(BusesClientService api) {
+		public FetchNearbyStopsTask(StopsService stopsService) {
 			super();
-			this.api = api;
-		}
-		
-		@Override
-		protected void onPostExecute(List<Stop> stops) {
-			showStops(location, stops);
+			this.stospService = stopsService;
 		}
 		
 		@Override
@@ -219,17 +216,18 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return api.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
-			} catch (HttpFetchException e) {
-				throw new RuntimeException(e);
-			} catch (ParsingException e) {
-				throw new RuntimeException(e);
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return stospService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not find stops within: " + e.getMessage());
 			}
 			return null;
-		}		
+		}
+		
+		@Override
+		protected void onPostExecute(List<Stop> stops) {
+			showStops(location, stops);
+		}
+		
 	}
 
 	@Override

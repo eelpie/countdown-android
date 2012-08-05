@@ -2,14 +2,13 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
@@ -38,7 +37,6 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private TextView status;
-
 	private MapView mapView;
 
 	private Route selectedRoute;
@@ -63,7 +61,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		super.onResume();
 		registerForLocationUpdates();
 		
-		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(ApiFactory.getApi(getApplicationContext()));
+		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 		fetchRouteStopsTask.execute(selectedRoute);
 	}
 	
@@ -124,6 +122,11 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		// TODO Auto-generated method stub		
 	}
 	
+	@Override
+	protected boolean isRouteDisplayed() {
+		return false;
+	}
+
 	private void zoomToUserLocation(Location location) {		
 		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
         mapView.getController().setZoom(12);
@@ -169,18 +172,13 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		}
 	}
 	
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
 
-		private BusesClientService api;
+		private StopsService stopsService;
 
-		public FetchRouteStopsTask(BusesClientService api) {
+		public FetchRouteStopsTask(StopsService api) {
 			super();
-			this.api = api;
+			this.stopsService = api;
 		}
 		
 		@Override
@@ -192,21 +190,12 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		protected List<Stop> doInBackground(Route... params) {
 			final Route route = params[0];
 			try {
-				return api.getRouteStops(route.getRoute(), route.getRun());
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return stopsService.getRouteStops(route.getRoute(), route.getRun());
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not load stops for route: " + e.getMessage());
 			}
 			return null;
 		}		
 	}
-	
-	
 	
 }

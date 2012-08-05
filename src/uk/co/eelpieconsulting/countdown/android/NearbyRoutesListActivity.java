@@ -238,7 +238,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return api.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+				return api.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);	// TODO migrate to cached service			
 			} catch (HttpFetchException e) {
 				throw new RuntimeException(e);
 			} catch (ParsingException e) {

@@ -108,7 +108,8 @@ public class SearchActivity extends Activity {
 			fetchSearchResultsTask = this;
 			final String query = params[0];
 			try {				
-				return busesClientService.searchStops(query);			
+				return busesClientService.searchStops(query);	// TODO move to caching service
+				
 			} catch (HttpFetchException e) {
 				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
 			} catch (ParsingException e) {

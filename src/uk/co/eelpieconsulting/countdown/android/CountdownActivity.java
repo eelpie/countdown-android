@@ -12,8 +12,12 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.LocationService;
+import uk.co.eelpieconsulting.countdown.android.services.MessageService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
@@ -42,6 +46,7 @@ public class CountdownActivity extends Activity {
 	
 	private BusesClientService api;
 	private FavouriteStopsDAO favouriteStopsDAO;
+	private MessageService messageService;
 	
 	private FetchArrivalsTask fetchArrivalsTask;
 	private FetchMessagesTask fetchMessagesTask;
@@ -52,6 +57,7 @@ public class CountdownActivity extends Activity {
 	private TextView status;
 
 	private LinearLayout stopsList;
+
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,8 @@ public class CountdownActivity extends Activity {
         selectedStop = null;
         
 		stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		
+		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
     }
 	
 	@Override
@@ -185,7 +193,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadMessages(int stopId) {
-		fetchMessagesTask = new FetchMessagesTask(ApiFactory.getApi(getApplicationContext()));
+		fetchMessagesTask = new FetchMessagesTask(messageService);
 		fetchMessagesTask.execute(stopId);
 	}
 	
@@ -281,27 +289,20 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchMessagesTask extends AsyncTask<Integer, Integer, List<MultiStopMessage>> {
 
-		private BusesClientService api;
+		private MessageService messageService;
 
-		public FetchMessagesTask(BusesClientService api) {
+		public FetchMessagesTask(MessageService messageService) {
 			super();
-			this.api = api;
+			this.messageService = messageService;
 		}
 
 		@Override
 		protected List<MultiStopMessage> doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
-				return api.getStopMessages(stopId);
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return messageService.getStopMessages(stopId);
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could new load messages: " + e.getMessage());
 			}
 			return null;
 		}

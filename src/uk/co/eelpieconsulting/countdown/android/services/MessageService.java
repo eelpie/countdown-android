@@ -48,6 +48,10 @@ public class MessageService {
 			throw new ContentNotAvailableException(e);
 		}
 	}
+	
+	public List<MultiStopMessage> getStopMessages(int stopId) throws ContentNotAvailableException {
+		return getStopMessages(new int[] {stopId});
+	}
 
 	public List<MultiStopMessage> getNewMessagesFor(int[] stopIds) throws ContentNotAvailableException {
 		List<MultiStopMessage> stopMessages = getStopMessages(stopIds);
