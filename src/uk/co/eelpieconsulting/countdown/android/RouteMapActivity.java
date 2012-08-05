@@ -148,7 +148,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 		
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
-		mapView.refreshDrawableState();
+		mapView.postInvalidate();
 	}
 	
 	private void registerForLocationUpdates() {
