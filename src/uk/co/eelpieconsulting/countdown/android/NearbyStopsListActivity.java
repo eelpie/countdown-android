@@ -11,6 +11,7 @@ import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceToStopComparator;
+import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
@@ -32,9 +33,7 @@ import android.widget.TextView;
 public class NearbyStopsListActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
-
-	public static final String KNOWN_STOP_LOCATION = "knownStopLocation";
-
+	
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private TextView status;
@@ -59,7 +58,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			listNearbyStops(makeLocationForSelectedStop(selectedStop));
+			listNearbyStops(KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop));
 
 		} else {
 			registerForLocationUpdates();
@@ -149,7 +148,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			return;
 		}
 		
-		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+		if (!location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
 			status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		} else {
@@ -189,17 +188,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
-	}
-	
-	private Location makeLocationForSelectedStop(Stop stop) {
-		final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
-		stopLocation.setAccuracy(1);
-		stopLocation.setLatitude(selectedStop.getLatitude());
-		stopLocation.setLongitude(selectedStop.getLongitude());
-		Bundle extras = new Bundle();
-		extras.putSerializable("stop", stop);
-		stopLocation.setExtras(extras);
-		return stopLocation;
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
