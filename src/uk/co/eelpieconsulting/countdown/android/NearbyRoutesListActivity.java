@@ -36,7 +36,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private static final String TAG = "StopsActivity";
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
-	private static final String KNOWN_STOP_LOCATION = "knownStopLocation";
 	
 	private TextView status;
 
@@ -63,10 +62,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			final Location stopLocation = new Location("knownStopLocation");
-			stopLocation.setLatitude(selectedStop.getLatitude());
-			stopLocation.setLongitude(selectedStop.getLongitude());
-			listNearbyStops(stopLocation);
+			listNearbyStops(makeLocationForSelectedStop(selectedStop));
 
 		} else {
 			registerForLocationUpdates();
@@ -135,7 +131,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	}
 	
 	private void listNearbyStops(Location location) {
-		if (location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+		if (location.getProvider().equals(NearbyStopsListActivity.KNOWN_STOP_LOCATION)) {
 			status.setText(getString(R.string.searching_for_routes_near) + " " + StopDescriptionService.makeStopTitle(selectedStop));
 			status.setVisibility(View.VISIBLE);
 		} else {
@@ -157,7 +153,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			return;
 		}
 		
-		if (!location.getProvider().equals(KNOWN_STOP_LOCATION)) {
+		if (!location.getProvider().equals(NearbyStopsListActivity.KNOWN_STOP_LOCATION)) {
 			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		} else {
@@ -208,6 +204,18 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
+	}
+	
+	// TODO duplication
+	private Location makeLocationForSelectedStop(Stop stop) {
+		final Location stopLocation = new Location(NearbyStopsListActivity.KNOWN_STOP_LOCATION);
+		stopLocation.setAccuracy(1);
+		stopLocation.setLatitude(selectedStop.getLatitude());
+		stopLocation.setLongitude(selectedStop.getLongitude());
+		Bundle extras = new Bundle();
+		extras.putSerializable("stop", stop);
+		stopLocation.setExtras(extras);
+		return stopLocation;
 	}
 	
 	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {

@@ -33,13 +33,12 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 
 	private static final String TAG = "StopsActivity";
 
-	private static final String KNOWN_STOP_LOCATION = "knownStopLocation";	
+	public static final String KNOWN_STOP_LOCATION = "knownStopLocation";
+
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private TextView status;
-
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
-
 	private Stop selectedStop;
 	
 	@Override
@@ -55,11 +54,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
-			stopLocation.setAccuracy(1);
-			stopLocation.setLatitude(selectedStop.getLatitude());
-			stopLocation.setLongitude(selectedStop.getLongitude());
-			listNearbyStops(stopLocation);
+			listNearbyStops(makeLocationForSelectedStop(selectedStop));
 
 		} else {
 			registerForLocationUpdates();
@@ -189,6 +184,17 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
+	}
+	
+	private Location makeLocationForSelectedStop(Stop stop) {
+		final Location stopLocation = new Location(KNOWN_STOP_LOCATION);
+		stopLocation.setAccuracy(1);
+		stopLocation.setLatitude(selectedStop.getLatitude());
+		stopLocation.setLongitude(selectedStop.getLongitude());
+		Bundle extras = new Bundle();
+		extras.putSerializable("stop", stop);
+		stopLocation.setExtras(extras);
+		return stopLocation;
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {

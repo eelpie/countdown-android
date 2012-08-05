@@ -7,6 +7,7 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.NearbyStopsListActivity;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import android.app.Activity;
 import android.content.Context;
@@ -42,7 +43,12 @@ public class StopDescriptionService {
 			if (DistanceMeasuringService.distanceTo(location, stop) < 1000) {
 				description.append(NEW_LINE);
 				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
-				description.append(" metres away\n\n");
+				if (location.getProvider().equals(NearbyStopsListActivity.KNOWN_STOP_LOCATION)) {
+					final Stop selectedStop = (Stop) location.getExtras().getSerializable("stop");
+					description.append(" metres away from " + StopDescriptionService.makeStopTitle(selectedStop) + "\n\n");					 
+				} else {
+					description.append(" metres away\n\n");
+				}
 			}
 		}
 		return description.toString();
