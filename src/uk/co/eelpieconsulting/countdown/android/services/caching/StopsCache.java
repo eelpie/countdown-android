@@ -36,7 +36,7 @@ public class StopsCache {
 	}
 
 	public void cacheStops(double latitude, double longitude, int radius, List<Stop> stops) {
-		putIntoCache(stops, getCacheFilenameFor(latitude, latitude, radius));
+		putIntoCache(stops, getCacheFilenameFor(latitude, longitude, radius));
 	}
 	
 	private String getCacheFilenameFor(String route, int run) {

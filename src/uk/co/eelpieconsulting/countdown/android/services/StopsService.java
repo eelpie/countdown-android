@@ -46,7 +46,7 @@ public class StopsService {
 
 	public List<Stop> findStopsWithin(double latitude, double longitude, int radius) throws ContentNotAvailableException {
 		try {
-			final List<Stop> cachedResults = stopsCache.getStopsWithin(latitude, latitude, radius);
+			final List<Stop> cachedResults = stopsCache.getStopsWithin(latitude, longitude, radius);
 			final boolean cachedResultsAreAvailable = cachedResults != null;
 			if (cachedResultsAreAvailable) {
 				Log.i(TAG, "Returning route stops from cache");
