@@ -1,6 +1,8 @@
 package uk.co.eelpieconsulting.countdown.android.views;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -52,17 +54,20 @@ public class StopDescriptionService {
 	
 	public static String routesDescription(Set<Route> routes) {
 		final StringBuilder routesDescription = new StringBuilder();		
-		for (String routeName : filterOutDuplicateRouteNamesAtTerminals(routes)) {
+		for (String routeName : sortAndFilterOutDuplicateRouteNamesAtTerminals(routes)) {
 			routesDescription.append("[" + routeName + "] ");			
 		}
 		return routesDescription.toString().trim();
 	}
 
-	private static Set<String> filterOutDuplicateRouteNamesAtTerminals(Set<Route> routes) {
-		final Set<String> routeNames = new HashSet<String>();
+	private static List<String> sortAndFilterOutDuplicateRouteNamesAtTerminals(Set<Route> routes) {
+		final List<String> routeNames = new ArrayList<String>();
 		for (Route route : routes) {
-			routeNames.add(route.getRoute());
+			if (!routeNames.contains(route.getRoute())) {
+				routeNames.add(route.getRoute());				
+			}
 		}
+		Collections.sort(routeNames);
 		return routeNames;
 	}
 	
