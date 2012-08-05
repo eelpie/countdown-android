@@ -11,8 +11,8 @@ import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringServic
 import uk.co.eelpieconsulting.countdown.android.services.DistanceToStopComparator;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
-import uk.co.eelpieconsulting.countdown.android.views.StopClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class NearbyStopsListActivity extends Activity implements LocationListener {
@@ -41,15 +41,12 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 
 	private Stop selectedStop;
-
-	private LinearLayout stopsList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);        
+        setContentView(R.layout.stopslist);        
 		status = (TextView) findViewById(R.id.status);
-		stopsList = (LinearLayout) findViewById(R.id.stopsList);
 	}
     
 	@Override
@@ -139,9 +136,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			status.setText(getString(R.string.searching_for_stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		}
-		
-		stopsList.removeAllViews();
-		
+				
 		fetchNearbyStopsTask = new FetchNearbyStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
@@ -162,24 +157,14 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		}
 				
 		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
-		
-		for (Stop stop : stops) {			
-			if (selectedStop == null || !stop.equals(selectedStop)) {
-				final TextView stopTextView = new TextView(this.getApplicationContext());
-				
-				String stopDescription = StopDescriptionService.makeStopDescription(stop);
-				stopDescription = stopDescription + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
-			
-				stopTextView.setText(stopDescription);
-				stopTextView.setOnClickListener(new StopClicker(this, stop));
-			
-				stopsList.addView(stopTextView);				
-			}
+
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
+		for (Stop stop : stops) {
+			stopsListAdapter.add(stop);
 		}
 		
-		final TextView credit = new TextView(getApplicationContext());
-		credit.setText(getString(R.string.tfl_credit));
-		stopsList.addView(credit);
+		final ListView stopsList = (ListView) findViewById(R.id.list);
+		stopsList.setAdapter(stopsListAdapter);	
 	}
 	
 	private void registerForLocationUpdates() {
