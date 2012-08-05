@@ -60,7 +60,8 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		mapView.setBuiltInZoomControls(false);
 		mapView.setClickable(true);
 		
-		locationCircleOverlay = new LocationCircleOverlay();
+		locationCircleOverlay = new LocationCircleOverlay();		
+		mapView.getOverlays().add(locationCircleOverlay);
 	}
     
 	@Override
@@ -125,7 +126,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		}
 		
 		locationCircleOverlay.setPoint(location);
-		mapView.refreshDrawableState();
+		mapView.postInvalidate();
 		
 		boolean newLocationIsBetterEnoughToJustifyReload = currentLocation == null;	// TODO	Improves to be had here
 		if (newLocationIsBetterEnoughToJustifyReload) {
@@ -174,9 +175,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
 				
-		overlays.add(locationCircleOverlay);
-		
-		mapView.refreshDrawableState();
+		mapView.postInvalidate();		
 	}
 	
 	private void registerForLocationUpdates() {
