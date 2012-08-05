@@ -13,36 +13,43 @@ import android.widget.TextView;
 
 public class StopDescriptionService {
 	
+	private static final String NEW_LINE = "\n";
+
 	public static TextView makeStopView(Stop stop, Context context, Activity activity) {
 		final TextView stopTextView = new TextView(context);
-		stopTextView.setText(StopDescriptionService.makeStopDescription(stop) + "\n\n");
+		stopTextView.setText(StopDescriptionService.makeStopDescription(stop));
 		stopTextView.setOnClickListener(new StopClicker(activity, stop));
 		return stopTextView;
 	}
-
+	
 	public static String makeStopDescription(Stop stop) {
-		final StringBuilder description = new StringBuilder(makeStopTitle(stop) + "\n");
+		final StringBuilder description = new StringBuilder(makeStopTitle(stop));
+		description.append(NEW_LINE);
 		if (stop.getTowards() != null) {
-			description.append("Towards " + stop.getTowards() + "\n");
+			description.append("Towards ");
+			description.append(stop.getTowards());
+			description.append(NEW_LINE);
 		}
 		description.append(routesDescription(stop.getRoutes()));	
 		return description.toString();
 	}
 	
 	public static String makeStopDescription(Stop stop, Location location) {
-		String description = makeStopDescription(stop);
+		StringBuilder description = new StringBuilder(makeStopDescription(stop));
 		if (location != null) {
 			if (DistanceMeasuringService.distanceTo(location, stop) < 1000) {
-				description = description + "\n" + DistanceMeasuringService.distanceToStopDescription(location, stop) + " metres away\n\n";
+				description.append(NEW_LINE);
+				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
+				description.append(" metres away\n\n");
 			}
 		}
-		return description;
+		return description.toString();
 	}
 	
 	public static String makeStopTitle(Stop stop) {
 		return stop.getName() + (stop.getIndicator() != null ? " (" + stop.getIndicator() + ") " : "");
 	}
-
+	
 	public static String routesDescription(Set<Route> routes) {
 		final StringBuilder routesDescription = new StringBuilder();		
 		for (String routeName : filterOutDuplicateRouteNamesAtTerminals(routes)) {

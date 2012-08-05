@@ -89,7 +89,7 @@ public class RouteStopsActivity extends Activity {
 		Integer selectedPosition = null;
 		Float closestDistance = null;
 		final ListView stopsList = (ListView) findViewById(R.id.list);
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
 		int i = 0;
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);
