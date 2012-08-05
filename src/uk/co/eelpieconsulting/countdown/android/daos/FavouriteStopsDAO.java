@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;

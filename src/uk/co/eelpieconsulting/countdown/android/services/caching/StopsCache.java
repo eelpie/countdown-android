@@ -8,7 +8,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FileService;
-import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import android.content.Context;
 import android.util.Log;
 

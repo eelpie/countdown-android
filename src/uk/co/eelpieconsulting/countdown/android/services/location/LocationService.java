@@ -1,7 +1,8 @@
-package uk.co.eelpieconsulting.countdown.android.services;
+package uk.co.eelpieconsulting.countdown.android.services.location;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 import android.location.Location;
 import android.location.LocationManager;

@@ -1,4 +1,4 @@
-package uk.co.eelpieconsulting.countdown.android.services;
+package uk.co.eelpieconsulting.countdown.android.services.location;
 
 import java.text.DecimalFormat;
 
