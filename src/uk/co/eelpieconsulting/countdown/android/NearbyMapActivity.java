@@ -61,9 +61,8 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		locationCircleOverlay = new LocationCircleOverlay();		
 		mapView.getOverlays().add(locationCircleOverlay);
 		
-		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
 		stopsCache = new StopsCache(getApplicationContext());
-
+		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
 	}
     
 	@Override
@@ -203,12 +202,12 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
 
-		private StopsService stospService;
+		private StopsService stopsService;
 		private Location location;
 
 		public FetchNearbyStopsTask(StopsService stopsService) {
 			super();
-			this.stospService = stopsService;
+			this.stopsService = stopsService;
 		}
 		
 		@Override
@@ -216,7 +215,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return stospService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not find stops within: " + e.getMessage());
 			}
