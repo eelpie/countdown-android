@@ -58,8 +58,13 @@ public class MessageCache {
 		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
 
-	private String getCacheFilenameFor(int[] stopIds) {
-		return "messages.ser"; // TODO needs to be unique for given set of stop ids.
+	private String getCacheFilenameFor(int[] stopIds) {	// TODO potential max file name length issue?
+		StringBuilder filename = new StringBuilder("messages-");
+		for (int stopId : stopIds) {
+			filename.append(stopId);
+		}
+		filename.append(".ser");
+		return filename.toString();
 	}
 	
 }
