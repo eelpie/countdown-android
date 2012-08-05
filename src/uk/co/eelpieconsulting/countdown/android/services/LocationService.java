@@ -37,7 +37,7 @@ public class LocationService {
 		for (String provider : providers) {
 			Location providerLocation = locationManager.getLastKnownLocation(provider);
 			if (providerLocation != null) {
-				Log.i(TAG, "Last known location for provider " + provider + ":" + DistanceMeasuringService.makeLocationDescription(providerLocation));
+				Log.i(TAG, "Last known location for provider " + provider + ": " + DistanceMeasuringService.makeLocationDescription(providerLocation));
 				availableLocations.add(providerLocation);
 			}
 		}

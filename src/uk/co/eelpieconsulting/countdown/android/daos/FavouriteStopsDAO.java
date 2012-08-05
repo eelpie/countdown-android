@@ -105,5 +105,9 @@ public class FavouriteStopsDAO {
 			Log.e(TAG, e.getMessage());
 		}		
 	}
+
+	public boolean hasFavourites() {
+		return !getFavouriteStops().isEmpty();
+	}
 	
 }

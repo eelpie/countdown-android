@@ -57,7 +57,6 @@ public class CountdownActivity extends Activity {
 	private TextView status;
 
 	private LinearLayout stopsList;
-
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +80,12 @@ public class CountdownActivity extends Activity {
         	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
         }
         
+        if (selectedStop == null && !favouriteStopsDAO.hasFavourites()) {
+        	status.setText(R.string.no_favourites_warning);
+        	status.setVisibility(View.VISIBLE);
+        	return;
+        }
+        
         if (selectedStop == null) {
     		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         	final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);        	
@@ -88,16 +93,12 @@ public class CountdownActivity extends Activity {
 				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
 				Log.i(TAG, lastKnownLocationMessage);				
 				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
-        		
+				Log.i(TAG, "Choosing closest favourite stop based on last known location: " + selectedStop.getName());
+				        		
         	} else {
         		selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
+        		Log.i(TAG, "As no last known position is available defaulting to first favourite stop: " + selectedStop.getName());
         	}
-        }
-        
-        if (selectedStop == null) {
-        	status.setText(R.string.no_favourites_warning);
-        	status.setVisibility(View.VISIBLE);
-        	return;
         }
         
 		final String title = StopDescriptionService.makeStopTitle(selectedStop);
