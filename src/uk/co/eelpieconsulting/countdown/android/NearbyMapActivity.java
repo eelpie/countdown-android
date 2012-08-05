@@ -8,6 +8,7 @@ import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableExce
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -71,11 +72,10 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			final Location stopLocation = new Location("knownStopLocation");
-			stopLocation.setLatitude(selectedStop.getLatitude());
-			stopLocation.setLongitude(selectedStop.getLongitude());
+			final Location stopLocation = KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop);			
+			zoomMapToLocation(stopLocation);
 			listNearbyStops(stopLocation);
-
+			
 		} else {
 			registerForLocationUpdates();
 		}
@@ -122,8 +122,7 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		status.setVisibility(View.VISIBLE);
 		
 		if (currentLocation == null) {
-			mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-			mapView.getController().setZoom(17);		
+			zoomMapToLocation(location);		
 		}
 		
 		locationCircleOverlay.setPoint(location);
@@ -198,6 +197,11 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
+	}
+	
+	private void zoomMapToLocation(Location location) {
+		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
+		mapView.getController().setZoom(17);
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
