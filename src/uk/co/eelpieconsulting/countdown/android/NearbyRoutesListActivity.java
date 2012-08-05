@@ -3,15 +3,14 @@ package uk.co.eelpieconsulting.countdown.android;
 import java.util.Collections;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.RouteNameComparator;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.RoutesService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.RoutesCache;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
@@ -37,15 +36,15 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
-	private TextView status;
-
+	private RouteNameComparator routeNameComparator;
+	private RoutesService routesService;
+	
 	private FetchNearbyRoutesTask fetchNearbyRoutesTask;
 
+	private TextView status;
 	private Stop selectedStop;
-
 	private LinearLayout routesList;
 
-	private RouteNameComparator routeNameComparator;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		status = (TextView) findViewById(R.id.status);
 		routesList = (LinearLayout) findViewById(R.id.stopsList);
 		routeNameComparator = new RouteNameComparator();
+
+		routesService = new RoutesService(ApiFactory.getApi(getApplicationContext()), new RoutesCache(getApplicationContext()));
 	}
     
 	@Override
@@ -141,7 +142,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		routesList.removeAllViews();
 		
-		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(ApiFactory.getApi(getApplicationContext()));
+		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(routesService);
 		fetchNearbyRoutesTask.execute(location);		
 		return;		
 	}
@@ -220,12 +221,12 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	
 	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
 
-		private BusesClientService api;
+		private RoutesService routesService;
 		private Location location;
 
-		public FetchNearbyRoutesTask(BusesClientService api) {
+		public FetchNearbyRoutesTask(RoutesService routesService) {
 			super();
-			this.api = api;
+			this.routesService = routesService;
 		}
 		
 		@Override
@@ -238,14 +239,9 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return api.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);	// TODO migrate to cached service			
-			} catch (HttpFetchException e) {
-				throw new RuntimeException(e);
-			} catch (ParsingException e) {
-				throw new RuntimeException(e);
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);	// TODO migrate to cached service			
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not load routes: " + e.getMessage());
 			}
 			return null;
 		}		

@@ -6,54 +6,42 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.countdown.android.daos.FileService;
 import android.content.Context;
 import android.util.Log;
 
-public class StopsCache {
+public class RoutesCache {
 	
-	private static final String TAG = "StopsCache";
+	private static final String TAG = "RoutesCache";
 	
 	private static final long ONE_DAY = 1 * 24 * 60 * 60 * 1000;
 
 	private Context context;
 	
-	public StopsCache(Context context) {
+	public RoutesCache(Context context) {
 		this.context = context;
 	}
 	
-	public List<Stop> getRouteStops(String route, int run) {
-		return getFromCache(getCacheFilenameFor(route, run));
-	}
-	
-	public void cacheStops(String route, int run, List<Stop> stops) {
-		putIntoCache(stops, getCacheFilenameFor(route, run));
-	}
-
-	public List<Stop> getStopsWithin(double latitude, double longitude,  int radius) {
+	public List<Route> getRoutesNear(double latitude, double longitude,  int radius) {
 		return getFromCache(getCacheFilenameFor(latitude, longitude, radius));
 	}
 
-	public void cacheStops(double latitude, double longitude, int radius, List<Stop> stops) {
-		putIntoCache(stops, getCacheFilenameFor(latitude, latitude, radius));
-	}
-	
-	private String getCacheFilenameFor(String route, int run) {
-		return "routestops-" + route + "-" + run;
+	public void cacheRoutes(double latitude, double longitude, int radius, List<Route> routes) {
+		putIntoCache(routes, getCacheFilenameFor(latitude, longitude, radius));
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
-		return "stopsnear-" + latitude + "-" + longitude + "-" + radius;
+		return "routesnear-" + latitude + "-" + longitude + "-" + radius;
 	}
 	
-	private List<Stop> getFromCache(final String cacheFilename) {
+	private List<Route> getFromCache(final String cacheFilename) {
 		Log.i(TAG, "Looking for cache file: " + cacheFilename);
 		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename, ONE_DAY)) {
 			try {
 				FileInputStream fileInputStream = FileService.getFileInputStream(context, cacheFilename);
 				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-				List<Stop> readObject = (List<Stop>) objectInputStream.readObject();
+				List<Route> readObject = (List<Route>) objectInputStream.readObject();
 				objectInputStream.close();
 				fileInputStream.close();
 				return readObject;
@@ -66,12 +54,12 @@ public class StopsCache {
 		return null;
 	}
 	
-	private void putIntoCache(List<Stop> stops, final String cacheFilename) {
+	private void putIntoCache(List<Route> routes, final String cacheFilename) {
 		Log.d(TAG, "Writing to disk: " + cacheFilename);
 		try {
 			FileOutputStream fileOutputStream = FileService.getFileOutputStream(context, cacheFilename);
 			ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
-			out.writeObject(stops);
+			out.writeObject(routes);
 			out.close();
 
 		} catch (Exception e) {
