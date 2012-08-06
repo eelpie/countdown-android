@@ -31,11 +31,13 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 	
 	private FetchUnreadMessagesTask fetchUnreadMessagesTask;
 
+	private MessageService messageService;
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "Received alarm; checking for new alert messages");
 		
-		final MessageService messageService = new MessageService(ApiFactory.getApi(context), new MessageCache(context), new SeenMessagesDAO(context));
+		messageService = new MessageService(ApiFactory.getApi(context), new MessageCache(context), new SeenMessagesDAO(context));
 		final FavouriteStopsDAO favouriteStopsDAO = FavouriteStopsDAO.get(context);
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		
@@ -68,6 +70,8 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);		
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		notificationManager.notify(AlertsActivity.NOTIFICATION_ID, notification);
+		
+		messageService.markAsSeen(messages);		
 	}
 	
 	private int[] getIdsFrom(final Set<Stop> favouriteStops) {

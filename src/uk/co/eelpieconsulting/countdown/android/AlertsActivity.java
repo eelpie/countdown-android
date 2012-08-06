@@ -134,9 +134,7 @@ public class AlertsActivity extends Activity {
 		
 		final TextView credit = new TextView(getApplicationContext());
 		credit.setText(getString(R.string.tfl_credit));
-		stopsList.addView(credit);
-		
-		messageService.markAsSeen(messages);		
+		stopsList.addView(credit);		
 	}
 	
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {
