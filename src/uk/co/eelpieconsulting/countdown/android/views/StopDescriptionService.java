@@ -7,6 +7,7 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import android.app.Activity;
@@ -64,6 +65,17 @@ public class StopDescriptionService {
 			routesDescription.append("[" + routeName + "] ");			
 		}
 		return routesDescription.toString().trim();
+	}
+	
+	public static String secondsToMinutes(long estimatedWait, Context context) {
+		final long minutes = estimatedWait / 60;
+		if (minutes == 0) {
+			return  context.getString(R.string.due);
+		}
+		if (minutes == 1) {
+			return "1 " + context.getString(R.string.minute);
+		}
+		return minutes + " " +  context.getString(R.string.minutes);
 	}
 
 	private static List<String> sortAndFilterOutDuplicateRouteNamesAtTerminals(Set<Route> routes) {

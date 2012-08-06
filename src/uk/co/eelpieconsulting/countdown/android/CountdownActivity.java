@@ -223,7 +223,7 @@ public class CountdownActivity extends Activity {
 		routeTextView.setText(arrival.getRoute().getRoute());			
 		
 		final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
-		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + secondsToMinutes(arrival));
+		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + StopDescriptionService.secondsToMinutes(arrival.getEstimatedWait(), getApplicationContext()));
 		
 		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop, null));
 		return arrivalView;
@@ -241,17 +241,6 @@ public class CountdownActivity extends Activity {
 		final TextView credit = new TextView(getApplicationContext());
 		credit.setText(getString(R.string.tfl_credit));
 		stopsList.addView(credit);
-	}
-	
-	private String secondsToMinutes(Arrival arrival) {
-		final long minutes = arrival.getEstimatedWait() / 60;
-		if (minutes == 0) {
-			return  getString(R.string.due);
-		}
-		if (minutes == 1) {
-			return "1 " + getString(R.string.minute);
-		}
-		return minutes + " " +  getString(R.string.minutes);
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
