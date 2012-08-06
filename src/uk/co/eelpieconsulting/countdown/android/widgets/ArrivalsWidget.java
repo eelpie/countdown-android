@@ -51,7 +51,6 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		remoteWidgetView.setOnClickPendingIntent(R.id.WidgetItemLayout, pendingIntent);
 		
 		setClosestStopTitle(context, remoteWidgetView, getClosestFavouriteStop(context));
-		remoteWidgetView.setTextViewText(R.id.arrivals, "");
 		
 		AppWidgetManager manager = AppWidgetManager.getInstance(context);	
 		if (manager != null) {
@@ -64,6 +63,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 			remoteWidgetView.setTextViewText(R.id.title, StopDescriptionService.makeStopTitle(closestFavouriteStop));
 		} else {
 			remoteWidgetView.setTextViewText(R.id.title, context.getString(R.string.no_favourites_warning));			
+			remoteWidgetView.setTextViewText(R.id.arrivals, "");
 		}
 	}
 
