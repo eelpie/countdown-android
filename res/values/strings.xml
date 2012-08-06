@@ -31,5 +31,6 @@
   	<string name="stop">stop</string>
     <string name="stops">stops</string>
     <string name="searching">Searching for stops</string>      
-    <string name="tfl_credit">Data supplied by Transport for London.</string>  	
+    <string name="tfl_credit">Data supplied by Transport for London.</string>
+  	<string name="widget_name">Arrivals.</string>
 </resources>
