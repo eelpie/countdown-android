@@ -11,6 +11,7 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.updates.AlertCheckerAlarmSetter;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
@@ -20,6 +21,8 @@ public class FavouriteStopsDAO {
 	private static final String TAG = "FavouriteStopsDAO";
 	
 	private static final String FAVOURITE_STOPS_FILENAME = "favourite-stops.ser";
+
+	private static final long NOW = 5000;
 	
 	private static FavouriteStopsDAO dao;
 
@@ -59,6 +62,9 @@ public class FavouriteStopsDAO {
 		Set<Stop> favouriteStops = getFavouriteStops();
 		favouriteStops.add(stop);
 		saveFavouriteStops(favouriteStops);
+		
+		AlertCheckerAlarmSetter alertCheckerAlarmSetter = new AlertCheckerAlarmSetter();
+		alertCheckerAlarmSetter.setSyncAlarm(context, NOW);
 	}
 	
 	public void removeFavourite(Stop stop) {

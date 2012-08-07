@@ -45,7 +45,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		fetchUnreadMessagesTask.execute(favouriteStops);
 		
 		AlertCheckerAlarmSetter alarmSetter = new AlertCheckerAlarmSetter();
-		alarmSetter.setSyncAlarm(context);
+		alarmSetter.setRepeatAlarm(context);
 	}
 
 	private void sendNotification(Context context, List<MultiStopMessage> messages) {

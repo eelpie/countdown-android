@@ -24,7 +24,7 @@ public class AlertCheckerAlarmSetter {
 		alarmManager.setRepeating(AlarmManager.RTC, timeInMillis, TEN_MINUTES, pi);
 	}
 	
-	public void setSyncAlarm(Context context) {
+	public void setRepeatAlarm(Context context) {
 		setSyncAlarm(context, TEN_MINUTES);
 	}
 	
