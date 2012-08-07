@@ -22,13 +22,6 @@ public class BusesClientService {
 		this.networkStatusService = networkStatusService;
 	}
 
-	public List<MultiStopMessage> getStopMessages(int stopId) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
-		if (networkStatusService.isConnectionAvailable()) {
-			return busesClient.getStopMessages(stopId);
-		}
-		throw new NetworkNotAvailableException();
-	}
-
 	public StopBoard getStopBoard(int stopId) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getStopBoard(stopId);

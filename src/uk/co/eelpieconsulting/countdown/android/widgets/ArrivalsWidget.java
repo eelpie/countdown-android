@@ -1,17 +1,15 @@
 package uk.co.eelpieconsulting.countdown.android.widgets;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.CountdownActivity;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.services.ArrivalsService;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -19,6 +17,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -30,13 +29,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 	private static final String TAG = "ArrivalsWidget";
 	
 	public static String WIDGET_CLICK = "ArrivalsWidgetClick";
-		
-	@Override
-	public void onEnabled(Context context) {
-		// TODO Auto-generated method stub
-		super.onEnabled(context);
-	}
-
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {		
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -67,15 +60,20 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		}
 	}
 
+	// TODO This looks like duplication with the main activity
 	private Stop getClosestFavouriteStop(Context context) {
 		FavouriteStopsDAO favouriteStopsDAO = new FavouriteStopsDAO(context);
 		if (favouriteStopsDAO.hasFavourites()) {
 			LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-			return favouriteStopsDAO.getClosestFavouriteStopTo(LocationService.getBestLastKnownLocation(locationManager));
+			final Location bestLastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);
+			if (bestLastKnownLocation != null) {
+				return favouriteStopsDAO.getClosestFavouriteStopTo(bestLastKnownLocation);
+			}
+			return favouriteStopsDAO.getFirstFavouriteStop();
 		}
 		return null;
 	}
-		
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);		
@@ -88,7 +86,9 @@ public class ArrivalsWidget extends AppWidgetProvider {
 			
 			if (closestFavouriteStop != null) {
 				Log.d(TAG, "Loading arrivals for: " + closestFavouriteStop.getName());
-				FetchArrivalsTask fetchArrivalsTask = new FetchArrivalsTask(ApiFactory.getApi(context), context);
+				
+				final ArrivalsService arrivalsService = new ArrivalsService(ApiFactory.getApi(context));
+				FetchArrivalsTask fetchArrivalsTask = new FetchArrivalsTask(arrivalsService, context);
 				fetchArrivalsTask.execute(closestFavouriteStop.getId());
 					
 			}
@@ -128,12 +128,12 @@ public class ArrivalsWidget extends AppWidgetProvider {
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
 
-		private BusesClientService api;
+		private ArrivalsService arrivalsService;
 		private Context context;
 
-		public FetchArrivalsTask(BusesClientService api, Context context) {
+		public FetchArrivalsTask(ArrivalsService arrivalsService, Context context) {
 			super();
-			this.api = api;
+			this.arrivalsService = arrivalsService;
 			this.context = context;
 		}
 
@@ -141,20 +141,13 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		protected StopBoard doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
-				return api.getStopBoard(stopId);
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return arrivalsService.getStopBoard(stopId);
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could new load messages: " + e.getMessage());
 			}
 			return null;
 		}
-
+		
 		@Override
 		protected void onPostExecute(StopBoard stopboard) {
 			renderStopboard(stopboard, context);

@@ -2,23 +2,20 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
+import uk.co.eelpieconsulting.countdown.android.services.ArrivalsService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
@@ -44,7 +41,6 @@ public class CountdownActivity extends Activity {
 	
 	private static final String TAG = "CountdownActivity";
 	
-	private BusesClientService api;
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private MessageService messageService;
 	
@@ -57,6 +53,8 @@ public class CountdownActivity extends Activity {
 	private TextView status;
 
 	private LinearLayout stopsList;
+
+	private ArrivalsService arrivalsService;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +62,7 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.stops);
         status = (TextView) findViewById(R.id.status);
         
-        api = ApiFactory.getApi(getApplicationContext());
+        arrivalsService = new ArrivalsService((ApiFactory.getApi(getApplicationContext())));
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
         
@@ -189,7 +187,7 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadArrivals(int stopId) {
-		fetchArrivalsTask = new FetchArrivalsTask(api);
+		fetchArrivalsTask = new FetchArrivalsTask(arrivalsService);
 		fetchArrivalsTask.execute(stopId);
 	}
 	
@@ -245,27 +243,20 @@ public class CountdownActivity extends Activity {
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
 
-		private BusesClientService api;
+		private ArrivalsService arrivalsService;
 
-		public FetchArrivalsTask(BusesClientService api) {
+		public FetchArrivalsTask(ArrivalsService arrivalsService) {
 			super();
-			this.api = api;
+			this.arrivalsService = arrivalsService;
 		}
 
 		@Override
 		protected StopBoard doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
-				return api.getStopBoard(stopId);
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NetworkNotAvailableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return arrivalsService.getStopBoard(stopId);
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Arrivals data was not available: " + e.getMessage());
 			}
 			return null;
 		}
