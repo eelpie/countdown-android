@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/favourites"
+        android:title="Favourites">
+    </item>
+    <item
+        android:id="@+id/nearby"
+        android:title="Near by">
+    </item>
+    <item
+        android:id="@+id/search"
+        android:title="Search">
+    </item>
+
+</menu>

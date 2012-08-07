@@ -21,6 +21,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -71,28 +72,28 @@ public class AlertsActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.favourites);
-		menu.add(0, 4, 0, R.string.near_me);		
-		menu.add(0, 7, 0, R.string.search);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.alerts_menu, menu);
 		return true;
 	}
 	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {		
+		Log.d(TAG, "Clicked: " + item.getItemId());		
 		switch (item.getItemId()) {
-		case 1:
-			this.startActivity(new Intent(this, FavouritesActivity.class));
-			return true;
-			
-		case 4:
-			this.startActivity(new Intent(this, NearbyTabActivity.class));
-			return true;
-			
-		case 7:
-			this.startActivity(new Intent(this, SearchActivity.class));
-			return true;
-		}
-		return false;
+			case R.id.favourites:
+				this.startActivity(new Intent(this, FavouritesActivity.class));
+				return true;
+				
+			case R.id.nearby:
+				this.startActivity(new Intent(this, NearbyTabActivity.class));
+				return true;
+				
+			case R.id.search:
+				this.startActivity(new Intent(this, SearchActivity.class));
+				return true;
+			}
+			return false;
 	}
 	
 	private void showAlerts() {
