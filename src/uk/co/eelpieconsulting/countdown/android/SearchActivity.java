@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -80,14 +81,15 @@ public class SearchActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.favourites);
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.search_menu, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case 1:
+		case R.id.favourites:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
 		}

@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -43,24 +44,23 @@ public class FavouritesActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 4, 0, R.string.near_me);	
-		menu.add(0, 6, 0, R.string.alerts);
-		menu.add(0, 7, 0, R.string.search);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.favourites_menu, menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {			
-		case 4:
+		case R.id.nearby:
 			this.startActivity(new Intent(this, NearbyTabActivity.class));
 			return true;	
 						
-		case 6:
+		case R.id.alerts:
 			this.startActivity(new Intent(this, AlertsActivity.class));
 			return true;
 			
-		case 7:
+		case R.id.search:
 			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}

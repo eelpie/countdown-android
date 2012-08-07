@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -49,12 +50,13 @@ public class CountdownActivity extends Activity {
 	
 	private Stop selectedStop;
 
-	private MenuItem favouriteMenuItem;
 	private TextView status;
 
 	private LinearLayout stopsList;
 
 	private ArrivalsService arrivalsService;
+
+	private Menu menu;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,67 +121,72 @@ public class CountdownActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.favourites);
-		menu.add(0, 4, 0, R.string.near_me);
-		if (selectedStop != null) {
-			menu.add(0, 5, 0, R.string.near_this);
-			favouriteMenuItem = menu.add(0, 2, 0, chooseFavouriteAction());
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.stop_menu, menu);
+		
+		if (selectedStop == null) {
+			menu.findItem(R.id.addfavourite).setVisible(false);
+			menu.findItem(R.id.removefavourite).setVisible(false);
+		} else {
+			chooseFavouriteAction(menu);
 		}
-		menu.add(0, 6, 0, R.string.alerts);
-		menu.add(0, 7, 0, R.string.search);
-		return true;
+		
+		this.menu = menu;
+		return true;	
 	}
 
-	private int chooseFavouriteAction() {
-		int favouriteAction = R.string.add_to_favourites;
-		if (selectedStop != null) {
-			if (favouriteStopsDAO.isFavourite(selectedStop)) {
-				favouriteAction = R.string.remove_favourite;				
-			}		
-		}
-		return favouriteAction;
+	private void chooseFavouriteAction(Menu menu) {	
+		final boolean isFavourite = favouriteStopsDAO.isFavourite(selectedStop);
+		menu.findItem(R.id.addfavourite).setVisible(!isFavourite);
+		menu.findItem(R.id.removefavourite).setVisible(isFavourite);			
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case 1:
+		case R.id.favourites:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
 
-		case 2:
+		case R.id.addfavourite:
+			if (selectedStop != null) {
+				if (!favouriteStopsDAO.isFavourite(selectedStop)) {					
+					favouriteStopsDAO.addFavourite(selectedStop);
+					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " added to favourites", Toast.LENGTH_SHORT);
+					toast.setGravity(Gravity.CENTER, 0, 0);
+					toast.show();
+					chooseFavouriteAction(menu);
+				}
+			}			
+			return true;
+			
+		case R.id.removefavourite:
 			if (selectedStop != null) {
 				if (favouriteStopsDAO.isFavourite(selectedStop)) {
 					favouriteStopsDAO.removeFavourite(selectedStop);
 					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " removed from favourites", Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER, 0, 0);
 					toast.show();
-					
-				} else {
-					favouriteStopsDAO.addFavourite(selectedStop);
-					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " added to favourites", Toast.LENGTH_SHORT);
-					toast.setGravity(Gravity.CENTER, 0, 0);
-					toast.show();
+					chooseFavouriteAction(menu);					
 				}
 			}			
-			favouriteMenuItem.setTitle(getString(chooseFavouriteAction()));
 			return true;
 			
-		case 4:
+		case R.id.nearby:
 			this.startActivity(new Intent(this, NearbyTabActivity.class));
 			return true;
 			
-		case 5:
+		case R.id.nearthis:
 			Intent intent = new Intent(this, NearThisTabActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;
 						
-		case 6:
+		case R.id.alerts:
 			this.startActivity(new Intent(this, AlertsActivity.class));
 			return true;
 			
-		case 7:
+		case R.id.search:
 			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}

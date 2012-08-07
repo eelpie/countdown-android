@@ -24,6 +24,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -92,24 +93,23 @@ public class NearbyMapActivity extends MapActivity implements LocationListener {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 1, 0, R.string.favourites);		
-		menu.add(0, 6, 0, R.string.alerts);
-		menu.add(0, 7, 0, R.string.search);
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.nearby_menu, menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case 1:
+		case R.id.favourites:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;	
 			
-		case 6:
+		case R.id.alerts:
 			this.startActivity(new Intent(this, AlertsActivity.class));
 			return true;
 			
-		case 7:
+		case R.id.search:
 			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
 		}

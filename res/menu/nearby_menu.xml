@@ -6,9 +6,9 @@
 		>
     </item>
     <item
-        android:id="@+id/nearby"
-        android:title="Near by"
-        >
+        android:id="@+id/alerts"
+        android:title="Alerts"
+		>
     </item>
     <item
         android:id="@+id/search"

@@ -1,0 +1,37 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/favourites"
+        android:title="Favourites"
+		>
+    </item>
+    <item
+        android:id="@+id/nearby"
+        android:title="Near by"
+        >
+    </item>
+      <item
+        android:id="@+id/nearthis"
+        android:title="Near this"
+        >
+    </item>
+     <item
+        android:id="@+id/addfavourite"
+        android:title="Add favourite"
+		>
+    </item>
+     <item
+        android:id="@+id/removefavourite"
+        android:title="Remove favourite"
+		>
+    </item>    
+    <item
+        android:id="@+id/alerts"
+        android:title="Alerts">        
+    </item>
+    <item
+        android:id="@+id/search"
+        android:title="Search">        
+    </item>
+
+</menu>
