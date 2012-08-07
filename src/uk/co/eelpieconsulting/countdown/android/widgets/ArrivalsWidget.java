@@ -87,7 +87,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 			if (closestFavouriteStop != null) {
 				Log.d(TAG, "Loading arrivals for: " + closestFavouriteStop.getName());
 				
-				final ArrivalsService arrivalsService = new ArrivalsService(ApiFactory.getApi(context));
+				final ArrivalsService arrivalsService = ApiFactory.getArrivalsService(context);
 				FetchArrivalsTask fetchArrivalsTask = new FetchArrivalsTask(arrivalsService, context);
 				fetchArrivalsTask.execute(closestFavouriteStop.getId());
 					

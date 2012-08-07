@@ -62,7 +62,7 @@ public class CountdownActivity extends Activity {
         setContentView(R.layout.stops);
         status = (TextView) findViewById(R.id.status);
         
-        arrivalsService = new ArrivalsService((ApiFactory.getApi(getApplicationContext())));
+        arrivalsService = ApiFactory.getArrivalsService(getApplicationContext());
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
         
