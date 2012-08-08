@@ -47,16 +47,13 @@ public class CountdownActivity extends Activity {
 	
 	private FetchArrivalsTask fetchArrivalsTask;
 	private FetchMessagesTask fetchMessagesTask;
-	
-	private Stop selectedStop;
-
-	private TextView status;
-
-	private LinearLayout stopsList;
-
 	private ArrivalsService arrivalsService;
-
+	
+	private TextView status;
+	private LinearLayout stopsList;
 	private Menu menu;
+
+	private Stop selectedStop;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,38 +68,17 @@ public class CountdownActivity extends Activity {
 		stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
+		
+		populateSelectedStop();
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
-        	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-        }
-        
-        if (selectedStop == null && !favouriteStopsDAO.hasFavourites()) {
-        	status.setText(R.string.no_favourites_warning);
-        	status.setVisibility(View.VISIBLE);
-        	return;
-        }
-        
-        if (selectedStop == null) {
-    		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        	final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);        	
-        	if (lastKnownLocation != null) {
-				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);				
-				Log.i(TAG, lastKnownLocationMessage);				
-				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
-				Log.i(TAG, "Choosing closest favourite stop based on last known location: " + selectedStop.getName());
-				        		
-        	} else {
-        		selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
-        		Log.i(TAG, "As no last known position is available defaulting to first favourite stop: " + selectedStop.getName());
-        	}
-        }
-        
+		
 		final String title = StopDescriptionService.makeStopTitle(selectedStop);
 		getWindow().setTitle(title);
+		
 		status.setText("Loading arrivals for stop: " + title);
 		status.setVisibility(View.VISIBLE);
 		loadArrivals(selectedStop.getId());
@@ -120,30 +96,36 @@ public class CountdownActivity extends Activity {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {		
 		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.stop_menu, menu);
+		inflater.inflate(R.menu.stop_menu, menu);		
+		this.menu = menu;
 		
+		setupFavouriteMenuOptions(menu, selectedStop);
+		return true;	
+	}
+
+	private void setupFavouriteMenuOptions(Menu menu, Stop selectedStop) {		
 		if (selectedStop == null) {
 			menu.findItem(R.id.addfavourite).setVisible(false);
 			menu.findItem(R.id.removefavourite).setVisible(false);
 		} else {
-			chooseFavouriteAction(menu);
+			final boolean isFavourite = favouriteStopsDAO.isFavourite(selectedStop);
+			menu.findItem(R.id.addfavourite).setVisible(!isFavourite);
+			menu.findItem(R.id.removefavourite).setVisible(isFavourite);
 		}
-		
-		this.menu = menu;
-		return true;	
-	}
-
-	private void chooseFavouriteAction(Menu menu) {	
-		final boolean isFavourite = favouriteStopsDAO.isFavourite(selectedStop);
-		menu.findItem(R.id.addfavourite).setVisible(!isFavourite);
-		menu.findItem(R.id.removefavourite).setVisible(isFavourite);			
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		
+		case R.id.refresh:
+			if (selectedStop != null) {
+				loadArrivals(selectedStop.getId());
+			}
+			return true;
+			
 		case R.id.favourites:
 			this.startActivity(new Intent(this, FavouritesActivity.class));
 			return true;
@@ -152,10 +134,10 @@ public class CountdownActivity extends Activity {
 			if (selectedStop != null) {
 				if (!favouriteStopsDAO.isFavourite(selectedStop)) {					
 					favouriteStopsDAO.addFavourite(selectedStop);
-					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " added to favourites", Toast.LENGTH_SHORT);
+					final Toast toast = Toast.makeText(getApplicationContext(), StopDescriptionService.makeStopTitle(selectedStop) + " added to favourites", Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER, 0, 0);
 					toast.show();
-					chooseFavouriteAction(menu);
+					setupFavouriteMenuOptions(menu, selectedStop);
 				}
 			}			
 			return true;
@@ -164,10 +146,10 @@ public class CountdownActivity extends Activity {
 			if (selectedStop != null) {
 				if (favouriteStopsDAO.isFavourite(selectedStop)) {
 					favouriteStopsDAO.removeFavourite(selectedStop);
-					final Toast toast = Toast.makeText(getApplicationContext(), selectedStop.getName() + " removed from favourites", Toast.LENGTH_SHORT);
+					final Toast toast = Toast.makeText(getApplicationContext(), StopDescriptionService.makeStopTitle(selectedStop) + " removed from favourites", Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER, 0, 0);
 					toast.show();
-					chooseFavouriteAction(menu);					
+					setupFavouriteMenuOptions(menu, selectedStop);					
 				}
 			}			
 			return true;
@@ -194,6 +176,8 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void loadArrivals(int stopId) {
+		stopsList.removeAllViews();
+		
 		fetchArrivalsTask = new FetchArrivalsTask(arrivalsService);
 		fetchArrivalsTask.execute(stopId);
 	}
@@ -204,7 +188,6 @@ public class CountdownActivity extends Activity {
 	}
 	
 	private void renderStopboard(StopBoard stopboard) {
-		stopsList.removeAllViews();
 		if (stopboard == null) {
 			status.setText("Arrivals could not be loaded"); // TODO why?
 			status.setVisibility(View.VISIBLE);
@@ -246,6 +229,33 @@ public class CountdownActivity extends Activity {
 		final TextView credit = new TextView(getApplicationContext());
 		credit.setText(getString(R.string.tfl_credit));
 		stopsList.addView(credit);
+	}
+	
+	private void populateSelectedStop() {
+		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+		}
+
+		if (selectedStop == null && !favouriteStopsDAO.hasFavourites()) {
+			status.setText(R.string.no_favourites_warning);
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+
+		if (selectedStop == null) {
+			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+			final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);
+			if (lastKnownLocation != null) {
+				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);
+				Log.i(TAG, lastKnownLocationMessage);
+				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
+				Log.i(TAG, "Choosing closest favourite stop based on last known location: " + selectedStop.getName());
+
+			} else {
+				selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
+				Log.i(TAG, "As no last known position is available defaulting to first favourite stop: " + selectedStop.getName());
+			}
+		}
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
