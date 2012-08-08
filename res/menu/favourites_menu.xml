@@ -3,6 +3,8 @@
     <item
         android:id="@+id/nearby"
         android:title="Near by"
+        android:icon="@drawable/ic_action_locate"
+       	android:showAsAction="ifRoom"        
         >
     </item>
     <item
@@ -12,7 +14,10 @@
     </item>
     <item
         android:id="@+id/search"
-        android:title="Search">        
+        android:title="Search"
+       	android:icon="@drawable/ic_action_search"
+       	android:showAsAction="ifRoom"        
+        >        
     </item>
 
 </menu>

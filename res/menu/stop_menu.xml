@@ -18,11 +18,15 @@
      <item
         android:id="@+id/addfavourite"
         android:title="Add favourite"
+        android:icon="@drawable/ic_action_star"
+       	android:showAsAction="ifRoom"     
 		>
     </item>
      <item
         android:id="@+id/removefavourite"
         android:title="Remove favourite"
+        android:icon="@drawable/ic_action_star"
+       	android:showAsAction="ifRoom"     
 		>
     </item>    
     <item
