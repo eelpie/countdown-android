@@ -8,19 +8,19 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
-import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class SearchActivity extends Activity {
@@ -28,14 +28,16 @@ public class SearchActivity extends Activity {
 	private static final String TAG = "SearchActivity";
 	
 	private TextView status;
+	private ListView stopsList;
 
 	private FetchSearchResultsTask fetchSearchResultsTask;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.stops);
+		setContentView(R.layout.stopslist);
         status = (TextView) findViewById(R.id.status);
+		stopsList = (ListView) findViewById(R.id.list);
 	}
 	
 	@Override
@@ -68,15 +70,22 @@ public class SearchActivity extends Activity {
 	}
 	
 	private void showStops(List<Stop> stops) {
+		if (stops == null) {
+			status.setText("Search results could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 		status.setText("Found " + stops.size() + " " + (stops.size() != 1 ? "stops" : "stop"));
 		status.setVisibility(View.VISIBLE);
-		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();
+				
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null);
 		for (Stop stop : stops) {
-			Log.i(TAG, "Found: " + stop.toString());
-			stopsList.addView(StopDescriptionService.makeStopView(stop, getApplicationContext(), this));
+			stopsListAdapter.add(stop);			
 		}
+		
+		stopsList.setAdapter(stopsListAdapter);	
+		stopsList.setVisibility(View.VISIBLE);
 	}
 	
 	@Override
@@ -110,7 +119,7 @@ public class SearchActivity extends Activity {
 			fetchSearchResultsTask = this;
 			final String query = params[0];
 			try {				
-				return busesClientService.searchStops(query);	// TODO move to caching service
+				return busesClientService.searchStops(query);	// TODO move to stops service
 				
 			} catch (HttpFetchException e) {
 				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
