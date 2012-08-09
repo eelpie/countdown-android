@@ -76,12 +76,14 @@ public class CountdownActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		
-		final String title = StopDescriptionService.makeStopTitle(selectedStop);
-		getWindow().setTitle(title);
+		if (selectedStop != null) {
+			final String title = StopDescriptionService.makeStopTitle(selectedStop);
+			getWindow().setTitle(title);
 		
-		status.setText("Loading arrivals for stop: " + title);
-		status.setVisibility(View.VISIBLE);
-		loadArrivals(selectedStop.getId());
+			status.setText("Loading arrivals for stop: " + title);
+			status.setVisibility(View.VISIBLE);
+			loadArrivals(selectedStop.getId());
+		}
 	}
 	
 	@Override

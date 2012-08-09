@@ -18,7 +18,8 @@
                         
         <activity
             android:label="@string/app_name"
-            android:name=".CountdownActivity" >
+            android:name=".StartupActivity" 
+            android:noHistory="true">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -50,7 +51,8 @@
         <activity android:name="RouteMapActivity"></activity>
         <activity android:name="NearbyRoutesListActivity"></activity>
         <activity android:name=".NearThisTabActivity"></activity>
-        
+      	<activity android:name=".CountdownActivity"></activity>
+                
        	<receiver android:name=".widgets.ArrivalsWidget" android:label="@string/widget_name">
         	<intent-filter>
             	<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -24,6 +24,7 @@ public class FavouritesActivity extends Activity {
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private StopNameComparator stopNameComparator;
 	private TextView status;
+	private ListView stopsList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,12 +34,16 @@ public class FavouritesActivity extends Activity {
 		stopNameComparator = new StopNameComparator();
         
         status = (TextView) findViewById(R.id.status);
+		stopsList = (ListView) findViewById(R.id.list);
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
 		getWindow().setTitle(getString(R.string.favourites));
+		status.setVisibility(View.GONE);
+		stopsList.setVisibility(View.GONE);
+		
 		showFavourites();
 	}
 	
@@ -67,7 +72,7 @@ public class FavouritesActivity extends Activity {
 		return false;
 	}
 	
-	private void showFavourites() {
+	private void showFavourites() {		
 		Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		if (favouriteStops.isEmpty()) {
 			status.setText(R.string.no_favourites_warning);
@@ -86,8 +91,8 @@ public class FavouritesActivity extends Activity {
 			stopsListAdapter.add(stop);
 		}
 		
-		final ListView stopsList = (ListView) findViewById(R.id.list);
 		stopsList.setAdapter(stopsListAdapter);	
+		stopsList.setVisibility(View.VISIBLE);
 	}
 	
 }
