@@ -22,7 +22,7 @@
   	<string name="towards">Towards</string>    
     <string name="add_to_favourites">Add to favourites</string>    
     <string name="remove_favourite">Remove favourite</string>
-   	<string name="search_hint">Stop identifer</string>
+   	<string name="search_hint">Stop name or identifer</string>
    	<string name="no_favourites_warning">No favourite stops set. Use near by or search to locate stops you are interested in.</string>
    	<string name="search">Search</string>
    	<string name="loading_messages">Loading messages</string> 
