@@ -44,6 +44,8 @@ public class SearchActivity extends Activity {
 	protected void onResume() {
 		super.onResume();		
         getWindow().setTitle(getString(R.string.search));
+		status.setVisibility(View.GONE);
+		stopsList.setVisibility(View.GONE);
 		
 		final Intent intent = getIntent();
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
