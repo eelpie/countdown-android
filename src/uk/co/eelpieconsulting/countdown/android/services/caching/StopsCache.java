@@ -49,15 +49,15 @@ public class StopsCache {
 	}
 	
 	private String getCacheFilenameFor(String route, int run) {
-		return "routestops-" + route + "-" + run;
+		return SafeFilenameService.makeSafeFilenameFor("routestops-" + route + "-" + run);
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
-		return "stopsnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius;
+		return SafeFilenameService.makeSafeFilenameFor("stopsnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius);
 	}
 	
 	private String getCacheFilenameFor(String q) {
-		return "stopsearch-" + q;	// TODO make filesystem safe
+		return  SafeFilenameService.makeSafeFilenameFor("stopsearch-" + q);
 	}
 	
 	private List<Stop> getFromCache(final String cacheFilename) {

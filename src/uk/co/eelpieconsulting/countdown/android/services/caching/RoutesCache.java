@@ -33,7 +33,7 @@ public class RoutesCache {
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
-		return "routesnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius;
+		return SafeFilenameService.makeSafeFilenameFor("routesnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius);
 	}
 	
 	private List<Route> getFromCache(final String cacheFilename) {

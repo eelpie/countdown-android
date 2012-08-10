@@ -58,13 +58,13 @@ public class MessageCache {
 		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
 
-	private String getCacheFilenameFor(int[] stopIds) {	// TODO potential max file name length issue?
+	private String getCacheFilenameFor(int[] stopIds) {
 		StringBuilder filename = new StringBuilder("messages-");
 		for (int stopId : stopIds) {
 			filename.append(stopId);
 		}
 		filename.append(".ser");
-		return filename.toString();
+		return  SafeFilenameService.makeSafeFilenameFor(filename.toString());
 	}
 	
 }
