@@ -2,7 +2,7 @@ package uk.co.eelpieconsulting.countdown.android.views.balloons;
 
 import java.util.ArrayList;
 
-import uk.co.eelpieconsulting.countdown.android.CountdownActivity;
+import uk.co.eelpieconsulting.countdown.android.StopActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -38,7 +38,7 @@ public class StopsItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onBalloonTap(int index, OverlayItem item) {	
-		Intent intent = new Intent(context, CountdownActivity.class);
+		Intent intent = new Intent(context, StopActivity.class);
 		intent.putExtra("stop", ((StopOverlayItem) item).getStop());
 		context.startActivity(intent);		
 		return true;

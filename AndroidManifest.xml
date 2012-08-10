@@ -51,7 +51,7 @@
         <activity android:name="RouteMapActivity"></activity>
         <activity android:name="NearbyRoutesListActivity"></activity>
         <activity android:name=".NearThisTabActivity"></activity>
-      	<activity android:name=".CountdownActivity"></activity>
+      	<activity android:name=".StopActivity"></activity>
                 
        	<receiver android:name=".widgets.ArrivalsWidget" android:label="@string/widget_name">
         	<intent-filter>

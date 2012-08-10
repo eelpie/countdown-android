@@ -3,7 +3,7 @@ package uk.co.eelpieconsulting.countdown.android.widgets;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.CountdownActivity;
+import uk.co.eelpieconsulting.countdown.android.StopActivity;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
@@ -120,7 +120,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 	}
 	
 	protected PendingIntent createStopIntent(Context context, Stop stop) {
-		Intent intent = new Intent(context, CountdownActivity.class);		
+		Intent intent = new Intent(context, StopActivity.class);		
 		intent.setData(Uri.withAppendedPath(Uri.parse("content://stop/id"), String.valueOf(stop.getId())));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		return pendingIntent;

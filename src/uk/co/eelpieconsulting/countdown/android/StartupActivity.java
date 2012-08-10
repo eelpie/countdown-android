@@ -19,7 +19,7 @@ public class StartupActivity extends Activity {
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         if (favouriteStopsDAO.hasFavourites()) {
         	Log.d(TAG, "Favourites set; starting stop activity");
-			this.startActivity(new Intent(this, CountdownActivity.class));
+			this.startActivity(new Intent(this, StopActivity.class));
 			
         } else {
         	Log.d(TAG, "No favourite set; starting favourites activity so that user can set some");

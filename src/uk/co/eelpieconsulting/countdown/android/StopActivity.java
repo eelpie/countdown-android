@@ -38,7 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CountdownActivity extends Activity {
+public class StopActivity extends Activity {
 	
 	private static final String TAG = "CountdownActivity";
 	

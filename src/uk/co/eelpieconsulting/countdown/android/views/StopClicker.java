@@ -1,7 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android.views;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.CountdownActivity;
+import uk.co.eelpieconsulting.countdown.android.StopActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +25,6 @@ public class StopClicker implements OnClickListener {
 	}
 
 	private Intent getIntentForContentsType(Context context, Stop stop) {
-		return new Intent(activity, CountdownActivity.class);
+		return new Intent(activity, StopActivity.class);
 	}
 }
