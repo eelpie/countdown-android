@@ -66,4 +66,26 @@ public class StopsService {
 		}		
 	}
 
+	public List<Stop> searchStops(String q) throws ContentNotAvailableException {
+		try {
+			final List<Stop> cachedResults = stopsCache.getSearchResultsFor(q);
+			final boolean cachedResultsAreAvailable = cachedResults != null;
+			if (cachedResultsAreAvailable) {
+				Log.i(TAG, "Returning stop search results from cache");
+				return cachedResults;
+			}
+			
+			final List<Stop> stops = busesClientService.searchStops(q);
+			stopsCache.cacheStopSearchResults(q, stops);
+			
+			return stops;
+		} catch (NetworkNotAvailableException e) {
+			throw new ContentNotAvailableException(e);
+		} catch (HttpFetchException e) {
+			throw new ContentNotAvailableException(e);		
+		} catch (ParsingException e) {
+			throw new ContentNotAvailableException(e);
+		}
+	}
+
 }

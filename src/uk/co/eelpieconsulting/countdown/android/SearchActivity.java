@@ -2,12 +2,11 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
-import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.app.SearchManager;
@@ -55,7 +54,7 @@ public class SearchActivity extends Activity {
 			status.setText(getString(R.string.searching));
 			status.setVisibility(View.VISIBLE);
 			
-			fetchSearchResultsTask = new FetchSearchResultsTask(ApiFactory.getApi(getApplicationContext()));
+			fetchSearchResultsTask = new FetchSearchResultsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 			fetchSearchResultsTask.execute(query);
 			
 		} else {
@@ -109,11 +108,11 @@ public class SearchActivity extends Activity {
 	
 	private class FetchSearchResultsTask extends AsyncTask<String, Integer, List<Stop>> {
 
-		private BusesClientService busesClientService;
+		private StopsService stopsService;
 
-		public FetchSearchResultsTask(BusesClientService busesClientService) {
+		public FetchSearchResultsTask(StopsService stopsService) {
 			super();
-			this.busesClientService = busesClientService;
+			this.stopsService = stopsService;
 		}
 		
 		@Override
@@ -121,14 +120,10 @@ public class SearchActivity extends Activity {
 			fetchSearchResultsTask = this;
 			final String query = params[0];
 			try {				
-				return busesClientService.searchStops(query);	// TODO move to stops service
+				return stopsService.searchStops(query);
 				
-			} catch (HttpFetchException e) {
-				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
-			} catch (ParsingException e) {
-				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
-			} catch (NetworkNotAvailableException e) {
-				Log.w(TAG, "Could search for stops stops: " + e.getMessage());
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not search for stops: " + e.getMessage());
 			}
 			return null;
 		}

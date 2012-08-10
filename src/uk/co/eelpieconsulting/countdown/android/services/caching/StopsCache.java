@@ -40,12 +40,24 @@ public class StopsCache {
 		putIntoCache(stops, getCacheFilenameFor(latitude, longitude, radius));
 	}
 	
+	public List<Stop> getSearchResultsFor(String q) {
+		return getFromCache(getCacheFilenameFor(q));
+	}
+	
+	public void cacheStopSearchResults(String q, List<Stop> stops) {
+		putIntoCache(stops, getCacheFilenameFor(q));		
+	}
+	
 	private String getCacheFilenameFor(String route, int run) {
 		return "routestops-" + route + "-" + run;
 	}
 	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
 		return "stopsnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius;
+	}
+	
+	private String getCacheFilenameFor(String q) {
+		return "stopsearch-" + q;	// TODO make filesystem safe
 	}
 	
 	private List<Stop> getFromCache(final String cacheFilename) {
@@ -81,5 +93,5 @@ public class StopsCache {
 		}
 		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
-
+	
 }
