@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -161,7 +160,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			status.setVisibility(View.GONE);
 		}
 								
-		final RoutesListAdapter routesListAdapter = new RoutesListAdapter(getApplicationContext(), R.layout.arrival, this, location, LayoutInflater.from(getApplicationContext()), selectedStop);
+		final RoutesListAdapter routesListAdapter = new RoutesListAdapter(getApplicationContext(), R.layout.arrival, this, location, selectedStop);
 		for (Route route : routes) {
 			routesListAdapter.add(route);			
 		}

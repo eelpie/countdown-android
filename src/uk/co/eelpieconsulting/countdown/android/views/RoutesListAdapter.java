@@ -17,16 +17,14 @@ public class RoutesListAdapter extends ArrayAdapter<Route> {
 	private final Context context;
 	private final Activity activity;
 	private final Location location;
-	private final LayoutInflater mInflater;
 	private final Stop selectedStop;
 	
-	public RoutesListAdapter(Context context, int viewResourceId, Activity activity, Location location, LayoutInflater layoutInflater, Stop selectedStops) {
+	public RoutesListAdapter(Context context, int viewResourceId, Activity activity, Location location, Stop selectedStop) {
 		super(context, viewResourceId);
 		this.context = context;
 		this.activity = activity;
 		this.location = location;
-		mInflater = layoutInflater;
-		selectedStop = selectedStops;
+		this.selectedStop = selectedStop;
 	}
 	
 	@Override
@@ -48,7 +46,7 @@ public class RoutesListAdapter extends ArrayAdapter<Route> {
 	}
 	
 	private View inflateRouteView() {
-		return mInflater.inflate(R.layout.arrival, null);	// TODO is this really how you're suppost to inflate in an ArrayAdapter?
+		return LayoutInflater.from(context).inflate(R.layout.arrival, null);
 	}
 	
 }
