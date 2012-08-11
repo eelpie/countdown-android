@@ -1,7 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -80,9 +79,7 @@ public class FavouritesActivity extends Activity {
 			return;
 		}
 		
-		final List<Stop> sortedStops = new ArrayList<Stop>(favouriteStops);
-		Collections.sort(sortedStops, stopNameComparator);		
-		showStops(sortedStops);
+		showStops(new ArrayList<Stop>(favouriteStops));
 	}
 	
 	private void showStops(List<Stop> stops) {
@@ -91,6 +88,7 @@ public class FavouritesActivity extends Activity {
 			stopsListAdapter.add(stop);
 		}
 		
+		stopsListAdapter.sort(stopNameComparator);
 		stopsList.setAdapter(stopsListAdapter);	
 		stopsList.setVisibility(View.VISIBLE);
 	}

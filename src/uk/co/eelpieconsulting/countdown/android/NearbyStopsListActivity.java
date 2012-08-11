@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -154,9 +152,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		} else {
 			status.setVisibility(View.GONE);
 		}
-				
-		Collections.sort(stops, (Comparator<? super Stop>) new DistanceToStopComparator(location));
-
+		
 		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
 		for (Stop stop : stops) {
 			final boolean isTheNearThisStopItself = selectedStop != null && selectedStop.equals(stop);
@@ -165,6 +161,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			}
 		}
 		
+		stopsListAdapter.sort(new DistanceToStopComparator(location));
 		stopsList.setAdapter(stopsListAdapter);	
 		stopsList.setVisibility(View.VISIBLE);
 	}
