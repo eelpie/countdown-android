@@ -1,6 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.Collections;
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -12,7 +11,7 @@ import uk.co.eelpieconsulting.countdown.android.services.RoutesService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.RoutesCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
-import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
+import uk.co.eelpieconsulting.countdown.android.views.RoutesListAdapter;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Context;
@@ -29,7 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class NearbyRoutesListActivity extends Activity implements LocationListener {
@@ -45,15 +44,15 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 
 	private TextView status;
 	private Stop selectedStop;
-	private LinearLayout routesList;
-
+	private ListView routesList;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);        
+        setContentView(R.layout.stopslist);        
 		status = (TextView) findViewById(R.id.status);
-		routesList = (LinearLayout) findViewById(R.id.stopsList);
+		routesList = (ListView) findViewById(R.id.list);
+
 		routeNameComparator = new RouteNameComparator();
 
 		routesService = new RoutesService(ApiFactory.getApi(getApplicationContext()), new RoutesCache(getApplicationContext()));
@@ -67,7 +66,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-			listNearbyStops(KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop));
+			listNearbyRoutes(KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop));
 
 		} else {
 			registerForLocationUpdates();
@@ -113,7 +112,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 		
-		listNearbyStops(location);
+		listNearbyRoutes(location);
 		
 		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {	
 				turnOffLocationUpdates();
@@ -134,7 +133,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		// TODO Auto-generated method stub		
 	}
 	
-	private void listNearbyStops(Location location) {
+	private void listNearbyRoutes(Location location) {
 		if (location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
 			status.setText(getString(R.string.searching_for_routes_near) + " " + StopDescriptionService.makeStopTitle(selectedStop));
 			status.setVisibility(View.VISIBLE);
@@ -142,8 +141,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
 			status.setVisibility(View.VISIBLE);
 		}
-		
-		routesList.removeAllViews();
 		
 		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(routesService);
 		fetchNearbyRoutesTask.execute(location);		
@@ -163,32 +160,15 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		} else {
 			status.setVisibility(View.GONE);
 		}
-						
-		Collections.sort(routes, routeNameComparator);
-		
-		final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
+								
+		final RoutesListAdapter routesListAdapter = new RoutesListAdapter(getApplicationContext(), R.layout.arrival, this, location, LayoutInflater.from(getApplicationContext()), selectedStop);
 		for (Route route : routes) {
-			routesList.addView(createRouteView(mInflater, route, location));	
+			routesListAdapter.add(route);			
 		}
 		
-		final TextView credit = new TextView(getApplicationContext());
-		credit.setText(getString(R.string.tfl_credit));
-		routesList.addView(credit);
-		
+		routesListAdapter.sort(routeNameComparator);
+		routesList.setAdapter(routesListAdapter);	
 		routesList.setVisibility(View.VISIBLE);
-	}
-	
-	private View createRouteView(LayoutInflater mInflater, Route route, Location location) {
-		final View routeView = mInflater.inflate(R.layout.arrival, null);		
-
-		final TextView routeTextView = (TextView) routeView.findViewById(R.id.routeName);
-		routeTextView.setText(route.getRoute());			
-		
-		final TextView bodyTextView = (TextView) routeView.findViewById(R.id.body);
-		bodyTextView.setText(getString(R.string.towards) + " " + route.getTowards());
-		
-		routeView.setOnClickListener(new RouteClicker(this, route, selectedStop, location));
-		return routeView;
 	}
 	
 	private void registerForLocationUpdates() {
