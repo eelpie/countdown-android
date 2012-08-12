@@ -1,49 +1,46 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
+
     <item
         android:id="@+id/refresh"
-        android:title="Refresh"
-      	android:icon="@drawable/ic_action_refresh"
-       	android:showAsAction="ifRoom"     
-		>
+        android:icon="@drawable/ic_action_refresh"
+        android:showAsAction="ifRoom"
+        android:title="Refresh">
     </item>
-    
     <item
         android:id="@+id/favourites"
-        android:title="Favourites"
-		>
+        android:title="Favourites">
     </item>
     <item
         android:id="@+id/nearby"
-        android:title="Near by"
-        >
+        android:title="Near by">
     </item>
-      <item
+    <item
         android:id="@+id/nearthis"
-        android:title="Near this"
-        >
+        android:title="Near this">
     </item>
-     <item
+    <item
         android:id="@+id/addfavourite"
-        android:title="Add favourite"
         android:icon="@drawable/ic_action_star"
-       	android:showAsAction="ifRoom"     
-		>
+        android:showAsAction="ifRoom"
+        android:title="Add favourite">
     </item>
-     <item
+    <item
         android:id="@+id/removefavourite"
-        android:title="Remove favourite"
         android:icon="@drawable/ic_action_star"
-       	android:showAsAction="ifRoom"     
-		>
-    </item>    
+        android:showAsAction="ifRoom"
+        android:title="Remove favourite">
+    </item>
     <item
         android:id="@+id/alerts"
-        android:title="Alerts">        
+        android:title="Alerts">
     </item>
     <item
         android:id="@+id/search"
-        android:title="Search">        
+        android:title="Search">
     </item>
-
+    <item
+        android:id="@+id/about"
+        android:title="About">
+    </item>
+    
 </menu>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bus stops</string>
+   	<string name="about">About</string>
+  	<string name="about_text">This application was developed by Eel Pie Consulting Limited.\n\nStops, route and estimated arrival data is supplied by Transport for London.\n\n</string>   	
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>

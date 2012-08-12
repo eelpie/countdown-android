@@ -170,6 +170,10 @@ public class StopActivity extends Activity {
 		case R.id.search:
 			this.startActivity(new Intent(this, SearchActivity.class));
 			return true;
+			
+		case R.id.about:
+			this.startActivity(new Intent(this, AboutActivity.class));
+			return true;			
 		}
 		return false;
 	}
