@@ -12,7 +12,7 @@ import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
-import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
+import uk.co.eelpieconsulting.countdown.android.views.MessagesListAdapter;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -24,7 +24,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class AlertsActivity extends Activity {
@@ -36,17 +36,19 @@ public class AlertsActivity extends Activity {
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private MessageService messageService;
 	
-	private TextView status;	
+	private TextView status;
+	private ListView messagesList;
 	private FetchMessagesTask fetchMessageTask;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stops);
+        setContentView(R.layout.stopslist);
         
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
 
+		messagesList = (ListView) findViewById(R.id.list);
         status = (TextView) findViewById(R.id.status);
         status.setVisibility(View.GONE);        
     }
@@ -125,17 +127,14 @@ public class AlertsActivity extends Activity {
 		
 		status.setText(R.string.alerts_effecting_your_stops);
 		status.setVisibility(View.VISIBLE);
-		
-		final LinearLayout stopsList = (LinearLayout) findViewById(R.id.stopsList);
-		stopsList.removeAllViews();		
-		for (MultiStopMessage messageToDisplay : messages) {			
-			final TextView messageView = MessageDescriptionService.makeMessageView(messageToDisplay, getApplicationContext());			
-			stopsList.addView(messageView);
+	
+		final MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getApplicationContext(), R.layout.stoprow);
+		for (MultiStopMessage message : messages) {
+			messagesListAdapter.add(message);
 		}
 		
-		final TextView credit = new TextView(getApplicationContext());
-		credit.setText(getString(R.string.tfl_credit));
-		stopsList.addView(credit);		
+		messagesList.setAdapter(messagesListAdapter);	
+		messagesList.setVisibility(View.VISIBLE);
 	}
 	
 	private class FetchMessagesTask extends AsyncTask<Set<Stop>, Integer, List<MultiStopMessage>> {

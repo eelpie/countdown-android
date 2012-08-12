@@ -8,10 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
-import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.services.StopNameComparator;
-
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
@@ -27,25 +25,25 @@ public class MessageDescriptionService {
 	public static TextView makeStopDescription(Message message, Context context) {
 		return makeMessageView(message, context, new ArrayList<Stop>());
 	}
-
-	public static TextView makeMessageView(MultiStopMessage displayMessage, Context applicationContext) {
-		return makeMessageView(displayMessage, applicationContext, displayMessage.getStops());			
+	
+	@Deprecated
+	public static TextView makeMessageView(Message message, Context context, List<Stop> stops) {		
+		TextView messageView = new TextView(context);
+		messageView.setText(makeMessageDescription(message, stops) + "\n\n\n");
+		messageView.setVisibility(View.VISIBLE);
+		return messageView;		
 	}
 	
-	private static TextView makeMessageView(Message message, Context context, List<Stop> stops) {
+	public static String makeMessageDescription(Message message, List<Stop> stops) {
 		final StringBuilder output = new StringBuilder();
 		output.append(dateFormatter.format(new Date(message.getStartDate())));
 		output.append(": ");
 		output.append(message.getMessage());
 		output.append("\n");
 		appendCommaSeperatedStopNames(stops, output);
-		
-		TextView messageView = new TextView(context);
-		messageView.setText(output.toString() + "\n\n\n");
-		messageView.setVisibility(View.VISIBLE);
-		return messageView;		
+		return output.toString();
 	}
-
+	
 	private static void appendCommaSeperatedStopNames(List<Stop> stops, final StringBuilder output) {
 		Collections.sort(stops, stopNameComparator);
 		
