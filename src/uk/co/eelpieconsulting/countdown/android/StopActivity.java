@@ -14,16 +14,11 @@ import uk.co.eelpieconsulting.countdown.android.services.ArrivalsService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.MessageService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
-import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
-import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.MessageDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.RouteClicker;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -69,7 +64,9 @@ public class StopActivity extends Activity {
 		
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
 		
-		populateSelectedStop();
+		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+		}
     }
 	
 	@Override
@@ -231,33 +228,6 @@ public class StopActivity extends Activity {
 		final TextView credit = new TextView(getApplicationContext());
 		credit.setText(getString(R.string.tfl_credit));
 		stopsList.addView(credit);
-	}
-	
-	private void populateSelectedStop() {
-		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
-			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
-		}
-
-		if (selectedStop == null && !favouriteStopsDAO.hasFavourites()) {
-			status.setText(R.string.no_favourites_warning);
-			status.setVisibility(View.VISIBLE);
-			return;
-		}
-
-		if (selectedStop == null) {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);
-			if (lastKnownLocation != null) {
-				final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);
-				Log.i(TAG, lastKnownLocationMessage);
-				selectedStop = favouriteStopsDAO.getClosestFavouriteStopTo(lastKnownLocation);
-				Log.i(TAG, "Choosing closest favourite stop based on last known location: " + selectedStop.getName());
-
-			} else {
-				selectedStop = favouriteStopsDAO.getFirstFavouriteStop();
-				Log.i(TAG, "As no last known position is available defaulting to first favourite stop: " + selectedStop.getName());
-			}
-		}
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
