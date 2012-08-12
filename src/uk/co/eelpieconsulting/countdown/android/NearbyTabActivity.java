@@ -3,6 +3,8 @@ package uk.co.eelpieconsulting.countdown.android;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -17,6 +19,13 @@ public class NearbyTabActivity extends TabActivity {
         setupTabs();
     }
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.nearby_menu, menu);
+		return true;
+	}
+	
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
  

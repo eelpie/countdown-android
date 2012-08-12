@@ -5,6 +5,8 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -24,6 +26,13 @@ public class NearThisTabActivity extends TabActivity {
         setTitle("Near " + StopDescriptionService.makeStopDescription(selectedStop));
         setupTabs();
     }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.alerts_menu, menu);
+		return true;
+	}
 	
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
