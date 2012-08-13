@@ -13,6 +13,7 @@ import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableExce
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.RouteOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 
@@ -125,6 +126,7 @@ public class RouteMapActivity extends BaseMapActivity {
 		
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
+		overlays.add(new RouteOverlayItem(stops));
 		mapView.postInvalidate();
 	}
 	
