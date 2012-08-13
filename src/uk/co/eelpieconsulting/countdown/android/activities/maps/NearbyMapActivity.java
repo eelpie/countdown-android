@@ -17,11 +17,10 @@ import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOve
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -36,10 +35,7 @@ import com.google.android.maps.Overlay;
 
 public class NearbyMapActivity extends BaseMapActivity {
 
-	private static final String TAG = "StopsActivity";
-
-	private static final int FIVE_SECONDS = 5 * 1000;
-	private static final int STOP_SEARCH_RADIUS = 250;
+	private static final String TAG = "NearbyMapActivity";
 	
 	private StopsCache stopsCache;
 	private StopsService stopsService;
@@ -75,6 +71,8 @@ public class NearbyMapActivity extends BaseMapActivity {
 			listNearbyStops(stopLocation);
 			
 		} else {
+			status.setText(getString(R.string.waiting_for_location));
+			status.setVisibility(View.VISIBLE);
 			registerForLocationUpdates();
 		}
 	}
@@ -85,7 +83,6 @@ public class NearbyMapActivity extends BaseMapActivity {
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
 		}
-		turnOffLocationUpdates();
 	}
 	
 	@Override
@@ -160,27 +157,6 @@ public class NearbyMapActivity extends BaseMapActivity {
 		overlays.add(itemizedOverlay);
 				
 		mapView.postInvalidate();		
-	}
-	
-	private void registerForLocationUpdates() {
-		status.setText(getString(R.string.waiting_for_location));
-		status.setVisibility(View.VISIBLE);
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FIVE_SECONDS, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FIVE_SECONDS, STOP_SEARCH_RADIUS, this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
-	}
-
-	private void turnOffLocationUpdates() {	// TODO Warn if no location
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.removeUpdates(this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
 	}
 	
 	private void zoomMapToLocation(Location location) {

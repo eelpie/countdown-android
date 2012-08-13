@@ -49,7 +49,7 @@ public class StopsService {
 			final List<Stop> cachedResults = stopsCache.getStopsWithin(latitude, longitude, radius);
 			final boolean cachedResultsAreAvailable = cachedResults != null;
 			if (cachedResultsAreAvailable) {
-				Log.i(TAG, "Returning route stops from cache");
+				Log.i(TAG, "Returning stops from cache");
 				return cachedResults;
 			}
 			

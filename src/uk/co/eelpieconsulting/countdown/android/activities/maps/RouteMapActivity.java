@@ -16,11 +16,10 @@ import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasur
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,10 +33,8 @@ import com.google.android.maps.Overlay;
 
 public class RouteMapActivity extends BaseMapActivity {
 
-	private static final String TAG = "StopsActivity";
-	
-	private static final int STOP_SEARCH_RADIUS = 250;
-	
+	private static final String TAG = "RouteMapActivity";
+		
 	private TextView status;
 
 	private Route selectedRoute;
@@ -56,6 +53,8 @@ public class RouteMapActivity extends BaseMapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		status.setText(getString(R.string.waiting_for_location));
+		status.setVisibility(View.VISIBLE);
 		registerForLocationUpdates();
 		
 		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
@@ -100,7 +99,7 @@ public class RouteMapActivity extends BaseMapActivity {
 				
 		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {
 			zoomToUserLocation(location);
-			turnOffLocationUpdates();
+			
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	
@@ -128,27 +127,6 @@ public class RouteMapActivity extends BaseMapActivity {
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
 		mapView.postInvalidate();
-	}
-	
-	private void registerForLocationUpdates() {
-		status.setText(getString(R.string.waiting_for_location));
-		status.setVisibility(View.VISIBLE);
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
-	}
-
-	private void turnOffLocationUpdates() {	// TODO Warn if not location
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.removeUpdates(this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
