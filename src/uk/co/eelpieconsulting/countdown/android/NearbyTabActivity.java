@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import uk.co.eelpieconsulting.countdown.android.activities.maps.NearbyMapActivity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;

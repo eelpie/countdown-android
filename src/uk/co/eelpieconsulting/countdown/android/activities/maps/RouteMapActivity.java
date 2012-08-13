@@ -1,9 +1,13 @@
-package uk.co.eelpieconsulting.countdown.android;
+package uk.co.eelpieconsulting.countdown.android.activities.maps;
 
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.AlertsActivity;
+import uk.co.eelpieconsulting.countdown.android.FavouritesActivity;
+import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.SearchActivity;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
@@ -16,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,30 +30,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
-public class RouteMapActivity extends MapActivity implements LocationListener {
+public class RouteMapActivity extends BaseMapActivity {
 
 	private static final String TAG = "StopsActivity";
 	
 	private static final int STOP_SEARCH_RADIUS = 250;
 	
 	private TextView status;
-	private MapView mapView;
 
 	private Route selectedRoute;
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mapstops);
+        
 		status = (TextView) findViewById(R.id.status);
-		mapView = (MapView) findViewById(R.id.map);
-		
-		mapView.setBuiltInZoomControls(false);
-		mapView.setClickable(true);
 		
 	    if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
         	selectedRoute = (Route) this.getIntent().getExtras().get("route");
@@ -109,24 +105,7 @@ public class RouteMapActivity extends MapActivity implements LocationListener {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	
 	}
-
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-	}
-
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-	}
-
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub		
-	}
 	
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-
 	private void zoomToUserLocation(Location location) {		
 		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
         mapView.getController().setZoom(12);

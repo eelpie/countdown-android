@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.activities.maps.NearbyMapActivity;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.TabActivity;
 import android.content.Intent;
