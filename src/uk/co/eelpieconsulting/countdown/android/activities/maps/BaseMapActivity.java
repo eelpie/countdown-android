@@ -4,6 +4,7 @@ import uk.co.eelpieconsulting.countdown.android.R;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -20,6 +21,18 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
         mapView = (MapView) findViewById(R.id.map);		
         mapView.setBuiltInZoomControls(false);
 		mapView.setClickable(true);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mapView.setVisibility(View.VISIBLE);		
+	}
+	
+	@Override
+	protected void onPause() {		
+		super.onPause();
+		mapView.setVisibility(View.GONE);
 	}
 	
 	@Override
