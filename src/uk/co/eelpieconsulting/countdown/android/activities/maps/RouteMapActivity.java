@@ -15,7 +15,6 @@ import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
-import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -55,6 +54,10 @@ public class RouteMapActivity extends BaseMapActivity {
 		super.onResume();
 		status.setText(getString(R.string.waiting_for_location));
 		status.setVisibility(View.VISIBLE);
+		
+		currentLocation = null;
+		mapView.getController().setZoom(12);
+		   
 		registerForLocationUpdates();
 		
 		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
@@ -96,19 +99,15 @@ public class RouteMapActivity extends BaseMapActivity {
 		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
-				
-		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {
-			zoomToUserLocation(location);
-			
-		} else {
-			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
-		}	
-	}
-	
-	private void zoomToUserLocation(Location location) {		
-		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-        mapView.getController().setZoom(12);
-		return;
+		
+		locationCircleOverlay.setPoint(location);
+		mapView.postInvalidate();
+		
+		if (currentLocation == null) {
+			zoomMapToLocation(location);		
+		}
+		
+		currentLocation = location;
 	}
 	
 	private void showStops(List<Stop> stops) {

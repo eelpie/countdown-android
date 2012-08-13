@@ -13,10 +13,8 @@ import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
-import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
-import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -41,21 +39,15 @@ public class NearbyMapActivity extends BaseMapActivity {
 	private StopsService stopsService;
 	
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
-	private Location currentLocation;
-
+	
 	private TextView status;
-
-	private LocationCircleOverlay locationCircleOverlay;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         status = (TextView) findViewById(R.id.status);
-		
-		locationCircleOverlay = new LocationCircleOverlay();		
-		mapView.getOverlays().add(locationCircleOverlay);
-		
+				
 		stopsCache = new StopsCache(getApplicationContext());
 		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
 	}
@@ -157,11 +149,6 @@ public class NearbyMapActivity extends BaseMapActivity {
 		overlays.add(itemizedOverlay);
 				
 		mapView.postInvalidate();		
-	}
-	
-	private void zoomMapToLocation(Location location) {
-		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-		mapView.getController().setZoom(17);
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {

@@ -1,6 +1,8 @@
 package uk.co.eelpieconsulting.countdown.android.activities.maps;
 
 import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
+import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,6 +23,10 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
 	
 	protected MapView mapView;
 	
+	protected LocationCircleOverlay locationCircleOverlay;
+
+	protected Location currentLocation;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,6 +35,9 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
         mapView = (MapView) findViewById(R.id.map);		
         mapView.setBuiltInZoomControls(false);
 		mapView.setClickable(true);
+		
+		locationCircleOverlay = new LocationCircleOverlay();
+		mapView.getOverlays().add(locationCircleOverlay);
 	}
 	
 	@Override
@@ -87,5 +96,9 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
 		}
 	}
 	
+	protected void zoomMapToLocation(Location location) {
+		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
+		mapView.getController().setZoom(17);
+	}
 	
 }
