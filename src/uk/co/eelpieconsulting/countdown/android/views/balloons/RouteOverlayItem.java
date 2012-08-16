@@ -32,8 +32,7 @@ public class RouteOverlayItem extends Overlay {
 		Stop from = routeStops.get(0);
 		for (int i = 1; i < routeStops.size(); i++) {
 			final Stop to = routeStops.get(i);
-
-
+			
 			final Point fromPoint = new Point();
 			mapView.getProjection().toPixels(GeoPointFactory.createGeoPointForLatLong(from.getLatitude(), from.getLongitude()), fromPoint);
 			
@@ -44,6 +43,12 @@ public class RouteOverlayItem extends Overlay {
 			path.moveTo(toPoint.x, toPoint.y);
 			path.lineTo(fromPoint.x, fromPoint.y);			
 
+			if (mapView.getZoomLevel() <= 14) {
+				paint.setARGB(255, 0, 0, 240);
+			} else {
+				paint.setARGB(20, 0, 0, 240);
+			}
+						
 			canvas.drawPath(path, paint);
 			
 			from = to;
