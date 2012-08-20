@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android.services.location;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
@@ -23,6 +24,21 @@ public class DistanceMeasuringService {
 			}
 		}	
 		return Integer.toString(roundToPlusMinus10(distanceTo));
+	}
+	
+	public static Stop findClosestOf(List<Stop> stops, Location location) {
+		Float closestDistance = null;
+		Stop closestStop = null;
+		for (Stop stop : stops) {
+			if (location != null) {
+				float distanceTo = DistanceMeasuringService.distanceTo(location, stop);
+				if (closestDistance == null || closestDistance > distanceTo) {
+					closestStop = stop;
+					closestDistance = distanceTo;
+				}
+			}
+		}
+		return closestStop;
 	}
 	
 	private static int roundToPlusMinus1(final float distanceTo) {

@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableExce
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +34,6 @@ public class RouteStopsActivity extends Activity {
 	private FetchRouteStopsTask fetchStopsTask;
 
 	private Route selectedRoute;
-	private Stop selectedStop;
 	private Location location;
 	
 	@Override
@@ -51,12 +51,14 @@ public class RouteStopsActivity extends Activity {
         	selectedRoute = (Route) this.getIntent().getExtras().get("route");
         }
         
-        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
-        	selectedStop= (Stop) this.getIntent().getExtras().get("stop");
-        }
         location = null;
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("location") != null) {
         	location = (Location) this.getIntent().getExtras().get("location");
+        }
+        
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+        	final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+        	location = KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop);
         }
                 
         final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
@@ -86,32 +88,19 @@ public class RouteStopsActivity extends Activity {
 		
 		Log.i(TAG, "Found " + stops.size() + " stops");		
 		status.setVisibility(View.GONE);
-		
-		Integer selectedPosition = null;
-		Float closestDistance = null;
-		final ListView stopsList = (ListView) findViewById(R.id.list);
+				
 		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
-		int i = 0;
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);
-
-			if (location != null) {
-				float distanceTo = DistanceMeasuringService.distanceTo(location, stop);
-				if (closestDistance == null || closestDistance > distanceTo) {
-					selectedPosition = i;
-					closestDistance = distanceTo;
-				}
-			}
-
-			if (selectedStop != null && selectedStop.equals(stop)) {
-				selectedPosition = i;
-			}			
-			i++;
 		}
+		
+		final ListView stopsList = (ListView) findViewById(R.id.list);
 		stopsList.setAdapter(stopsListAdapter);
-		if (selectedPosition != null) {
-			stopsList.setSelection(selectedPosition);
-		}		
+		
+		final Stop highlightedStop = DistanceMeasuringService.findClosestOf(stops, location);
+		if (highlightedStop != null) {
+			stopsList.setSelection(stops.indexOf(highlightedStop));
+		}
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
