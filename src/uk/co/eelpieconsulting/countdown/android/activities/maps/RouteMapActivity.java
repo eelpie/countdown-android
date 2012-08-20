@@ -69,6 +69,8 @@ public class RouteMapActivity extends BaseMapActivity {
 		mapView.getController().setZoom(12);
 		
 		if (selectedStop == null) {
+			status.setText(getString(R.string.waiting_for_location));
+			status.setVisibility(View.VISIBLE);
 			registerForLocationUpdates();
 		}
 		

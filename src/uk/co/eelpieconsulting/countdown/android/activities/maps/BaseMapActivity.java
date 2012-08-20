@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android.activities.maps;
 
 import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 import android.content.Context;
@@ -87,13 +88,7 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
 	
 
 	protected void registerForLocationUpdates() {
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FIVE_SECONDS, 0, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FIVE_SECONDS, 0, this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
+		LocationService.registerForLocationUpdates(getApplicationContext(), this);
 	}
 	
 	protected void zoomMapToLocation(Location location) {

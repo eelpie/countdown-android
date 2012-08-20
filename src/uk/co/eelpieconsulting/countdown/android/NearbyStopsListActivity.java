@@ -5,6 +5,7 @@ import java.util.List;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
@@ -60,6 +61,8 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			listNearbyStops(KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop));
 
 		} else {
+			status.setText(getString(R.string.waiting_for_location));
+			status.setVisibility(View.VISIBLE);
 			registerForLocationUpdates();
 		}
 	}
@@ -166,16 +169,8 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		stopsList.setVisibility(View.VISIBLE);
 	}
 	
-	private void registerForLocationUpdates() {
-		status.setText(getString(R.string.waiting_for_location));
-		status.setVisibility(View.VISIBLE);
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5 * 1000, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5 * 1000, STOP_SEARCH_RADIUS, this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
+	private void registerForLocationUpdates() {		
+		LocationService.registerForLocationUpdates(getApplicationContext(), this);		
 	}
 
 	private void turnOffLocationUpdates() {	// TODO Warn if not location
