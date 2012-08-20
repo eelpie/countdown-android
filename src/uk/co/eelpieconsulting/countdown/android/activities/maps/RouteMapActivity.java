@@ -111,9 +111,9 @@ public class RouteMapActivity extends BaseMapActivity {
 		currentLocation = location;
 	}
 	
-	private void showStops(List<Stop> stops) {
+	private void showRouteStops(List<Stop> stops) {
 		if (stops == null) {
-			status.setText("Stops could not be loaded"); // TODO why?
+			status.setText("Route stops could not be loaded"); // TODO why?
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
@@ -141,7 +141,7 @@ public class RouteMapActivity extends BaseMapActivity {
 		
 		@Override
 		protected void onPostExecute(List<Stop> stops) {
-			showStops(stops);
+			showRouteStops(stops);
 		}
 		
 		@Override

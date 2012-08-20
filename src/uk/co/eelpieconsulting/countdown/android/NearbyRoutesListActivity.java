@@ -211,7 +211,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);	// TODO migrate to cached service			
+				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);		
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load routes: " + e.getMessage());
 			}
