@@ -55,8 +55,8 @@ public class RouteTabActivity extends TabActivity {
 		mapIntent.putExtra("stop", selectedStop);
 		mapSpec.setContent(mapIntent);
 		        
+		tabHost.addTab(mapSpec);        
         tabHost.addTab(stopsSpec);
-        tabHost.addTab(mapSpec);
 	}
 	
 }

@@ -30,25 +30,24 @@ public class NearbyTabActivity extends TabActivity {
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
  
-        TabSpec stopsSpec = tabHost.newTabSpec("Stops");
+        final TabSpec stopsSpec = tabHost.newTabSpec("Stops");
         stopsSpec.setIndicator("Stops");
         Intent stopsIntent = new Intent(this, NearbyStopsListActivity.class);
         stopsSpec.setContent(stopsIntent);
  
-        TabSpec routesSpec = tabHost.newTabSpec("Routes");
+        final TabSpec routesSpec = tabHost.newTabSpec("Routes");
         routesSpec.setIndicator("Routes");
         Intent routesIntent = new Intent(this, NearbyRoutesListActivity.class);
         routesSpec.setContent(routesIntent);
         
-        TabSpec tabSpec = tabHost.newTabSpec("Map");
-        tabSpec.setIndicator("Map");
+        final TabSpec mapSpec = tabHost.newTabSpec("Map");
+        mapSpec.setIndicator("Map");
         Intent mapIntent = new Intent(this, NearbyMapActivity.class);
-        tabSpec.setContent(mapIntent);        
-
+        mapSpec.setContent(mapIntent);        
  
+        tabHost.addTab(mapSpec);
         tabHost.addTab(stopsSpec);
         tabHost.addTab(routesSpec);
-        tabHost.addTab(tabSpec);
 	}
 	
 }
