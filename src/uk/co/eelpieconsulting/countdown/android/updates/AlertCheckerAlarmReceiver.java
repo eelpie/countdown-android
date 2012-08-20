@@ -60,7 +60,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		}
 		
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		final CharSequence tickerText = messages.size() > 1 ? "New alerts" : "New alert";	// TODO can be moved to strings?
+		final CharSequence tickerText = context.getString(messages.size() > 1 ? R.string.new_alerts_capital : R.string.new_alert_capital);
 		Notification notification = new Notification(R.drawable.notification_icon, tickerText, new Date().getTime());
 		
 		CharSequence contentTitle = messages.size() + " " + (messages.size() > 1 ? "new alerts" : "new alert");
