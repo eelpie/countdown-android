@@ -71,7 +71,13 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		} else {
 			status.setText(getString(R.string.waiting_for_location));
 			status.setVisibility(View.VISIBLE);
-			registerForLocationUpdates();
+			try {
+				LocationService.registerForLocationUpdates(getApplicationContext(), this);
+				
+			} catch (NoProvidersException e) {
+				status.setText(getString(R.string.no_location_providers));
+				status.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 	
@@ -173,11 +179,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		routesList.setVisibility(View.VISIBLE);
 	}
 	
-	private void registerForLocationUpdates() {
-		LocationService.registerForLocationUpdates(getApplicationContext(), this);
-	}
-
-	private void turnOffLocationUpdates() {	// TODO Warn if not location
+	private void turnOffLocationUpdates() {
 		try {
 			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 			locationManager.removeUpdates(this);

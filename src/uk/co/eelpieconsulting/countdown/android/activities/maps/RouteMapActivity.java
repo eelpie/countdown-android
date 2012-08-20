@@ -6,6 +6,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.AlertsActivity;
 import uk.co.eelpieconsulting.countdown.android.FavouritesActivity;
+import uk.co.eelpieconsulting.countdown.android.NoProvidersException;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.SearchActivity;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
@@ -14,6 +15,7 @@ import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
+import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.RouteOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -71,7 +73,13 @@ public class RouteMapActivity extends BaseMapActivity {
 		if (selectedStop == null) {
 			status.setText(getString(R.string.waiting_for_location));
 			status.setVisibility(View.VISIBLE);
-			registerForLocationUpdates();
+			try {
+				LocationService.registerForLocationUpdates(getApplicationContext(), this);
+				
+			} catch (NoProvidersException e) {
+				status.setText(getString(R.string.no_location_providers));
+				status.setVisibility(View.VISIBLE);
+			}
 		}
 		
 		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
