@@ -49,7 +49,11 @@ public class LocationService {
 		locationManager.removeUpdates(listener);
 		throw new NoProvidersException();
 	}
-
+	
+	public static boolean isAccurateEnoughForNearbyRoutes(Location location) {
+		return location.hasAccuracy() && location.getAccuracy() < NEAR_BY_RADIUS;
+	}
+	
 	private static Location chooseBestLocation(List<Location> allAvailableLastKnownLocations) {
 		Location bestLocation = null;
 		for (Location location : allAvailableLastKnownLocations) {

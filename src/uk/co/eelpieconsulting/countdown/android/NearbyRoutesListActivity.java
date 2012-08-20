@@ -120,14 +120,14 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		listNearbyRoutes(location);
 		
-		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {	// TODO push decision to location service
-				turnOffLocationUpdates();
-				
+		if (LocationService.isAccurateEnoughForNearbyRoutes(location)) {
+			turnOffLocationUpdates();
+			
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	
 	}
-
+	
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub		
 	}
