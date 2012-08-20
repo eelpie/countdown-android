@@ -1,5 +1,10 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.List;
+
+import uk.co.eelpieconsulting.countdown.android.model.Article;
+import uk.co.eelpieconsulting.countdown.android.services.AboutArticlesService;
+import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,12 +13,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class AboutActivity extends Activity {
 	
 	private static final String TAG = "AlertsActivity";
-		
+	
+	private AboutArticlesService aboutArticlesService;
+	
+	private LinearLayout stopsList;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +33,22 @@ public class AboutActivity extends Activity {
         TextView status = (TextView) findViewById(R.id.status);
         status.setText(R.string.about_text);
         status.setVisibility(View.VISIBLE);
+        
+		stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		
+        aboutArticlesService = new AboutArticlesService(); 
     }
+	
+	@Override
+	protected void onResume() {		
+		super.onResume();
+		
+		List<Article> articles = aboutArticlesService.getArticles(getApplicationContext());
+		
+		for (Article article : articles) {
+			stopsList.addView(StopDescriptionService.makeArticleView(article, getApplicationContext()));
+		}
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

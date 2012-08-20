@@ -8,6 +8,7 @@ import java.util.Set;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.model.Article;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import android.app.Activity;
@@ -26,6 +27,12 @@ public class StopDescriptionService {
 		return stopTextView;
 	}
 	
+	public static TextView makeArticleView(Article article, Context context) {
+		final TextView articleTextView = new TextView(context);
+		articleTextView.setText(article.getTitle() + NEW_LINE + NEW_LINE + article.getBody());
+		return articleTextView;
+	}
+		
 	public static String makeStopDescription(Stop stop) {
 		final StringBuilder description = new StringBuilder(makeStopTitle(stop));
 		description.append(NEW_LINE);
