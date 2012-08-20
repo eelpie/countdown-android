@@ -41,7 +41,8 @@ public class StopDescriptionService {
 	public static String makeStopDescription(Stop stop, Location location) {
 		StringBuilder description = new StringBuilder(makeStopDescription(stop));
 		if (location != null) {
-			if (DistanceMeasuringService.distanceTo(location, stop) < 1000) {
+			final float distanceTo = DistanceMeasuringService.distanceTo(location, stop);
+			if (distanceTo > 0 && distanceTo < 1000) {
 				description.append(NEW_LINE);
 				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
 				if (location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
