@@ -2,17 +2,22 @@ package uk.co.eelpieconsulting.countdown.android.activities.maps;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.AlertsActivity;
 import uk.co.eelpieconsulting.countdown.android.FavouritesActivity;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.SearchActivity;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
+import uk.co.eelpieconsulting.countdown.android.services.RoutesService;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
+import uk.co.eelpieconsulting.countdown.android.services.caching.RoutesCache;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
+import uk.co.eelpieconsulting.countdown.android.views.balloons.RouteOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
 
@@ -35,12 +40,14 @@ public class NearbyMapActivity extends BaseMapActivity {
 
 	private static final String TAG = "NearbyMapActivity";
 	
-	private StopsCache stopsCache;
 	private StopsService stopsService;
+	private RoutesService routesService;
 	
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
+	private FetchNearbyRoutesTask fetchNearbyRoutesTask;
 	
 	private TextView status;
+
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,8 +55,13 @@ public class NearbyMapActivity extends BaseMapActivity {
 
         status = (TextView) findViewById(R.id.status);
 				
-		stopsCache = new StopsCache(getApplicationContext());
-		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
+        final BusesClientService busesClientService = ApiFactory.getApi(getApplicationContext());
+
+        final StopsCache stopsCache = new StopsCache(getApplicationContext());
+		stopsService = new StopsService(busesClientService, stopsCache);
+		
+		final RoutesCache routesCache = new RoutesCache(getApplicationContext());
+		routesService = new RoutesService(busesClientService, routesCache);
 	}
     
 	@Override
@@ -74,6 +86,9 @@ public class NearbyMapActivity extends BaseMapActivity {
 		super.onPause();
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
+		}
+		if (fetchNearbyRoutesTask != null && fetchNearbyRoutesTask.getStatus().equals(Status.RUNNING)) {
+			fetchNearbyRoutesTask.cancel(true);
 		}
 	}
 	
@@ -130,13 +145,14 @@ public class NearbyMapActivity extends BaseMapActivity {
 		return;		
 	}
 	
-	private void showStops(Location location, List<Stop> stops) {		
+	private void showStops(Location location, List<Stop> stops) {
 		if (stops == null) {
-			status.setText("Stops could not be loaded"); // TODO why?
+			status.setText("Nearby stops could not be loaded"); // TODO why?
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
 		
+		Log.i(TAG, "Found " + stops.size() + " nearby stops");		
 		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
 		
 		Drawable drawable = getResources().getDrawable(R.drawable.marker);
@@ -148,7 +164,32 @@ public class NearbyMapActivity extends BaseMapActivity {
 		final List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(itemizedOverlay);
 				
-		mapView.postInvalidate();		
+		mapView.postInvalidate();
+		
+		fetchNearbyRoutesTask = new FetchNearbyRoutesTask(routesService);
+		fetchNearbyRoutesTask.execute(location);
+	}
+	
+	private void showRoutes(Location location, List<Route> routes) {
+		if (routes == null) {
+			status.setText("Nearby routes could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
+		Log.i(TAG, "Found " + routes.size() + " nearby routes");	
+	}
+	
+	private void showRouteLines(List<Stop> stops) {
+		if (stops == null) {
+			status.setText("Roue stops could not be loaded"); // TODO why?
+			status.setVisibility(View.VISIBLE);
+			return;
+		}
+		
+		final List<Overlay> overlays = mapView.getOverlays();
+		overlays.add(new RouteOverlayItem(stops));
+		mapView.postInvalidate();
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
@@ -176,8 +217,44 @@ public class NearbyMapActivity extends BaseMapActivity {
 		@Override
 		protected void onPostExecute(List<Stop> stops) {
 			showStops(location, stops);
+		}		
+	}
+	
+	// TODO duplicate
+	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
+
+		private RoutesService routesService;
+		private Location location;
+
+		public FetchNearbyRoutesTask(RoutesService routesService) {
+			super();
+			this.routesService = routesService;
 		}
 		
+		@Override
+		protected void onPostExecute(List<Route> routes) {
+			showRoutes(location, routes);
+		}
+		
+		@Override
+		protected List<Route> doInBackground(Location... params) {
+			final Location location = params[0];
+			this.location = location;
+			try {								
+				List<Route> nearbyRoutes = routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);
+				for (Route route : nearbyRoutes) {
+					Log.i(TAG, "Fetching stops for route: " + route);
+					List<Stop> routeStops = stopsService.getRouteStops(route.getRoute(), route.getRun());
+					showRouteLines(routeStops);
+				}
+				
+				return nearbyRoutes;	
+				
+			} catch (ContentNotAvailableException e) {
+				Log.w(TAG, "Could not load routes: " + e.getMessage());
+			}
+			return null;
+		}		
 	}
 	
 }
