@@ -42,7 +42,7 @@ public class RouteTabActivity extends TabActivity {
  
 		final TabSpec stopsSpec = tabHost.newTabSpec("Stops");
 		stopsSpec.setIndicator("Stops");
-		Intent stopsIntent = new Intent(this, RouteStopsActivity.class);
+		final Intent stopsIntent = new Intent(this, RouteStopsActivity.class);
 		stopsIntent.putExtra("route", selectedRoute);
 		stopsIntent.putExtra("stop", selectedStop);
 		stopsIntent.putExtra("location", location);
@@ -50,9 +50,9 @@ public class RouteTabActivity extends TabActivity {
 		
 		final TabSpec mapSpec = tabHost.newTabSpec("Map");
 		mapSpec.setIndicator("Map");
-		Intent mapIntent = new Intent(this, RouteMapActivity.class);
+		final Intent mapIntent = new Intent(this, RouteMapActivity.class);
 		mapIntent.putExtra("route", selectedRoute);
-		stopsIntent.putExtra("stop", selectedStop);
+		mapIntent.putExtra("stop", selectedStop);
 		mapSpec.setContent(mapIntent);
 		        
         tabHost.addTab(stopsSpec);

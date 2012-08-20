@@ -39,30 +39,38 @@ public class RouteMapActivity extends BaseMapActivity {
 	private TextView status;
 
 	private Route selectedRoute;
-
+	private Stop selectedStop;
+	
 	private List<Stop> routeStops;
-		
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-		status = (TextView) findViewById(R.id.status);
-		
-	    if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("route") != null) {
         	selectedRoute = (Route) this.getIntent().getExtras().get("route");
-	    }
+        }
+        
+        if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
+        	selectedStop = (Stop) this.getIntent().getExtras().get("stop");
+        }
+                
+		status = (TextView) findViewById(R.id.status);		
 	}
     
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
 		status.setText(getString(R.string.waiting_for_location));
 		status.setVisibility(View.VISIBLE);
 		
 		currentLocation = null;
 		mapView.getController().setZoom(12);
-		   
-		registerForLocationUpdates();
+		
+		if (selectedStop == null) {
+			registerForLocationUpdates();
+		}
 		
 		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
 		fetchRouteStopsTask.execute(selectedRoute);
@@ -133,6 +141,10 @@ public class RouteMapActivity extends BaseMapActivity {
 		mapView.postInvalidate();
 		
 		routeStops = stops;
+		
+		if (selectedStop != null) {
+			zoomMapToLocation(KnownStopLocationProviderService.makeLocationForSelectedStop(DistanceMeasuringService.findClosestOf(routeStops, KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop))));
+		}
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
