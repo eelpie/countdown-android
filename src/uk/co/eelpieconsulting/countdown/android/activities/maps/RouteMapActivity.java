@@ -13,6 +13,7 @@ import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableExce
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.RouteOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
@@ -38,6 +39,8 @@ public class RouteMapActivity extends BaseMapActivity {
 	private TextView status;
 
 	private Route selectedRoute;
+
+	private List<Stop> routeStops;
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,11 +107,11 @@ public class RouteMapActivity extends BaseMapActivity {
 		locationCircleOverlay.setPoint(location);
 		mapView.postInvalidate();
 		
-		if (currentLocation == null) {
-			zoomMapToLocation(location);		
+		if (currentLocation == null && routeStops != null) {
+			zoomMapToLocation(KnownStopLocationProviderService.makeLocationForSelectedStop(DistanceMeasuringService.findClosestOf(routeStops, location)));		
+			currentLocation = location;
 		}
 		
-		currentLocation = location;
 	}
 	
 	private void showRouteStops(List<Stop> stops) {
@@ -128,6 +131,8 @@ public class RouteMapActivity extends BaseMapActivity {
 		overlays.add(itemizedOverlay);
 		overlays.add(new RouteOverlayItem(stops));
 		mapView.postInvalidate();
+		
+		routeStops = stops;
 	}
 	
 	private class FetchRouteStopsTask extends AsyncTask<Route, Integer, List<Stop>> {
