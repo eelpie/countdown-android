@@ -174,7 +174,7 @@ public class NearbyMapActivity extends BaseMapActivity {
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not find stops within: " + e.getMessage());
 			}

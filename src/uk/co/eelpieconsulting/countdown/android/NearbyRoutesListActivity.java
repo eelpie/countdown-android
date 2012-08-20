@@ -34,9 +34,7 @@ import android.widget.TextView;
 public class NearbyRoutesListActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
-	
-	private static final int STOP_SEARCH_RADIUS = 250;
-	
+		
 	private RouteNameComparator routeNameComparator;
 	private RoutesService routesService;
 	
@@ -122,8 +120,9 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		listNearbyRoutes(location);
 		
-		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {	
+		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {	// TODO push decision to location service
 				turnOffLocationUpdates();
+				
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	
@@ -208,7 +207,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);		
+				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);
+				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load routes: " + e.getMessage());
 			}

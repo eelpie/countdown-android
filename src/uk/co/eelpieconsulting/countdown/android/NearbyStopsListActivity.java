@@ -33,9 +33,7 @@ import android.widget.TextView;
 public class NearbyStopsListActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "StopsActivity";
-	
-	private static final int STOP_SEARCH_RADIUS = 250;
-	
+		
 	private TextView status;
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 	private Stop selectedStop;
@@ -114,7 +112,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		listNearbyStops(location);
 		
-		if (location.hasAccuracy() && location.getAccuracy() < STOP_SEARCH_RADIUS) {	
+		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {	
 				turnOffLocationUpdates();
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
@@ -204,7 +202,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), STOP_SEARCH_RADIUS);				
+				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load nearby stops: " + e.getMessage());
 			}

@@ -11,7 +11,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.util.Log;
 
-public class LocationService {	// TODO Why are there 2 classes with this name?
+public class LocationService {
+	
+	public static final int NEAR_BY_RADIUS = 250;
 	
 	private static final String TAG = "LocationService";
 

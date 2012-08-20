@@ -1,8 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android.activities.maps;
 
-import uk.co.eelpieconsulting.countdown.android.NoProvidersException;
 import uk.co.eelpieconsulting.countdown.android.R;
-import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.LocationCircleOverlay;
 import uk.co.eelpieconsulting.countdown.android.views.maps.GeoPointFactory;
 import android.content.Context;
@@ -19,9 +17,6 @@ import com.google.android.maps.MapView;
 public class BaseMapActivity  extends MapActivity implements LocationListener {
 	
 	private static final String TAG = "BaseMapActivity";
-	
-	private static final int FIVE_SECONDS = 5 * 1000;
-	protected static final int STOP_SEARCH_RADIUS = 250;
 	
 	protected MapView mapView;
 	
