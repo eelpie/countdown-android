@@ -1,34 +1,30 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/status"
+    <LinearLayout
+        android:id="@+id/stopsList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:visibility="gone" />
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="#fff"
+            android:padding="0px"
+            android:src="@drawable/buses"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:visibility="gone" />
         
-     <TextView
-         android:id="@+id/messages"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text=""
-         android:visibility="gone" />
-    
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+    </LinearLayout>
 
-	    <LinearLayout
-	        android:id="@+id/stopsList"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:orientation="vertical" >
-
-	    </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+</ScrollView>
