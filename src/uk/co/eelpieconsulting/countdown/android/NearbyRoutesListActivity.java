@@ -71,7 +71,11 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			status.setVisibility(View.VISIBLE);
 			try {
 				LocationService.registerForLocationUpdates(getApplicationContext(), this);
-				
+				final Location bestLastKnownLocation = LocationService.getBestLastKnownLocation(this);
+				if (bestLastKnownLocation != null) {
+					onLocationChanged(bestLastKnownLocation);
+				}
+
 			} catch (NoProvidersException e) {
 				status.setText(getString(R.string.no_location_providers));
 				status.setVisibility(View.VISIBLE);

@@ -21,7 +21,8 @@ public class LocationService {
 	
 	private static final String[] PROVIDERS = {LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER};
 	
-	public static Location getBestLastKnownLocation(LocationManager locationManager) {
+	public static Location getBestLastKnownLocation(Context context) {
+		final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);			
 		List<Location> allAvailableLastKnownLocations = getAllAvailableLastKnownLocations(locationManager);		
 		return chooseBestLocation(allAvailableLastKnownLocations);
 	}
