@@ -22,7 +22,7 @@ public class ApiFactory {
 	
 	public static ArrivalsService getArrivalsService(Context context) {
 		if (arrivalsService == null) {
-			arrivalsService = new ArrivalsService(getApi(context));
+			arrivalsService = new ArrivalsService(getApi(context), context);
 		}
 		return arrivalsService;
 	}

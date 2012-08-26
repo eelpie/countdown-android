@@ -3,8 +3,8 @@ package uk.co.eelpieconsulting.countdown.android.widgets;
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.StopActivity;
 import uk.co.eelpieconsulting.countdown.android.R;
+import uk.co.eelpieconsulting.countdown.android.StopActivity;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.ArrivalsService;
@@ -18,7 +18,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -64,8 +63,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 	private Stop getClosestFavouriteStop(Context context) {
 		FavouriteStopsDAO favouriteStopsDAO = new FavouriteStopsDAO(context);
 		if (favouriteStopsDAO.hasFavourites()) {
-			LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-			final Location bestLastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);
+			final Location bestLastKnownLocation = LocationService.getBestLastKnownLocation(context);
 			if (bestLastKnownLocation != null) {
 				return favouriteStopsDAO.getClosestFavouriteStopTo(bestLastKnownLocation);
 			}

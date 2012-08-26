@@ -5,14 +5,21 @@ public class ContentNotAvailableException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final Exception cause;
+	private final String message;
 
 	public ContentNotAvailableException(Exception cause) {
-		this.cause = cause;
+		super();
+		this.message = cause.getMessage();
 	}
-
-	public Exception getCause() {
-		return cause;
+	
+	public ContentNotAvailableException(String message) {
+		super();
+		this.message = message;
+	}
+	
+	@Override
+	public String getMessage() {
+		return message;
 	}
 	
 }

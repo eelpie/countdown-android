@@ -5,10 +5,8 @@ import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -27,8 +25,7 @@ public class StartupActivity extends Activity {
         if (favouriteStopsDAO.hasFavourites()) {
         	Log.d(TAG, "Favourites set; starting stop activity");
         	
-    		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    		final Location lastKnownLocation = LocationService.getBestLastKnownLocation(locationManager);
+    		final Location lastKnownLocation = LocationService.getBestLastKnownLocation(getApplicationContext());
     		if (lastKnownLocation != null) {
     			final String lastKnownLocationMessage = "Last known location is: " + DistanceMeasuringService.makeLocationDescription(lastKnownLocation);
     			Log.i(TAG, lastKnownLocationMessage);

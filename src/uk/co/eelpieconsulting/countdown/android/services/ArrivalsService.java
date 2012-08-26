@@ -3,11 +3,13 @@ package uk.co.eelpieconsulting.countdown.android.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.util.Log;
 
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
+import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.model.CachedStopBoard;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
@@ -19,11 +21,13 @@ public class ArrivalsService {
 	private static final long ARRIVALS_CACHE_TTL = 30000;
 	
 	private final BusesClientService busesClientService;
+	private final Context context;
 	
-	Map<Integer, CachedStopBoard> cache;
+	private Map<Integer, CachedStopBoard> cache;
 	
-	public ArrivalsService(BusesClientService busesClientService) {
+	public ArrivalsService(BusesClientService busesClientService, Context context) {
 		this.busesClientService = busesClientService;
+		this.context = context;
 		cache = new HashMap<Integer, CachedStopBoard>();
 	}
 	
@@ -48,7 +52,7 @@ public class ArrivalsService {
 			return stopBoard;
 			
 		} catch (NetworkNotAvailableException e) {
-			throw new ContentNotAvailableException(e);
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
 		} catch (HttpFetchException e) {
 			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {

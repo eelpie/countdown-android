@@ -37,5 +37,6 @@
     <string name="searching">Searching for stops</string>      
     <string name="tfl_credit">Data supplied by Transport for London.</string>
   	<string name="widget_name">Arrivals</string>
-  	<string name="no_location_providers">No location providers are available. Your current position cannot be determined</string>  	
+  	<string name="no_location_providers">No location providers are available. Your current position cannot be determined</string> 
+  	<string name="no_network_available">Your device is reporting that no data connection is currently available</string>  	  	
 </resources>

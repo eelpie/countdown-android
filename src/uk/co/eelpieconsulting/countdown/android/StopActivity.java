@@ -190,9 +190,9 @@ public class StopActivity extends Activity {
 		fetchMessagesTask.execute(stopId);
 	}
 	
-	private void renderStopboard(StopBoard stopboard) {
+	private void renderStopboard(StopBoard stopboard, ContentNotAvailableException exception) {
 		if (stopboard == null) {
-			status.setText("Arrivals could not be loaded"); // TODO why?
+			status.setText("Arrivals could not be loaded: " + exception.getMessage());
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
@@ -237,6 +237,7 @@ public class StopActivity extends Activity {
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
 
 		private ArrivalsService arrivalsService;
+		private ContentNotAvailableException exception;
 
 		public FetchArrivalsTask(ArrivalsService arrivalsService) {
 			super();
@@ -249,6 +250,7 @@ public class StopActivity extends Activity {
 			try {
 				return arrivalsService.getStopBoard(stopId);
 			} catch (ContentNotAvailableException e) {
+				this.exception = e;
 				Log.w(TAG, "Arrivals data was not available: " + e.getMessage());
 			}
 			return null;
@@ -256,7 +258,7 @@ public class StopActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(StopBoard stopboard) {
-			renderStopboard(stopboard);
+			renderStopboard(stopboard, exception);
 		}
 		
 	}
