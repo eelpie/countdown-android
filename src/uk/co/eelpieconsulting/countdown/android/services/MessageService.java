@@ -7,10 +7,12 @@ import java.util.Set;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
+import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;
 import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import android.content.Context;
 import android.util.Log;
 
 public class MessageService {
@@ -20,11 +22,13 @@ public class MessageService {
 	private final BusesClientService api;
 	private final MessageCache messageCache;
 	private final SeenMessagesDAO seenMessagesDAO;
+	private final Context context;
 
-	public MessageService(BusesClientService api, MessageCache messageCache, SeenMessagesDAO seenMessagesDAO) {
+	public MessageService(BusesClientService api, MessageCache messageCache, SeenMessagesDAO seenMessagesDAO, Context context) {
 		this.api = api;
 		this.messageCache = messageCache;
 		this.seenMessagesDAO = seenMessagesDAO;
+		this.context = context;
 	}
 	
 	public List<MultiStopMessage> getStopMessages(int[] stopIds) throws ContentNotAvailableException {
@@ -41,7 +45,7 @@ public class MessageService {
 			return messages;
 			
 		} catch (NetworkNotAvailableException e) {
-			throw new ContentNotAvailableException(e);
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
 		} catch (HttpFetchException e) {
 			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {

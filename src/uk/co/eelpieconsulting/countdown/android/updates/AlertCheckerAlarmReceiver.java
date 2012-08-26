@@ -37,7 +37,7 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "Received alarm; checking for new alert messages");
 		
-		messageService = new MessageService(ApiFactory.getApi(context), new MessageCache(context), new SeenMessagesDAO(context));
+		messageService = new MessageService(ApiFactory.getApi(context), new MessageCache(context), new SeenMessagesDAO(context), context);
 		final FavouriteStopsDAO favouriteStopsDAO = FavouriteStopsDAO.get(context);
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		

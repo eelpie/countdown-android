@@ -67,7 +67,7 @@ public class RouteStopsActivity extends Activity {
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
 		
-		fetchStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
+		fetchStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext()), getApplicationContext()));
 		fetchStopsTask.execute(selectedRoute);
 	}
 	

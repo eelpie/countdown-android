@@ -145,7 +145,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			status.setVisibility(View.VISIBLE);
 		}
 				
-		fetchNearbyStopsTask = new FetchNearbyStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
+		fetchNearbyStopsTask = new FetchNearbyStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext()), getApplicationContext()));
 		fetchNearbyStopsTask.execute(location);		
 		return;		
 	}

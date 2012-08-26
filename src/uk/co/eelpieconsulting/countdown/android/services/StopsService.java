@@ -5,9 +5,11 @@ import java.util.List;
 import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
+import android.content.Context;
 import android.util.Log;
 
 public class StopsService {
@@ -16,10 +18,12 @@ public class StopsService {
 	
 	private final BusesClientService busesClientService;
 	private final StopsCache stopsCache;
+	private final Context context;
 	
-	public StopsService(BusesClientService busesClientService, StopsCache stopsCache) {
+	public StopsService(BusesClientService busesClientService, StopsCache stopsCache, Context context) {
 		this.busesClientService = busesClientService;
-		this.stopsCache = stopsCache;		
+		this.stopsCache = stopsCache;
+		this.context = context;
 	}
 
 	public List<Stop> getRouteStops(String route, int run) throws ContentNotAvailableException {		
@@ -36,7 +40,7 @@ public class StopsService {
 			return stops;
 			
 		} catch (NetworkNotAvailableException e) {
-			throw new ContentNotAvailableException(e);
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
 		} catch (HttpFetchException e) {
 			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {
@@ -58,7 +62,7 @@ public class StopsService {
 			return stops;
 			
 		} catch (NetworkNotAvailableException e) {
-			throw new ContentNotAvailableException(e);
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
 		} catch (HttpFetchException e) {
 			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {
@@ -80,7 +84,7 @@ public class StopsService {
 			
 			return stops;
 		} catch (NetworkNotAvailableException e) {
-			throw new ContentNotAvailableException(e);
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
 		} catch (HttpFetchException e) {
 			throw new ContentNotAvailableException(e);		
 		} catch (ParsingException e) {

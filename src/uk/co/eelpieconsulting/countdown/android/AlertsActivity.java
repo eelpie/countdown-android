@@ -46,7 +46,7 @@ public class AlertsActivity extends Activity {
         setContentView(R.layout.stopslist);
         
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
-		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
+		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()), getApplicationContext());
 
 		messagesList = (ListView) findViewById(R.id.list);
         status = (TextView) findViewById(R.id.status);

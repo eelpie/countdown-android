@@ -54,7 +54,7 @@ public class SearchActivity extends Activity {
 			status.setText(getString(R.string.searching));
 			status.setVisibility(View.VISIBLE);
 			
-			fetchSearchResultsTask = new FetchSearchResultsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
+			fetchSearchResultsTask = new FetchSearchResultsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext()), getApplicationContext()));
 			fetchSearchResultsTask.execute(query);
 			
 		} else {

@@ -82,7 +82,7 @@ public class RouteMapActivity extends BaseMapActivity {
 			}
 		}
 		
-		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext())));
+		FetchRouteStopsTask fetchRouteStopsTask = new FetchRouteStopsTask(new StopsService(ApiFactory.getApi(getApplicationContext()), new StopsCache(getApplicationContext()), getApplicationContext()));
 		fetchRouteStopsTask.execute(selectedRoute);
 	}
 	

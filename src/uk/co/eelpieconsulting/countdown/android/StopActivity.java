@@ -62,7 +62,7 @@ public class StopActivity extends Activity {
         
 		stopsList = (LinearLayout) findViewById(R.id.stopsList);
 		
-		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()));
+		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()), getApplicationContext());
 		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");

@@ -51,7 +51,7 @@ public class NearbyMapActivity extends BaseMapActivity {
         status = (TextView) findViewById(R.id.status);
 				
 		stopsCache = new StopsCache(getApplicationContext());
-		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache);
+		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache, getApplicationContext());
 	}
     
 	@Override

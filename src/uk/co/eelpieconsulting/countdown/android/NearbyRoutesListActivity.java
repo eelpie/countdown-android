@@ -53,7 +53,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 
 		routeNameComparator = new RouteNameComparator();
 
-		routesService = new RoutesService(ApiFactory.getApi(getApplicationContext()), new RoutesCache(getApplicationContext()));
+		routesService = new RoutesService(ApiFactory.getApi(getApplicationContext()), new RoutesCache(getApplicationContext()), getApplicationContext());
 	}
     
 	@Override
