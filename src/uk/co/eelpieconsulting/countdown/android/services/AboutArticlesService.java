@@ -8,7 +8,7 @@ import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.util.HttpFetcher;
+import uk.co.eelpieconsulting.common.http.HttpFetcher;
 import uk.co.eelpieconsulting.countdown.android.ArticlesNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.model.Article;
 import android.content.Context;
@@ -28,7 +28,7 @@ public class AboutArticlesService {
 	public List<Article> getArticles(Context context, String feedUrl) throws ArticlesNotAvailableException {		
 		final List<Article> articles = new ArrayList<Article>();		
 		try {			
-			final String feedContent = httpFetcher.fetchContent(feedUrl, "UTF-8");
+			final String feedContent = httpFetcher.fetchContent(feedUrl);
 			
 			final InputStream inputStream = new StringBufferInputStream(feedContent);
 			final Reader articleReader = new BufferedReader(new InputStreamReader(inputStream, "UTF8"));		

@@ -3,12 +3,12 @@ package uk.co.eelpieconsulting.countdown.android.api;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.BusesClient;
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.network.NetworkStatusService;
 

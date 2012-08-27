@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.daos.SeenMessagesDAO;

@@ -2,9 +2,9 @@ package uk.co.eelpieconsulting.countdown.android.services;
 
 import java.util.List;
 
-import uk.co.eelpieconsulting.buses.client.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.busroutes.model.Route;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.android.R;
 import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.RoutesCache;
