@@ -54,12 +54,14 @@ public class DistanceMeasuringService {
 	}
 		
 	public static float distanceTo(Location location, Stop stop) {
-		float[] results = new float[1];
-		Location.distanceBetween(location.getLatitude(), location.getLongitude(), stop.getLatitude(), stop.getLongitude(), results);
-		return results[0];
+		return distanceBetween(location.getLatitude(), location.getLongitude(), stop.getLatitude(), stop.getLongitude());		
 	}
-		
-	public static String makeLocationDescription(Location location) {
+	
+	public static float distanceBetween(Location start, Location end) {
+		return distanceBetween(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());	
+	}
+	
+	public static String makeLocationDescription(Location location) {	// TODO move to view factory
 		StringBuilder description = new StringBuilder(roundLatLong(location.getLatitude()) + ", " + roundLatLong(location.getLongitude()));
 		if (location.hasAccuracy()) {
 			description.append(" +/- " + location.getAccuracy() + "m");
@@ -69,6 +71,12 @@ public class DistanceMeasuringService {
 	
 	public static String roundLatLong(double value) {
 		return LAT_LONG_FORMAT.format(value);
+	}
+	
+	private static float distanceBetween(double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
+		float[] results = new float[1];
+		Location.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude, results);
+		return results[0];
 	}
 	
 }

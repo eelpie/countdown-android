@@ -55,6 +55,13 @@ public class LocationService {
 		return location.hasAccuracy() && location.getAccuracy() < NEAR_BY_RADIUS;
 	}
 	
+	public static boolean locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(Location currentLocation, Location newLocation) {
+		if (currentLocation == null) {
+			return true;
+		}		
+		return DistanceMeasuringService.distanceBetween(currentLocation, newLocation) > (NEAR_BY_RADIUS / 2);
+	}
+	
 	private static Location chooseBestLocation(List<Location> allAvailableLastKnownLocations) {
 		Location bestLocation = null;
 		for (Location location : allAvailableLastKnownLocations) {

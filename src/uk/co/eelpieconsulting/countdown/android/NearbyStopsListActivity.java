@@ -37,8 +37,10 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	private TextView status;
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
 	private Stop selectedStop;
-
+	private Location currentLocation;
+	
 	private ListView stopsList;
+
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		super.onResume();
 		getWindow().setTitle(getString(R.string.near_me));
 		stopsList.setVisibility(View.GONE);
+		currentLocation = null;
 		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
@@ -114,10 +117,13 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
 		status.setVisibility(View.VISIBLE);
 		
-		listNearbyStops(location);
+		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, location)) {
+			listNearbyStops(location);
+			currentLocation = location;
+		}
 		
-		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {	
-				turnOffLocationUpdates();
+		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {
+			turnOffLocationUpdates();
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	

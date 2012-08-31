@@ -126,11 +126,10 @@ public class NearbyMapActivity extends BaseMapActivity {
 		locationCircleOverlay.setPoint(location);
 		mapView.postInvalidate();
 		
-		boolean newLocationIsBetterEnoughToJustifyReload = currentLocation == null;	// TODO	Improves to be had here
-		if (newLocationIsBetterEnoughToJustifyReload) {
+		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, location)) {
 			listNearbyStops(location);		
+			currentLocation = location;
 		}
-		currentLocation = location;
 	}
 	
 	private void listNearbyStops(Location location) {		
