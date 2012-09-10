@@ -28,7 +28,7 @@ public class AboutArticlesService {
 	public List<Article> getArticles(Context context, String feedUrl) throws ArticlesNotAvailableException {		
 		final List<Article> articles = new ArrayList<Article>();		
 		try {			
-			final String feedContent = httpFetcher.fetchContent(feedUrl);
+			final String feedContent = httpFetcher.get(feedUrl);
 			
 			final InputStream inputStream = new StringBufferInputStream(feedContent);
 			final Reader articleReader = new BufferedReader(new InputStreamReader(inputStream, "UTF8"));		

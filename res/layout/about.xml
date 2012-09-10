@@ -25,6 +25,13 @@
             android:text=""
             android:visibility="gone" />
         
+        <TextView
+            android:id="@+id/sources"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:visibility="gone" />
+            
     </LinearLayout>
 
 </ScrollView>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
+import uk.co.eelpieconsulting.buses.client.model.FileInformation;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -62,6 +63,15 @@ public class BusesClientService {
 	public List<Stop> getRouteStops(String route, int run) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.getRouteStops(route, run);
+		}
+		throw new NetworkNotAvailableException();
+	}
+
+	public List<FileInformation> getSourceFileInformation() throws HttpFetchException, ParsingException, NetworkNotAvailableException {
+		if (networkStatusService.isConnectionAvailable()) {
+			List<FileInformation> sourceFileInformation = busesClient.getSourceFileInformation();
+			System.out.println(sourceFileInformation);
+			return sourceFileInformation;
 		}
 		throw new NetworkNotAvailableException();
 	}
