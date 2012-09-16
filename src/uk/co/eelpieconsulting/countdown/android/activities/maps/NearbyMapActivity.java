@@ -69,7 +69,7 @@ public class NearbyMapActivity extends BaseMapActivity {
 			status.setVisibility(View.VISIBLE);
 			try {
 				LocationService.registerForLocationUpdates(getApplicationContext(), this);
-				final Location bestLastKnownLocation = LocationService.getBestLastKnownLocation(getApplicationContext());
+				final Location bestLastKnownLocation = LocationService.getRecentBestLastKnownLocation(getApplicationContext());
 				if (bestLastKnownLocation != null) {
 					onLocationChanged(bestLastKnownLocation);
 				}

@@ -12,21 +12,41 @@ import android.location.LocationManager;
 import android.util.Log;
 
 public class LocationService {
-	
+		
 	public static final int NEAR_BY_RADIUS = 250;
-	
+
 	private static final String TAG = "LocationService";
 
 	private static final int FIVE_SECONDS = 5 * 1000;
+	private static final int TEN_MINUTES = 1000 * 60 * 10;
 	
 	private static final String[] PROVIDERS = {LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER};
 	
 	public static Location getBestLastKnownLocation(Context context) {
 		final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);			
-		List<Location> allAvailableLastKnownLocations = getAllAvailableLastKnownLocations(locationManager);		
+		final List<Location> allAvailableLastKnownLocations = getAllAvailableLastKnownLocations(locationManager);		
 		return chooseBestLocation(allAvailableLastKnownLocations);
 	}
 	
+	public static Location getRecentBestLastKnownLocation(Context context) {
+		final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		final List<Location> allAvailableLastKnownLocations = getAllAvailableLastKnownLocations(locationManager);
+		final List<Location> recentLocations = getRecentLocationsFor(allAvailableLastKnownLocations);
+		return chooseBestLocation(recentLocations);
+	}
+		
+	
+	private static List<Location> getRecentLocationsFor(List<Location> allAvailableLastKnownLocations) {
+		List<Location> recentLocations = new ArrayList<Location>();
+		for (Location location : allAvailableLastKnownLocations) {
+			boolean isRecentEnough = System.currentTimeMillis() - location.getTime() > TEN_MINUTES;
+			if (isRecentEnough) {
+				recentLocations.add(location);
+			}
+		}
+		return recentLocations;
+	}
+
 	public static void registerForLocationUpdates(Context context, LocationListener listener) throws NoProvidersException {
 		final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);			
 		try {
@@ -58,7 +78,7 @@ public class LocationService {
 	public static boolean locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(Location currentLocation, Location newLocation) {
 		if (currentLocation == null) {
 			return true;
-		}		
+		}	
 		return DistanceMeasuringService.distanceBetween(currentLocation, newLocation) > (NEAR_BY_RADIUS / 2);
 	}
 	
@@ -87,5 +107,5 @@ public class LocationService {
 		}
 		return availableLocations;
 	}
-
+	
 }
