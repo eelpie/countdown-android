@@ -55,7 +55,9 @@ public class AlertCheckerAlarmReceiver extends BroadcastReceiver {
 		}
 		
 		if (messages.isEmpty()) {
-			Log.i(TAG, "No new messages seen; not notifying");
+			Log.i(TAG, "No new messages seen; not notifying; clearing any current notifications so that expired alerts aren't left on display");
+			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+			notificationManager.cancel(AlertsActivity.NOTIFICATION_ID);
 			return;
 		}
 		
