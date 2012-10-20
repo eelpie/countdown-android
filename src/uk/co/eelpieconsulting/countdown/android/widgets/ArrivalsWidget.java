@@ -43,6 +43,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		remoteWidgetView.setOnClickPendingIntent(R.id.WidgetItemLayout, pendingIntent);
 		
 		setClosestStopTitle(context, remoteWidgetView, getClosestFavouriteStop(context));
+		// TODO not clearing the arrivals broad at this point can lead to inconsistant stop name title and arrivals
 		
 		AppWidgetManager manager = AppWidgetManager.getInstance(context);	
 		if (manager != null) {
