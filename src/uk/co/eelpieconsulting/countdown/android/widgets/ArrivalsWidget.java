@@ -43,7 +43,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		remoteWidgetView.setOnClickPendingIntent(R.id.WidgetItemLayout, pendingIntent);
 		
 		setClosestStopTitle(context, remoteWidgetView, getClosestFavouriteStop(context));
-		// TODO not clearing the arrivals broad at this point can lead to inconsistant stop name title and arrivals
+		clearStopBoard(remoteWidgetView);
 		
 		AppWidgetManager manager = AppWidgetManager.getInstance(context);	
 		if (manager != null) {
@@ -51,12 +51,16 @@ public class ArrivalsWidget extends AppWidgetProvider {
 		}
 	}
 
+	private void clearStopBoard(final RemoteViews remoteWidgetView) {
+		remoteWidgetView.setTextViewText(R.id.arrivals, "");
+	}
+
 	private void setClosestStopTitle(Context context, final RemoteViews remoteWidgetView, Stop closestFavouriteStop) {
 		if (closestFavouriteStop != null) {
 			remoteWidgetView.setTextViewText(R.id.title, StopDescriptionService.makeStopTitle(closestFavouriteStop));
 		} else {
 			remoteWidgetView.setTextViewText(R.id.title, context.getString(R.string.no_favourites_warning));			
-			remoteWidgetView.setTextViewText(R.id.arrivals, "");
+			clearStopBoard(remoteWidgetView);
 		}
 	}
 
@@ -88,8 +92,7 @@ public class ArrivalsWidget extends AppWidgetProvider {
 				
 				final ArrivalsService arrivalsService = ApiFactory.getArrivalsService(context);
 				FetchArrivalsTask fetchArrivalsTask = new FetchArrivalsTask(arrivalsService, context);
-				fetchArrivalsTask.execute(closestFavouriteStop.getId());
-					
+				fetchArrivalsTask.execute(closestFavouriteStop.getId());					
 			}
 			
 			final AppWidgetManager manager = AppWidgetManager.getInstance(context);
