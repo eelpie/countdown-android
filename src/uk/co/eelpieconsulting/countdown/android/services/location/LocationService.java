@@ -24,8 +24,7 @@ public class LocationService {
 	
 	public static Location getBestLastKnownLocation(Context context) {
 		final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);			
-		final List<Location> allAvailableLastKnownLocations = getAllAvailableLastKnownLocations(locationManager);		
-		return chooseBestLocation(allAvailableLastKnownLocations);
+		return chooseBestLocation(getAllAvailableLastKnownLocations(locationManager));
 	}
 	
 	public static Location getRecentBestLastKnownLocation(Context context) {
@@ -39,8 +38,9 @@ public class LocationService {
 	private static List<Location> getRecentLocationsFor(List<Location> allAvailableLastKnownLocations) {
 		List<Location> recentLocations = new ArrayList<Location>();
 		for (Location location : allAvailableLastKnownLocations) {
-			boolean isRecentEnough = System.currentTimeMillis() - location.getTime() > TEN_MINUTES;
-			if (isRecentEnough) {
+			boolean isRecentEnough = System.currentTimeMillis() - location.getTime() < TEN_MINUTES;
+			Log.d(TAG, "Is recent enough: " + location + " (" + isRecentEnough + ")");
+			if (isRecentEnough) {				
 				recentLocations.add(location);
 			}
 		}
@@ -78,21 +78,45 @@ public class LocationService {
 	public static boolean locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(Location currentLocation, Location newLocation) {
 		if (currentLocation == null) {
 			return true;
-		}	
-		return DistanceMeasuringService.distanceBetween(currentLocation, newLocation) > (NEAR_BY_RADIUS / 2);
+		}
+		float distanceBetween = DistanceMeasuringService.distanceBetween(currentLocation, newLocation);
+		final boolean isSignificant = distanceBetween > (NEAR_BY_RADIUS / 2) && distanceBetween > newLocation.getAccuracy();
+		Log.d(TAG, "Distance from last location: " + distanceBetween + " (is significant: " + isSignificant + ")");
+		return isSignificant;
 	}
 	
-	private static Location chooseBestLocation(List<Location> allAvailableLastKnownLocations) {
+	public static boolean locationIsSignificatelyDifferentOrBetterToWarrentMovingPoint(Location currentLocation, Location newLocation) {
+		if (currentLocation == null) {
+			return true;
+		}
+		if (newLocation.getAccuracy() < NEAR_BY_RADIUS) {
+			return true;
+		}
+		
+		if (newLocation.getTime() - currentLocation.getTime() > 60000) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static Location chooseBestLocation(List<Location> availableLocations) {
+		Log.i(TAG, "Locations to choose best from: " + availableLocations);
 		Location bestLocation = null;
-		for (Location location : allAvailableLastKnownLocations) {
+		for (Location location : availableLocations) {
 			if (bestLocation == null) {
 				bestLocation = location;
-			} else {
-				if (location.getTime() > bestLocation.getTime()) {
+
+			} else {				
+				if (bestLocation.getTime() + 60000 < location.getTime()) {
 					bestLocation = location;				
+				}				
+				if (location.getAccuracy() < bestLocation.getAccuracy()) {
+					bestLocation = location;
 				}
 			}			
 		}
+		
+		Log.i(TAG, "Best location of " + availableLocations + " is: " + bestLocation);
 		return bestLocation;
 	}
 
@@ -105,6 +129,8 @@ public class LocationService {
 				availableLocations.add(providerLocation);
 			}
 		}
+		
+		Log.i(TAG, "Available last known locations: " + availableLocations);
 		return availableLocations;
 	}
 	

@@ -65,11 +65,15 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			status.setText(getString(R.string.waiting_for_location));
 			status.setVisibility(View.VISIBLE);
 			try {
-				LocationService.registerForLocationUpdates(getApplicationContext(), this);
 				final Location bestLastKnownLocation = LocationService.getRecentBestLastKnownLocation(this);
 				if (bestLastKnownLocation != null) {
 					onLocationChanged(bestLastKnownLocation);
-				}
+					if (LocationService.isAccurateEnoughForNearbyRoutes(currentLocation)) {
+						return;
+					}
+				} 
+				
+				LocationService.registerForLocationUpdates(getApplicationContext(), this);				
 				
 			} catch (NoProvidersException e) {
 				status.setText(getString(R.string.no_location_providers));
@@ -124,6 +128,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {
 			turnOffLocationUpdates();
+			
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
 		}	

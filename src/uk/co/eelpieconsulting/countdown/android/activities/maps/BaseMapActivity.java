@@ -84,7 +84,9 @@ public class BaseMapActivity  extends MapActivity implements LocationListener {
 	
 	protected void zoomMapToLocation(Location location) {
 		mapView.getController().animateTo(GeoPointFactory.createGeoPointForLatLong(location.getLatitude(), location.getLongitude()));
-		mapView.getController().setZoom(17);
+		mapView.getController().setZoom(17);		
+		locationCircleOverlay.setPoint(location);
+		mapView.postInvalidate();
 	}
 	
 }

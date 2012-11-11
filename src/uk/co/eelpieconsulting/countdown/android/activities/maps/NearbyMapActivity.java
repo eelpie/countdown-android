@@ -57,6 +57,9 @@ public class NearbyMapActivity extends BaseMapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		currentLocation = null;
+		
 		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
@@ -68,11 +71,11 @@ public class NearbyMapActivity extends BaseMapActivity {
 			status.setText(getString(R.string.waiting_for_location));
 			status.setVisibility(View.VISIBLE);
 			try {
-				LocationService.registerForLocationUpdates(getApplicationContext(), this);
+				LocationService.registerForLocationUpdates(getApplicationContext(), this);						
 				final Location bestLastKnownLocation = LocationService.getRecentBestLastKnownLocation(getApplicationContext());
 				if (bestLastKnownLocation != null) {
 					onLocationChanged(bestLastKnownLocation);
-				}
+				}				
 				
 			} catch (NoProvidersException e) {
 				status.setText(getString(R.string.no_location_providers));
@@ -114,21 +117,23 @@ public class NearbyMapActivity extends BaseMapActivity {
 		return false;
 	}
 	
-	public void onLocationChanged(Location location) {
-		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
+	public void onLocationChanged(Location newLocation) {
+		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(newLocation));
 		status.setVisibility(View.VISIBLE);
 		
-		if (currentLocation == null) {
-			zoomMapToLocation(location);		
+		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, newLocation)) {
+			status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(newLocation));
+			zoomMapToLocation(newLocation);		
+		
+		} else if (LocationService.locationIsSignificatelyDifferentOrBetterToWarrentMovingPoint(currentLocation, newLocation)) {
+			// TODO current map point should be considered here as well as current data set point.
+			locationCircleOverlay.setPoint(newLocation);
+			mapView.postInvalidate();
 		}
 		
-		locationCircleOverlay.setPoint(location);
-		mapView.postInvalidate();
-		
-		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, location)) {
-			listNearbyStops(location);		
-			currentLocation = location;
+		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, newLocation)) {
+			listNearbyStops(newLocation);		
+			currentLocation = newLocation;
 		}
 	}
 	
@@ -148,18 +153,19 @@ public class NearbyMapActivity extends BaseMapActivity {
 			return;
 		}
 		
-		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));
-		
-		Drawable drawable = getResources().getDrawable(R.drawable.marker);
-		final StopsItemizedOverlay itemizedOverlay = new StopsItemizedOverlay(drawable, mapView);
-		for (Stop stop : stops) {		
-			itemizedOverlay.addOverlay(new StopOverlayItem(stop));
+		status.setText(getString(R.string.stops_near) + ": " + DistanceMeasuringService.makeLocationDescription(location));		
+		if (!stops.isEmpty()) {
+			Drawable drawable = getResources().getDrawable(R.drawable.marker);
+			final StopsItemizedOverlay itemizedOverlay = new StopsItemizedOverlay(drawable, mapView);
+			for (Stop stop : stops) {		
+				itemizedOverlay.addOverlay(new StopOverlayItem(stop));
+			}
+			
+			final List<Overlay> overlays = mapView.getOverlays();
+			overlays.add(itemizedOverlay);
+			
+			mapView.postInvalidate();
 		}
-		
-		final List<Overlay> overlays = mapView.getOverlays();
-		overlays.add(itemizedOverlay);
-				
-		mapView.postInvalidate();		
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
@@ -186,6 +192,7 @@ public class NearbyMapActivity extends BaseMapActivity {
 		
 		@Override
 		protected void onPostExecute(List<Stop> stops) {
+			Log.d(TAG, "Stops to show: " + stops);
 			showStops(location, stops);
 		}
 		

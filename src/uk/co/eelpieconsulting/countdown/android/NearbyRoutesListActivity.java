@@ -43,6 +43,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private TextView status;
 	private Stop selectedStop;
 	private ListView routesList;
+	private Location currentLocation;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,9 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		currentLocation = null;
+		
 		getWindow().setTitle(getString(R.string.near_me));
 		routesList.setVisibility(View.GONE);
 		
@@ -70,11 +74,14 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 			status.setText(getString(R.string.waiting_for_location));
 			status.setVisibility(View.VISIBLE);
 			try {
-				LocationService.registerForLocationUpdates(getApplicationContext(), this);
 				final Location bestLastKnownLocation = LocationService.getRecentBestLastKnownLocation(this);
 				if (bestLastKnownLocation != null) {
 					onLocationChanged(bestLastKnownLocation);
+					if (LocationService.isAccurateEnoughForNearbyRoutes(currentLocation)) {
+						return;
+					}
 				}
+				LocationService.registerForLocationUpdates(getApplicationContext(), this);
 
 			} catch (NoProvidersException e) {
 				status.setText(getString(R.string.no_location_providers));
@@ -117,18 +124,21 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		return false;
 	}
 	
-	public void onLocationChanged(Location location) {
-		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
-		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(location));
+	public void onLocationChanged(Location newLocation) {
+		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(newLocation));
+		status.setText("Location found: " + DistanceMeasuringService.makeLocationDescription(newLocation));
 		status.setVisibility(View.VISIBLE);
 		
-		listNearbyRoutes(location);
+		if (LocationService.locationIsSignificantlyDifferentToCurrentLocationToWarrentReloadingResults(currentLocation, newLocation)) {
+			listNearbyRoutes(newLocation);
+			currentLocation = newLocation;
+		}
 		
-		if (LocationService.isAccurateEnoughForNearbyRoutes(location)) {
+		if (LocationService.isAccurateEnoughForNearbyRoutes(newLocation)) {
 			turnOffLocationUpdates();
 			
 		} else {
-			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
+			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(newLocation));
 		}	
 	}
 	
