@@ -85,6 +85,16 @@ public class LocationService {
 		return isSignificant;
 	}
 	
+	public static void turnOffLocationUpdates(Context context, LocationListener listener) {
+		Log.d(TAG, "Turning off location updates");
+		try {
+			LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+			locationManager.removeUpdates(listener);
+		} catch (Exception e) {
+			Log.w(TAG, e);
+		}
+	}	
+	
 	public static boolean locationIsSignificatelyDifferentOrBetterToWarrentMovingPoint(Location currentLocation, Location newLocation) {
 		if (currentLocation == null) {
 			return true;

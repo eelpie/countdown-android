@@ -88,8 +88,8 @@ public class RouteMapActivity extends BaseMapActivity {
 	
 	@Override
 	protected void onPause() {
-		super.onPause();		
-		turnOffLocationUpdates();
+		super.onPause();
+		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 	}
 
 	@Override

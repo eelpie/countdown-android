@@ -5,20 +5,18 @@ import java.util.List;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
-import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceToStopComparator;
 import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocationProviderService;
+import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -85,10 +83,10 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	@Override
 	protected void onPause() {
 		super.onPause();
+		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
 		}
-		turnOffLocationUpdates();
 	}
 	
 	@Override
@@ -127,7 +125,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		}
 		
 		if (location.hasAccuracy() && location.getAccuracy() < LocationService.NEAR_BY_RADIUS) {
-			turnOffLocationUpdates();
+			LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 			
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(location));
@@ -186,15 +184,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		stopsListAdapter.sort(new DistanceToStopComparator(location));
 		stopsList.setAdapter(stopsListAdapter);	
 		stopsList.setVisibility(View.VISIBLE);
-	}
-	
-	private void turnOffLocationUpdates() {
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.removeUpdates(this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {

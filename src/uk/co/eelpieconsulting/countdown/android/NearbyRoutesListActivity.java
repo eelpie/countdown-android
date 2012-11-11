@@ -15,11 +15,9 @@ import uk.co.eelpieconsulting.countdown.android.services.location.LocationServic
 import uk.co.eelpieconsulting.countdown.android.views.RoutesListAdapter;
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -93,10 +91,10 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	@Override
 	protected void onPause() {
 		super.onPause();
+		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 		if (fetchNearbyRoutesTask != null && fetchNearbyRoutesTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyRoutesTask.cancel(true);
 		}
-		turnOffLocationUpdates();
 	}
 
 	@Override
@@ -135,8 +133,7 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		}
 		
 		if (LocationService.isAccurateEnoughForNearbyRoutes(newLocation)) {
-			turnOffLocationUpdates();
-			
+			LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);			
 		} else {
 			status.setText("Hoping for more accurate location than: " + DistanceMeasuringService.makeLocationDescription(newLocation));
 		}	
@@ -190,15 +187,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		routesListAdapter.sort(routeNameComparator);
 		routesList.setAdapter(routesListAdapter);	
 		routesList.setVisibility(View.VISIBLE);
-	}
-	
-	private void turnOffLocationUpdates() {
-		try {
-			LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-			locationManager.removeUpdates(this);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
 	}
 	
 	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
