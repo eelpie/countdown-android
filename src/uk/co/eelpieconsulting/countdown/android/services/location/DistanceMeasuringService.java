@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
+import android.view.ViewGroup.MarginLayoutParams;
 
 public class DistanceMeasuringService {
 	
@@ -62,7 +63,12 @@ public class DistanceMeasuringService {
 	}
 	
 	public static String makeLocationDescription(Location location) {	// TODO move to view factory
-		StringBuilder description = new StringBuilder(roundLatLong(location.getLatitude()) + ", " + roundLatLong(location.getLongitude()));
+		final String description = roundLatLong(location.getLatitude()) + ", " + roundLatLong(location.getLongitude());
+		return makeLocationDescription(description, location);		
+	}
+	
+	public static String makeLocationDescription(String locationName, Location location) {
+		StringBuilder description = new StringBuilder(locationName);
 		if (location.hasAccuracy()) {
 			description.append(" +/- " + location.getAccuracy() + "m");
 		}

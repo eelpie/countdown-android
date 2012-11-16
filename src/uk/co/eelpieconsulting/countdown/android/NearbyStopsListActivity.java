@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
@@ -34,6 +35,8 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		
 	private TextView status;
 	private FetchNearbyStopsTask fetchNearbyStopsTask;
+	private ResolveLocationTask resolveLocationTask;
+	
 	private Stop selectedStop;
 	private Location currentLocation;
 	
@@ -86,6 +89,9 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
+		}
+		if (resolveLocationTask != null && resolveLocationTask.getStatus().equals(Status.RUNNING)) {
+			resolveLocationTask.cancel(true);
 		}
 	}
 	
@@ -184,6 +190,14 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		stopsListAdapter.sort(new DistanceToStopComparator(location));
 		stopsList.setAdapter(stopsListAdapter);	
 		stopsList.setVisibility(View.VISIBLE);
+		
+		resolveLocationTask = new ResolveLocationTask(ApiFactory.getApi(getApplicationContext()));
+		resolveLocationTask.execute(location);
+	}
+	
+	private void showLocation(Location location, String locationName) {
+		status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(locationName, location));
+		status.setVisibility(View.VISIBLE);
 	}
 	
 	private class FetchNearbyStopsTask extends AsyncTask<Location, Integer, List<Stop>> {
@@ -209,6 +223,34 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 				return stopsService.findStopsWithin(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load nearby stops: " + e.getMessage());
+			}
+			return null;
+		}		
+	}
+	
+	private class ResolveLocationTask extends AsyncTask<Location, Integer, String> {
+
+		private BusesClientService busesClient;
+		private Location location;
+
+		public ResolveLocationTask(BusesClientService busesClient) {
+			super();
+			this.busesClient = busesClient;
+		}
+		
+		@Override
+		protected void onPostExecute(String locationName) {
+			showLocation(location, locationName);
+		}
+		
+		@Override
+		protected String doInBackground(Location... params) {
+			final Location location = params[0];
+			this.location = location;
+			try {				
+				return busesClient.resolveLocation(location.getLatitude(), location.getLongitude());		
+			} catch (Exception e) {
+				Log.w(TAG, "Could not resolve location: " + e.getMessage());
 			}
 			return null;
 		}		

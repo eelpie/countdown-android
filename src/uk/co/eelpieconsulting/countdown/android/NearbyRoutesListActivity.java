@@ -5,6 +5,7 @@ import java.util.List;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
+import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.RouteNameComparator;
 import uk.co.eelpieconsulting.countdown.android.services.RoutesService;
@@ -37,7 +38,8 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private RoutesService routesService;
 	
 	private FetchNearbyRoutesTask fetchNearbyRoutesTask;
-
+	private ResolveLocationTask resolveLocationTask;
+	
 	private TextView status;
 	private Stop selectedStop;
 	private ListView routesList;
@@ -94,6 +96,9 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 		if (fetchNearbyRoutesTask != null && fetchNearbyRoutesTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyRoutesTask.cancel(true);
+		}
+		if (resolveLocationTask != null && resolveLocationTask.getStatus().equals(Status.RUNNING)) {
+			resolveLocationTask.cancel(true);
 		}
 	}
 
@@ -187,6 +192,14 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		routesListAdapter.sort(routeNameComparator);
 		routesList.setAdapter(routesListAdapter);	
 		routesList.setVisibility(View.VISIBLE);
+		
+		resolveLocationTask = new ResolveLocationTask(ApiFactory.getApi(getApplicationContext()));
+		resolveLocationTask.execute(location);
+	}
+	
+	private void showLocation(Location location, String locationName) {
+		status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(locationName, location));
+		status.setVisibility(View.VISIBLE);
 	}
 	
 	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
@@ -213,6 +226,34 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load routes: " + e.getMessage());
+			}
+			return null;
+		}		
+	}
+	
+	private class ResolveLocationTask extends AsyncTask<Location, Integer, String> {
+
+		private BusesClientService busesClient;
+		private Location location;
+
+		public ResolveLocationTask(BusesClientService busesClient) {
+			super();
+			this.busesClient = busesClient;
+		}
+		
+		@Override
+		protected void onPostExecute(String locationName) {
+			showLocation(location, locationName);
+		}
+		
+		@Override
+		protected String doInBackground(Location... params) {
+			final Location location = params[0];
+			this.location = location;
+			try {				
+				return busesClient.resolveLocation(location.getLatitude(), location.getLongitude());		
+			} catch (Exception e) {
+				Log.w(TAG, "Could not resolve location: " + e.getMessage());
 			}
 			return null;
 		}		

@@ -2,6 +2,8 @@ package uk.co.eelpieconsulting.countdown.android.api;
 
 import java.util.List;
 
+import org.json.JSONException;
+
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.FileInformation;
@@ -69,9 +71,14 @@ public class BusesClientService {
 
 	public List<FileInformation> getSourceFileInformation() throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
-			List<FileInformation> sourceFileInformation = busesClient.getSourceFileInformation();
-			System.out.println(sourceFileInformation);
-			return sourceFileInformation;
+			return busesClient.getSourceFileInformation();
+		}
+		throw new NetworkNotAvailableException();
+	}
+
+	public String resolveLocation(double latitude, double longitude) throws NetworkNotAvailableException, JSONException, HttpFetchException {
+		if (networkStatusService.isConnectionAvailable()) {
+			return busesClient.resolveLocation(latitude, longitude);
 		}
 		throw new NetworkNotAvailableException();
 	}
