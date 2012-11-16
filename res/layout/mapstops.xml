@@ -7,7 +7,7 @@
 		         android:id="@+id/map"
                  android:layout_width="fill_parent"
                  android:layout_height="fill_parent"
-                 android:apiKey="0jcBgjvEKL5WE9KrFjDcUtwnd4-7Vm3Hrxj8lag"
+                 android:apiKey="0jcBgjvEKL5Vc9IxLA1N6NIzt8Eynagpw5zIDng"
                  />
           
         <TextView
