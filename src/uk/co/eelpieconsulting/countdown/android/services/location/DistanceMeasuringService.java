@@ -5,7 +5,6 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
-import android.view.ViewGroup.MarginLayoutParams;
 
 public class DistanceMeasuringService {
 	
@@ -13,20 +12,9 @@ public class DistanceMeasuringService {
 	
 	public static String distanceToStopDescription(Location location, Stop stop) {
 		final float distanceTo = distanceTo(location, stop);
-		if (location.hasAccuracy()) {
-			if (location.getAccuracy() <= 20) {
-				return Integer.toString(roundToPlusMinus1(distanceTo));
-			}
-			if (location.getAccuracy() <= 200) {
-				return Integer.toString(roundToPlusMinus10(distanceTo));
-			}			
-			if (location.getAccuracy() > 200) {
-				return "Approximately " + roundToPlusMinus100(distanceTo);
-			}
-		}	
-		return Integer.toString(roundToPlusMinus10(distanceTo));
+		return roundDistanceBasedOnLocationAccuracy(location, distanceTo);
 	}
-	
+
 	public static Stop findClosestOf(List<Stop> stops, Location location) {
 		Float closestDistance = null;
 		Stop closestStop = null;
@@ -42,18 +30,6 @@ public class DistanceMeasuringService {
 		return closestStop;
 	}
 	
-	private static int roundToPlusMinus1(final float distanceTo) {
-		return Math.round(distanceTo);
-	}
-
-	private static int roundToPlusMinus10(final float distanceTo) {
-		return Math.round((distanceTo / 10)) * 10;
-	}
-	
-	private static int roundToPlusMinus100(final float distanceTo) {
-		return Math.round((distanceTo / 100)) * 100;
-	}
-		
 	public static float distanceTo(Location location, Stop stop) {
 		return distanceBetween(location.getLatitude(), location.getLongitude(), stop.getLatitude(), stop.getLongitude());		
 	}
@@ -70,7 +46,7 @@ public class DistanceMeasuringService {
 	public static String makeLocationDescription(String locationName, Location location) {
 		StringBuilder description = new StringBuilder(locationName);
 		if (location.hasAccuracy()) {
-			description.append(" +/- " + location.getAccuracy() + "m");
+			description.append(" +/- " + roundDistanceBasedOnLocationAccuracy(location, location.getAccuracy()) + "m");
 		}
 		return description.toString();
 	}
@@ -79,6 +55,35 @@ public class DistanceMeasuringService {
 		return LAT_LONG_FORMAT.format(value);
 	}
 	
+	private static String roundDistanceBasedOnLocationAccuracy(
+			Location location, final float distanceTo) {
+		if (location.hasAccuracy()) {
+			float accuracy = location.getAccuracy();
+			if (accuracy <= 20) {
+				return Integer.toString(roundToPlusMinus1(distanceTo));
+			}
+			if (accuracy <= 200) {
+				return Integer.toString(roundToPlusMinus10(distanceTo));
+			}			
+			if (accuracy > 200) {
+				return Integer.toString(roundToPlusMinus100(distanceTo));
+			}
+		}	
+		return Integer.toString(roundToPlusMinus10(distanceTo));
+	}
+
+	private static int roundToPlusMinus1(final float distanceTo) {
+		return Math.round(distanceTo);
+	}
+
+	private static int roundToPlusMinus10(final float distanceTo) {
+		return Math.round((distanceTo / 10)) * 10;
+	}
+
+	private static int roundToPlusMinus100(final float distanceTo) {
+		return Math.round((distanceTo / 100)) * 100;
+	}
+
 	private static float distanceBetween(double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
 		float[] results = new float[1];
 		Location.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude, results);

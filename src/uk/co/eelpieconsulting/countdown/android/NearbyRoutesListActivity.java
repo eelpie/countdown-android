@@ -2,10 +2,10 @@ package uk.co.eelpieconsulting.countdown.android;
 
 import java.util.List;
 
+import uk.co.eelpieconsulting.buses.client.model.RoutesNear;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.RouteNameComparator;
 import uk.co.eelpieconsulting.countdown.android.services.RoutesService;
@@ -38,7 +38,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	private RoutesService routesService;
 	
 	private FetchNearbyRoutesTask fetchNearbyRoutesTask;
-	private ResolveLocationTask resolveLocationTask;
 	
 	private TextView status;
 	private Stop selectedStop;
@@ -96,9 +95,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 		if (fetchNearbyRoutesTask != null && fetchNearbyRoutesTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyRoutesTask.cancel(true);
-		}
-		if (resolveLocationTask != null && resolveLocationTask.getStatus().equals(Status.RUNNING)) {
-			resolveLocationTask.cancel(true);
 		}
 	}
 
@@ -170,39 +166,31 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		return;		
 	}
 	
-	private void showRoutes(Location location, List<Route> routes) {
-		if (routes == null) {
+	private void showRoutes(Location location, RoutesNear routesNear) {
+		if (routesNear == null) {
 			status.setText("Routes could not be loaded");   // TODO why?
 			status.setVisibility(View.VISIBLE);
 			return;
 		}
 		
 		if (!location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
-			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(location));
+			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(routesNear.getLocation(), location));
 			status.setVisibility(View.VISIBLE);
 		} else {
 			status.setVisibility(View.GONE);
 		}
 								
 		final RoutesListAdapter routesListAdapter = new RoutesListAdapter(getApplicationContext(), R.layout.arrival, this, location, selectedStop);
-		for (Route route : routes) {
+		for (Route route : routesNear.getRoutes()) {
 			routesListAdapter.add(route);			
 		}
 		
 		routesListAdapter.sort(routeNameComparator);
 		routesList.setAdapter(routesListAdapter);	
 		routesList.setVisibility(View.VISIBLE);
-		
-		resolveLocationTask = new ResolveLocationTask(ApiFactory.getApi(getApplicationContext()));
-		resolveLocationTask.execute(location);
 	}
 	
-	private void showLocation(Location location, String locationName) {
-		status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(locationName, location));
-		status.setVisibility(View.VISIBLE);
-	}
-	
-	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, List<Route>> {
+	private class FetchNearbyRoutesTask extends AsyncTask<Location, Integer, RoutesNear> {
 
 		private RoutesService routesService;
 		private Location location;
@@ -213,47 +201,18 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		}
 		
 		@Override
-		protected void onPostExecute(List<Route> routes) {
+		protected void onPostExecute(RoutesNear routes) {
 			showRoutes(location, routes);
 		}
 		
 		@Override
-		protected List<Route> doInBackground(Location... params) {
+		protected RoutesNear doInBackground(Location... params) {
 			final Location location = params[0];
 			this.location = location;
 			try {				
-				return routesService.findRoutesWithin(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);
-				
+				return routesService.findRoutesNear(location.getLatitude(), location.getLongitude(), LocationService.NEAR_BY_RADIUS);				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Could not load routes: " + e.getMessage());
-			}
-			return null;
-		}		
-	}
-	
-	private class ResolveLocationTask extends AsyncTask<Location, Integer, String> {
-
-		private BusesClientService busesClient;
-		private Location location;
-
-		public ResolveLocationTask(BusesClientService busesClient) {
-			super();
-			this.busesClient = busesClient;
-		}
-		
-		@Override
-		protected void onPostExecute(String locationName) {
-			showLocation(location, locationName);
-		}
-		
-		@Override
-		protected String doInBackground(Location... params) {
-			final Location location = params[0];
-			this.location = location;
-			try {				
-				return busesClient.resolveLocation(location.getLatitude(), location.getLongitude());		
-			} catch (Exception e) {
-				Log.w(TAG, "Could not resolve location: " + e.getMessage());
 			}
 			return null;
 		}		

@@ -2,12 +2,12 @@ package uk.co.eelpieconsulting.countdown.android.api;
 
 import java.util.List;
 
-import org.json.JSONException;
-
 import uk.co.eelpieconsulting.buses.client.BusesClient;
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.FileInformation;
+import uk.co.eelpieconsulting.buses.client.model.RoutesNear;
 import uk.co.eelpieconsulting.buses.client.model.StopBoard;
+import uk.co.eelpieconsulting.buses.client.model.StopsNear;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -45,7 +45,14 @@ public class BusesClientService {
 		}
 		throw new NetworkNotAvailableException();
 	}
-
+	
+	public StopsNear findStopsNear(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
+		if (networkStatusService.isConnectionAvailable()) {
+			return busesClient.findStopsNearLocation(latitude, longitude, radius);
+		}
+		throw new NetworkNotAvailableException();
+	}
+	
 	public List<Route> findRoutesWithin(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
 			return busesClient.findRoutesWithin(latitude, longitude, radius);
@@ -76,9 +83,9 @@ public class BusesClientService {
 		throw new NetworkNotAvailableException();
 	}
 
-	public String resolveLocation(double latitude, double longitude) throws NetworkNotAvailableException, JSONException, HttpFetchException {
+	public RoutesNear findRoutesNear(double latitude, double longitude, int radius) throws HttpFetchException, ParsingException, NetworkNotAvailableException {
 		if (networkStatusService.isConnectionAvailable()) {
-			return busesClient.resolveLocation(latitude, longitude);
+			return busesClient.findRoutesNearLocation(latitude, longitude, radius);
 		}
 		throw new NetworkNotAvailableException();
 	}

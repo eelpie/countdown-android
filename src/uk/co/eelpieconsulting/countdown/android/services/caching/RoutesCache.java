@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import uk.co.eelpieconsulting.buses.client.model.RoutesNear;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.countdown.android.daos.FileService;
 import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
@@ -32,8 +33,20 @@ public class RoutesCache {
 		putIntoCache(routes, getCacheFilenameFor(latitude, longitude, radius));
 	}
 	
+	public RoutesNear getRoutesNearLocation(double latitude, double longitude, int radius) {
+		return getRoutesNearFromCache(getCacheFilenameForRoutesNear(latitude, longitude, radius));
+	}
+	
+	public void cacheRoutesNearLocation(double latitude, double longitude, int radius, RoutesNear routesNear) {
+		putRoutesNearbyIntoCache(routesNear, getCacheFilenameForRoutesNear(latitude, longitude, radius));
+	}
+	
 	private String getCacheFilenameFor(double latitude, double longitude, int radius) {
 		return SafeFilenameService.makeSafeFilenameFor("routesnear-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius);
+	}
+	
+	private String getCacheFilenameForRoutesNear(double latitude, double longitude, int radius) {
+		return SafeFilenameService.makeSafeFilenameFor("routesnearlocation-" + DistanceMeasuringService.roundLatLong(latitude) + "-" + DistanceMeasuringService.roundLatLong(longitude) + "-" + radius);
 	}
 	
 	private List<Route> getFromCache(final String cacheFilename) {
@@ -43,6 +56,25 @@ public class RoutesCache {
 				FileInputStream fileInputStream = FileService.getFileInputStream(context, cacheFilename);
 				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 				List<Route> readObject = (List<Route>) objectInputStream.readObject();
+				objectInputStream.close();
+				fileInputStream.close();
+				return readObject;
+
+			} catch (Exception e) {
+				Log.w(TAG, "Failed to read from cache file: " + e.getMessage());
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	private RoutesNear getRoutesNearFromCache(String cacheFilename) {
+		Log.i(TAG, "Looking for cache file: " + cacheFilename);
+		if (FileService.existsLocallyAndIsNotStale(context, cacheFilename, ONE_DAY)) {
+			try {
+				FileInputStream fileInputStream = FileService.getFileInputStream(context, cacheFilename);
+				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+				RoutesNear readObject = (RoutesNear) objectInputStream.readObject();
 				objectInputStream.close();
 				fileInputStream.close();
 				return readObject;
@@ -69,5 +101,20 @@ public class RoutesCache {
 		}
 		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
 	}
+	
+	private void putRoutesNearbyIntoCache(RoutesNear routesNear, final String cacheFilename) {
+		Log.d(TAG, "Writing to disk: " + cacheFilename);
+		try {
+			FileOutputStream fileOutputStream = FileService.getFileOutputStream(context, cacheFilename);
+			ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+			out.writeObject(routesNear);
+			out.close();
 
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to write to cache file: " + e.getMessage());
+			Log.e(TAG, e.getMessage());
+		}
+		Log.d(TAG, "Finished writing to disk: " + cacheFilename);
+	}
+	
 }

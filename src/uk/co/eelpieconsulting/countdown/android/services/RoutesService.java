@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.countdown.android.services;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
+import uk.co.eelpieconsulting.buses.client.model.RoutesNear;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.android.R;
@@ -46,6 +47,28 @@ public class RoutesService {
 		} catch (ParsingException e) {
 			throw new ContentNotAvailableException(e);
 		}		
+	}
+	
+	public RoutesNear findRoutesNear(double latitude, double longitude, int radius) throws ContentNotAvailableException {
+		try {
+			final RoutesNear cachedResults = routesCache.getRoutesNearLocation(latitude, longitude, radius);
+			final boolean cachedResultsAreAvailable = cachedResults != null;
+			if (cachedResultsAreAvailable) {
+				Log.i(TAG, "Returning route stops from cache");
+				return cachedResults;
+			}
+			
+			final RoutesNear routesNear = busesClientService.findRoutesNear(latitude, longitude, radius);
+			routesCache.cacheRoutesNearLocation(latitude, longitude, radius, routesNear);
+			return routesNear;
+			
+		} catch (NetworkNotAvailableException e) {
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
+		} catch (HttpFetchException e) {
+			throw new ContentNotAvailableException(e);		
+		} catch (ParsingException e) {
+			throw new ContentNotAvailableException(e);
+		}	
 	}
 
 }

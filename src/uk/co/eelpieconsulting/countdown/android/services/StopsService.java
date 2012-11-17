@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.countdown.android.services;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
+import uk.co.eelpieconsulting.buses.client.model.StopsNear;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.android.R;
@@ -69,7 +70,29 @@ public class StopsService {
 			throw new ContentNotAvailableException(e);
 		}		
 	}
-
+	
+	public StopsNear findStopsNear(double latitude, double longitude, int radius) throws ContentNotAvailableException {
+		try {
+			final StopsNear cachedResults = stopsCache.getStopsNear(latitude, longitude, radius);
+			final boolean cachedResultsAreAvailable = cachedResults != null;
+			if (cachedResultsAreAvailable) {
+				Log.i(TAG, "Returning stops from cache");
+				return cachedResults;
+			}
+			
+			final StopsNear stopsNear = busesClientService.findStopsNear(latitude, longitude, radius);
+			stopsCache.cacheNearbyStops(latitude, longitude, radius, stopsNear);
+			return stopsNear;
+			
+		} catch (NetworkNotAvailableException e) {
+			throw new ContentNotAvailableException(context.getString(R.string.no_network_available));
+		} catch (HttpFetchException e) {
+			throw new ContentNotAvailableException(e);		
+		} catch (ParsingException e) {
+			throw new ContentNotAvailableException(e);
+		}		
+	}
+	
 	public List<Stop> searchStops(String q) throws ContentNotAvailableException {
 		try {
 			final List<Stop> cachedResults = stopsCache.getSearchResultsFor(q);
@@ -91,5 +114,5 @@ public class StopsService {
 			throw new ContentNotAvailableException(e);
 		}
 	}
-
+	
 }
