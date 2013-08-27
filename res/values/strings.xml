@@ -41,5 +41,6 @@
   	<string name="no_network_available">Your device is reporting that no data connection is currently available</string>
   	<string name="refresh_description">Refresh arrivals for this stop</string>
   	<string name="add_favourite">Add this stop to favourites</string>
-  	<string name="remove_favourite">Remove this stop from favourites</string>	
+  	<string name="remove_favourite">Remove this stop from favourites</string>
+  	<string name="no_expected_arrivals">No expected arrivals reported</string>  	
 </resources>

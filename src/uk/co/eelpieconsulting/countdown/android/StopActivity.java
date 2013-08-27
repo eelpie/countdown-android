@@ -54,10 +54,6 @@ public class StopActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-		Log.i(TAG, "Creating with selected stop: " + selectedStop);
-		Log.i(TAG, "Creating with savedInstanceState: " + savedInstanceState);
-
-		
         setContentView(R.layout.stops);
         
 	    getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -214,14 +210,21 @@ public class StopActivity extends Activity {
 		if (messages == null) {
 			return;
 		}
-				
-		for (Message message : messages) {
-			stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
+		
+		if (messages.isEmpty()) {
+			final TextView noExpectedDeparturesText = new TextView(getApplicationContext());
+			noExpectedDeparturesText.setText(getString(R.string.no_expected_arrivals));
+			stopsList.addView(noExpectedDeparturesText);
+			
+		} else {
+			for (Message message : messages) {
+				stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
+			}
 		}
 		
-		final TextView credit = new TextView(getApplicationContext());
-		credit.setText(getString(R.string.tfl_credit));
-		stopsList.addView(credit);
+		final TextView creditText = new TextView(getApplicationContext());
+		creditText.setText(getString(R.string.tfl_credit));
+		stopsList.addView(creditText);
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
