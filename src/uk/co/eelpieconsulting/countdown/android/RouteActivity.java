@@ -31,8 +31,7 @@ public class RouteActivity extends TabActivity {
         	location = (Location) this.getIntent().getExtras().get("location");
         }
 
-        final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
-        setTitle(title);
+        setTitle(selectedRoute.getRoute() + " towards " + selectedRoute.getTowards());
 
         setupTabs();
     }

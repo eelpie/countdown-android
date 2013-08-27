@@ -43,8 +43,9 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stopslist);        
-		status = (TextView) findViewById(R.id.status);
+        setContentView(R.layout.stopslist);
+        		
+        status = (TextView) findViewById(R.id.status);
 		routesList = (ListView) findViewById(R.id.list);
 
 		routeNameComparator = new RouteNameComparator();
@@ -58,7 +59,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		
 		currentLocation = null;
 		
-		getWindow().setTitle(getString(R.string.near_me));
 		routesList.setVisibility(View.GONE);
 		
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {

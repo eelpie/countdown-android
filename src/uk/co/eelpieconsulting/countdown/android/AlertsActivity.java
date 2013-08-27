@@ -42,6 +42,7 @@ public class AlertsActivity extends Activity {
         setContentView(R.layout.stopslist);
         
 	    getActionBar().setDisplayHomeAsUpEnabled(true);
+	    setTitle(R.string.alerts);
 	    
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()), getApplicationContext());
@@ -54,7 +55,6 @@ public class AlertsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.alerts));
 		
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(NOTIFICATION_ID);

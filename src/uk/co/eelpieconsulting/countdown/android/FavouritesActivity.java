@@ -29,6 +29,9 @@ public class FavouritesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stopslist);        
+        
+        setTitle(getString(R.string.favourites));
+        
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
 		stopNameComparator = new StopNameComparator();
         
@@ -39,7 +42,6 @@ public class FavouritesActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.favourites));
 		status.setVisibility(View.GONE);
 		stopsList.setVisibility(View.GONE);
 		

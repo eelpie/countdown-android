@@ -71,6 +71,8 @@ public class StopActivity extends Activity {
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 		}
+		
+		setTitle(StopDescriptionService.makeStopTitle(selectedStop));
     }
 	
 	@Override
@@ -79,10 +81,8 @@ public class StopActivity extends Activity {
 		Log.i(TAG, "Resuming with selected stop: " + selectedStop);
 		
 		if (selectedStop != null) {
-			final String title = StopDescriptionService.makeStopTitle(selectedStop);
-			getWindow().setTitle(title);
 		
-			status.setText("Loading arrivals for stop: " + title);
+			status.setText("Loading arrivals for stop: " + StopDescriptionService.makeStopTitle(selectedStop));
 			status.setVisibility(View.VISIBLE);
 			loadArrivals(selectedStop.getId());
 		}

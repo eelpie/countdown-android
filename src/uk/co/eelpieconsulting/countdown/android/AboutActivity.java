@@ -41,6 +41,7 @@ public class AboutActivity extends Activity {
 	    getActionBar().setDisplayHomeAsUpEnabled(true);
 	    
         setTitle(R.string.about);
+        
         TextView status = (TextView) findViewById(R.id.status);
         status.setText(R.string.about_text);
         status.setVisibility(View.VISIBLE);

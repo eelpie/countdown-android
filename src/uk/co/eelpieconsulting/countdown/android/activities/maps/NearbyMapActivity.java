@@ -17,7 +17,6 @@ import uk.co.eelpieconsulting.countdown.android.services.location.KnownStopLocat
 import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopOverlayItem;
 import uk.co.eelpieconsulting.countdown.android.views.balloons.StopsItemizedOverlay;
-
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -25,8 +24,6 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -51,7 +48,7 @@ public class NearbyMapActivity extends BaseMapActivity {
         status = (TextView) findViewById(R.id.status);
 				
 		stopsCache = new StopsCache(getApplicationContext());
-		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache, getApplicationContext());
+		stopsService = new StopsService(ApiFactory.getApi(getApplicationContext()), stopsCache, getApplicationContext());		
 	}
     
 	@Override
@@ -60,7 +57,6 @@ public class NearbyMapActivity extends BaseMapActivity {
 		
 		currentLocation = null;
 		
-		getWindow().setTitle(getString(R.string.near_me));
 		if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			final Stop selectedStop = (Stop) this.getIntent().getExtras().get("stop");
 			final Location stopLocation = KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop);			

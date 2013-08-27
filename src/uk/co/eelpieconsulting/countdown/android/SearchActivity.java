@@ -35,14 +35,17 @@ public class SearchActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stopslist);
-        status = (TextView) findViewById(R.id.status);
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		setTitle(getString(R.string.search));
+		
+		status = (TextView) findViewById(R.id.status);
 		stopsList = (ListView) findViewById(R.id.list);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();		
-        getWindow().setTitle(getString(R.string.search));
 		status.setVisibility(View.GONE);
 		stopsList.setVisibility(View.GONE);
 		

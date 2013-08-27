@@ -25,7 +25,7 @@ public class NearThisStopActivity extends TabActivity {	// TODO name is confusin
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
         }
         
-        setTitle("Near " + StopDescriptionService.makeStopDescription(selectedStop));
+        setTitle("Near " + StopDescriptionService.makeStopTitle(selectedStop));
         setupTabs();
     }
 

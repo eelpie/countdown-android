@@ -42,6 +42,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stopslist);        
+                
 		status = (TextView) findViewById(R.id.status);
 		stopsList = (ListView) findViewById(R.id.list);
 	}
@@ -49,7 +50,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getWindow().setTitle(getString(R.string.near_me));
 		stopsList.setVisibility(View.GONE);
 		currentLocation = null;
 		

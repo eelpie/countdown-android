@@ -59,8 +59,7 @@ public class RouteStopsActivity extends Activity {
         	location = KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop);
         }
                 
-        final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
-		getWindow().setTitle(title);
+        setTitle(selectedRoute.getRoute() + " towards " + selectedRoute.getTowards());
 		
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
