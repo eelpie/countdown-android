@@ -70,7 +70,7 @@ public class StopDescriptionService {
 	public static String routesDescription(Set<Route> routes) {
 		final StringBuilder routesDescription = new StringBuilder();		
 		for (String routeName : sortAndFilterOutDuplicateRouteNamesAtTerminals(routes)) {
-			routesDescription.append("[" + routeName + "] ");			
+			routesDescription.append(routeName + " ");
 		}
 		return routesDescription.toString().trim();
 	}
