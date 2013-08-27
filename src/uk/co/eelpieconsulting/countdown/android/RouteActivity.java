@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-public class RouteTabActivity extends TabActivity {
+public class RouteActivity extends TabActivity {
 	
 	private Route selectedRoute;
 	private Stop selectedStop;

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-public class NearbyTabActivity extends TabActivity {	// TODO Tab in name is confusing - is the a tab or the frame?
+public class NearbyActivity extends TabActivity {	// TODO Tab in name is confusing - is the a tab or the frame?
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {

@@ -57,7 +57,7 @@ public class FavouritesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {			
 		case R.id.nearby:
-			this.startActivity(new Intent(this, NearbyTabActivity.class));
+			this.startActivity(new Intent(this, NearbyActivity.class));
 			return true;	
 						
 		case R.id.alerts:

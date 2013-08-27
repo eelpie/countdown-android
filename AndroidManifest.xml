@@ -24,8 +24,8 @@
             </intent-filter>       	    
        	</activity>        
         
-        <activity android:name=".StopActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
-        <activity android:name="NearbyTabActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>        
+        <activity android:name="StopActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
+        <activity android:name="NearbyActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>        
         <activity android:name="AlertsActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
         <activity android:name="AboutActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
         
@@ -38,14 +38,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         
+        <activity android:name="RouteActivity"></activity>
              	
         <activity android:name=".activities.maps.NearbyMapActivity"></activity>           	
      	<activity android:name=".RouteStopsActivity"></activity>        
         <activity android:name="NearbyStopsListActivity"></activity>
-        <activity android:name="RouteTabActivity"></activity>
         <activity android:name=".activities.maps.RouteMapActivity"></activity>
         <activity android:name="NearbyRoutesListActivity"></activity>
-        <activity android:name=".NearThisTabActivity"  android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName=".StopActivity" ></activity>
+        <activity android:name="NearThisStopActivity"  android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName=".StopActivity" ></activity>
            	
      	<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
                        

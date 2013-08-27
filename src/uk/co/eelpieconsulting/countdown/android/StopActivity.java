@@ -159,7 +159,7 @@ public class StopActivity extends Activity {
 			return true;
 			
 		case R.id.nearthis:
-			Intent intent = new Intent(this, NearThisTabActivity.class);
+			Intent intent = new Intent(this, NearThisStopActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
 			return true;				

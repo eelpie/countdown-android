@@ -2,7 +2,7 @@ package uk.co.eelpieconsulting.countdown.android.views;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.countdown.android.RouteTabActivity;
+import uk.co.eelpieconsulting.countdown.android.RouteActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
@@ -24,7 +24,7 @@ public class RouteClicker implements OnClickListener {
 	}
 
 	public void onClick(View view) {
-		Intent intent = new Intent(view.getContext(), RouteTabActivity.class);
+		Intent intent = new Intent(view.getContext(), RouteActivity.class);
 		intent.putExtra("route", route);		
 		intent.putExtra("stop", stop);
 		intent.putExtra("location", location);

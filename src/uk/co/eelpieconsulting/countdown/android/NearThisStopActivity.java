@@ -6,12 +6,11 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-public class NearThisTabActivity extends TabActivity {	// TODO name is confusing - something like NearStopActivity would be better
+public class NearThisStopActivity extends TabActivity {	// TODO name is confusing - something like NearStopActivity would be better
 	
 	private Stop selectedStop;
 

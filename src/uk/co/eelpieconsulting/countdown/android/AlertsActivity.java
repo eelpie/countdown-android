@@ -15,12 +15,10 @@ import uk.co.eelpieconsulting.countdown.android.services.caching.MessageCache;
 import uk.co.eelpieconsulting.countdown.android.views.MessagesListAdapter;
 import android.app.Activity;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,25 +68,6 @@ public class AlertsActivity extends Activity {
 		if (fetchMessageTask != null && fetchMessageTask.getStatus().equals(Status.RUNNING)) {
 			fetchMessageTask.cancel(true);
 		}
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {		
-		Log.d(TAG, "Clicked: " + item.getItemId());		
-		switch (item.getItemId()) {
-			case R.id.favourites:
-				this.startActivity(new Intent(this, FavouritesActivity.class));
-				return true;
-				
-			case R.id.nearby:
-				this.startActivity(new Intent(this, NearbyTabActivity.class));
-				return true;
-				
-			case R.id.search:
-				this.startActivity(new Intent(this, SearchActivity.class));
-				return true;
-			}
-			return false;
 	}
 	
 	private void showAlerts() {
