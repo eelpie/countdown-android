@@ -20,8 +20,6 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -45,6 +43,8 @@ public class AlertsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stopslist);
         
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
+	    
         favouriteStopsDAO = FavouriteStopsDAO.get(getApplicationContext());
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()), getApplicationContext());
 
@@ -70,13 +70,6 @@ public class AlertsActivity extends Activity {
 		if (fetchMessageTask != null && fetchMessageTask.getStatus().equals(Status.RUNNING)) {
 			fetchMessageTask.cancel(true);
 		}
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.alerts_menu, menu);
-		return true;
 	}
 	
 	@Override

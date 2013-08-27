@@ -13,7 +13,7 @@ public class Countdown extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.i(TAG, "Setting sync alarm");
+		Log.i(TAG, "Setting alert polling alarm");
 		AlertCheckerAlarmSetter alarmSetter = new AlertCheckerAlarmSetter();
 		alarmSetter.setSyncAlarm(getApplicationContext(), TEN_SECONDS);
 	}

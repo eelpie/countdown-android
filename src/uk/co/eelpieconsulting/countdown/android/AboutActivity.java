@@ -42,6 +42,8 @@ public class AboutActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
         
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
+	    
         setTitle(R.string.about);
         TextView status = (TextView) findViewById(R.id.status);
         status.setText(R.string.about_text);
@@ -67,13 +69,6 @@ public class AboutActivity extends Activity {
 		if (fetchMessagesTask != null && fetchMessagesTask.getStatus().equals(Status.RUNNING)) {
 			fetchMessagesTask.cancel(true);
 		}	
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.alerts_menu, menu);
-		return true;
 	}
 	
 	@Override

@@ -4,50 +4,43 @@ import uk.co.eelpieconsulting.countdown.android.activities.maps.NearbyMapActivit
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-public class NearbyTabActivity extends TabActivity {
+public class NearbyTabActivity extends TabActivity {	// TODO Tab in name is confusing - is the a tab or the frame?
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.near);
         
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
+
         setTitle(getString(R.string.near_me));
         setupTabs();
-    }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.nearby_menu, menu);
-		return true;
 	}
 	
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
  
-        final TabSpec stopsSpec = tabHost.newTabSpec("Stops");
-        stopsSpec.setIndicator("Stops");
+        final TabSpec stopsTab = tabHost.newTabSpec("Stops");
+        stopsTab.setIndicator("Stops");
         Intent stopsIntent = new Intent(this, NearbyStopsListActivity.class);
-        stopsSpec.setContent(stopsIntent);
+        stopsTab.setContent(stopsIntent);
  
-        final TabSpec routesSpec = tabHost.newTabSpec("Routes");
-        routesSpec.setIndicator("Routes");
+        final TabSpec routesTab = tabHost.newTabSpec("Routes");
+        routesTab.setIndicator("Routes");
         Intent routesIntent = new Intent(this, NearbyRoutesListActivity.class);
-        routesSpec.setContent(routesIntent);
+        routesTab.setContent(routesIntent);
         
-        final TabSpec mapSpec = tabHost.newTabSpec("Map");
-        mapSpec.setIndicator("Map");
+        final TabSpec mapTab = tabHost.newTabSpec("Map");
+        mapTab.setIndicator("Map");
         Intent mapIntent = new Intent(this, NearbyMapActivity.class);
-        mapSpec.setContent(mapIntent);        
+        mapTab.setContent(mapIntent);        
  
-        tabHost.addTab(mapSpec);
-        tabHost.addTab(stopsSpec);
-        tabHost.addTab(routesSpec);
+        tabHost.addTab(stopsTab);
+        tabHost.addTab(routesTab);
+        tabHost.addTab(mapTab);
 	}
 	
 }

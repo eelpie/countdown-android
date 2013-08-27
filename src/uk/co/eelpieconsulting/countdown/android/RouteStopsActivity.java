@@ -130,13 +130,6 @@ public class RouteStopsActivity extends Activity {
 		}
 		
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.nearby_menu, menu);
-		return true;
-	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

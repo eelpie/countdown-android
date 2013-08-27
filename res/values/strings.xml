@@ -20,8 +20,8 @@
     <string name="stops_near">Stops near </string>  
     <string name="estimated_wait">Estimated wait</string>
     <string name="near_me">Near by</string>
-    <string name="near_this">Near this</string>
-    <string name="alerts">Alerts</string>    
+    <string name="near_this_description">Stops and routes near this stop</string>
+    <string name="alerts">Alerts</string> 
     <string name="favourites">Favourites</string>
   	<string name="towards">Towards</string>    
     <string name="add_to_favourites">Add to favourites</string>    
@@ -38,5 +38,8 @@
     <string name="tfl_credit">Data supplied by Transport for London.</string>
   	<string name="widget_name">Arrivals</string>
   	<string name="no_location_providers">No location providers are available. Your current position cannot be determined</string> 
-  	<string name="no_network_available">Your device is reporting that no data connection is currently available</string>  	  	
+  	<string name="no_network_available">Your device is reporting that no data connection is currently available</string>
+  	<string name="refresh_description">Refresh arrivals for this stop</string>
+  	<string name="add_favourite">Add this stop to favourites</string>
+  	<string name="remove_favourite">Remove this stop from favourites</string>	
 </resources>

@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.List;
-
 import uk.co.eelpieconsulting.buses.client.model.RoutesNear;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -23,8 +21,6 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -96,13 +92,6 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		if (fetchNearbyRoutesTask != null && fetchNearbyRoutesTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyRoutesTask.cancel(true);
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.nearby_menu, menu);
-		return true;	
 	}
 	
 	@Override

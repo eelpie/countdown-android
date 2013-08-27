@@ -53,7 +53,15 @@ public class StopActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+		Log.i(TAG, "Creating with selected stop: " + selectedStop);
+		Log.i(TAG, "Creating with savedInstanceState: " + savedInstanceState);
+
+		
         setContentView(R.layout.stops);
+        
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
+        
         status = (TextView) findViewById(R.id.status);
         
         arrivalsService = ApiFactory.getArrivalsService(getApplicationContext());
@@ -70,8 +78,9 @@ public class StopActivity extends Activity {
     }
 	
 	@Override
-	protected void onResume() {
+	protected void onResume() {	
 		super.onResume();
+		Log.i(TAG, "Resuming with selected stop: " + selectedStop);
 		
 		if (selectedStop != null) {
 			final String title = StopDescriptionService.makeStopTitle(selectedStop);
@@ -103,7 +112,7 @@ public class StopActivity extends Activity {
 		setupFavouriteMenuOptions(menu, selectedStop);
 		return true;	
 	}
-
+	
 	private void setupFavouriteMenuOptions(Menu menu, Stop selectedStop) {		
 		if (selectedStop == null) {
 			menu.findItem(R.id.addfavourite).setVisible(false);
@@ -118,17 +127,13 @@ public class StopActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		
+					
 		case R.id.refresh:
 			if (selectedStop != null) {
 				loadArrivals(selectedStop.getId());
 			}
 			return true;
 			
-		case R.id.favourites:
-			this.startActivity(new Intent(this, FavouritesActivity.class));
-			return true;
-
 		case R.id.addfavourite:
 			if (selectedStop != null) {
 				if (!favouriteStopsDAO.isFavourite(selectedStop)) {					
@@ -153,28 +158,13 @@ public class StopActivity extends Activity {
 			}			
 			return true;
 			
-		case R.id.nearby:
-			this.startActivity(new Intent(this, NearbyTabActivity.class));
-			return true;
-			
 		case R.id.nearthis:
 			Intent intent = new Intent(this, NearThisTabActivity.class);
 			intent.putExtra("stop", selectedStop);
 			this.startActivity(intent);
-			return true;
-						
-		case R.id.alerts:
-			this.startActivity(new Intent(this, AlertsActivity.class));
-			return true;
-			
-		case R.id.search:
-			this.startActivity(new Intent(this, SearchActivity.class));
-			return true;
-			
-		case R.id.about:
-			this.startActivity(new Intent(this, AboutActivity.class));
-			return true;			
+			return true;				
 		}
+		
 		return false;
 	}
 	

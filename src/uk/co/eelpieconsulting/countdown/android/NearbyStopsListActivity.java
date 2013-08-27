@@ -1,11 +1,8 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.List;
-
 import uk.co.eelpieconsulting.buses.client.model.StopsNear;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
-import uk.co.eelpieconsulting.countdown.android.api.BusesClientService;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
@@ -23,8 +20,6 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -90,13 +85,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
 		}	
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {		
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.nearby_menu, menu);
-		return true;		
 	}
 	
 	@Override

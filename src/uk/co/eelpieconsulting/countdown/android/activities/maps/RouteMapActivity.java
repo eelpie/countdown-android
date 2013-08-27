@@ -91,13 +91,6 @@ public class RouteMapActivity extends BaseMapActivity {
 		super.onPause();
 		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.nearby_menu, menu);
-		return true;
-	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -6,12 +6,12 @@ import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-public class NearThisTabActivity extends TabActivity {
+public class NearThisTabActivity extends TabActivity {	// TODO name is confusing - something like NearStopActivity would be better
 	
 	private Stop selectedStop;
 
@@ -20,6 +20,8 @@ public class NearThisTabActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.near);
         
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
+	    
         if (this.getIntent().getExtras() != null && this.getIntent().getExtras().get("stop") != null) {
 			selectedStop = (Stop) this.getIntent().getExtras().get("stop");
         }
@@ -27,18 +29,26 @@ public class NearThisTabActivity extends TabActivity {
         setTitle("Near " + StopDescriptionService.makeStopDescription(selectedStop));
         setupTabs();
     }
-	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.alerts_menu, menu);
-		return true;
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {		
+			case android.R.id.home:
+
+				final Intent intent = new Intent(this, StopActivity.class);
+			
+				intent.putExtra("stop", selectedStop);
+				this.startActivity(intent);
+				return true;
+	
+		}
+		return false;
 	}
 	
 	private void setupTabs() {
 		final TabHost tabHost = getTabHost();
  
-        TabSpec stopsSpec = tabHost.newTabSpec("Stops");
+        TabSpec stopsSpec = tabHost.newTabSpec("Stops");	// TODO how to get these from R.strings?
         stopsSpec.setIndicator("Stops");
         Intent stopsIntent = new Intent(this, NearbyStopsListActivity.class);
         stopsIntent.putExtra("stop", selectedStop);

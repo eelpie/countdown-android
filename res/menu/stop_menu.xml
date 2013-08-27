@@ -1,46 +1,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
     <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_action_refresh"
         android:showAsAction="ifRoom"
-        android:title="Refresh">
+        android:title="@string/refresh_description">
     </item>
-    <item
-        android:id="@+id/favourites"
-        android:title="Favourites">
-    </item>
-    <item
-        android:id="@+id/nearby"
-        android:title="Near by">
-    </item>
-    <item
-        android:id="@+id/nearthis"
-        android:title="Near this">
-    </item>
+    
     <item
         android:id="@+id/addfavourite"
-        android:icon="@drawable/ic_action_star"
+        android:icon="@drawable/ic_action_unstar"
         android:showAsAction="ifRoom"
-        android:title="Add favourite">
+        android:title="@string/add_to_favourites">
     </item>
     <item
         android:id="@+id/removefavourite"
         android:icon="@drawable/ic_action_star"
         android:showAsAction="ifRoom"
-        android:title="Remove favourite">
-    </item>
+        android:title="@string/remove_favourite">
+    </item>    
     <item
-        android:id="@+id/alerts"
-        android:title="Alerts">
-    </item>
-    <item
-        android:id="@+id/search"
-        android:title="Search">
-    </item>
-    <item
-        android:id="@+id/about"
-        android:title="About">
-    </item>
-    
+        android:id="@+id/nearthis"
+        android:showAsAction="ifRoom"
+     	android:icon="@drawable/ic_action_locate"   
+        android:title="@string/near_this_description">
+    </item>    
 </menu>
