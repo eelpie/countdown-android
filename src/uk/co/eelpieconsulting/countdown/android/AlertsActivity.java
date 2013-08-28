@@ -70,6 +70,7 @@ public class AlertsActivity extends Activity {
 		}
 	}
 	
+	
 	private void showAlerts() {
 		final Set<Stop> favouriteStops = favouriteStopsDAO.getFavouriteStops();
 		if (favouriteStops.isEmpty()) {
@@ -84,22 +85,27 @@ public class AlertsActivity extends Activity {
 		fetchMessagesTask.execute(favouriteStops);
 	}
 	
-	private void renderMessages(List<MultiStopMessage> messages) {		
+	private void renderMessages(List<MultiStopMessage> messages) {	
 		if (messages == null) {
 			status.setText(R.string.could_not_load_messages);
 			status.setVisibility(View.VISIBLE);
+			status.announceForAccessibility(getString(R.string.could_not_load_messages));			
 			return;
 		}
 		
 		if (messages.isEmpty()) {
 			status.setText(R.string.no_alerts);
-			status.setVisibility(View.VISIBLE);
+			status.setVisibility(View.VISIBLE);			
+			status.announceForAccessibility(getString(R.string.no_alerts));
 			return;
 		}
 		
-		status.setText(R.string.alerts_effecting_your_stops);
+		
+		final String alertsEffectingYourStopsMessage = "There are " + messages.size() + " " + getString(R.string.alerts_effecting_your_stops);	// TODO plural
+		status.setText(alertsEffectingYourStopsMessage);
 		status.setVisibility(View.VISIBLE);
-	
+		status.announceForAccessibility(alertsEffectingYourStopsMessage);
+		
 		final MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getApplicationContext(), R.layout.stoprow);
 		for (MultiStopMessage message : messages) {
 			messagesListAdapter.add(message);
@@ -120,7 +126,7 @@ public class AlertsActivity extends Activity {
 
 		@Override
 		protected List<MultiStopMessage> doInBackground(Set<Stop>... params) {
-			fetchMessageTask = this;		
+			fetchMessageTask = this;
 			final Set<Stop> stops = params[0];
 			int[] stopIds = new int[stops.size()];
 			Iterator<Stop> iterator = stops.iterator();
@@ -129,7 +135,12 @@ public class AlertsActivity extends Activity {
 			}
 			
 			try {
+				try {
+					Thread.sleep(1000);	// TODO accessiblity message is not correctly announced if this method returns too quickly
+				} catch (InterruptedException e) {					
+				}
 				return messageService.getStopMessages(stopIds);
+				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Messages could not be fetched: Cause: " + e.getMessage());
 				return null;
