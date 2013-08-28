@@ -36,11 +36,13 @@ public class MessageDescriptionService {
 	
 	public static String makeMessageDescription(Message message, List<Stop> stops) {
 		final StringBuilder output = new StringBuilder();
+		appendCommaSeperatedStopNames(stops, output);
+		output.append(": ");
+		
 		output.append(dateFormatter.format(new Date(message.getStartDate())));
 		output.append(": ");
 		output.append(message.getMessage());
 		output.append("\n");
-		appendCommaSeperatedStopNames(stops, output);
 		return output.toString();
 	}
 	

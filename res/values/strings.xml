@@ -31,7 +31,7 @@
    	<string name="search">Search</string>
    	<string name="loading_messages">Loading messages</string> 
    	<string name="could_not_load_messages">Could not load alerts</string>
-   	<string name="alerts_effecting_your_stops">Alerts effecting your favourite stops:</string>    	
+   	<string name="alerts_effecting_your_stops">alerts effecting your favourite stops.</string>
   	<string name="stop">stop</string>
     <string name="stops">stops</string>
     <string name="searching">Searching for stops</string>      
