@@ -187,22 +187,26 @@ public class StopActivity extends Activity {
 		status.setText(towards + StopDescriptionService.routesDescription(selectedStop.getRoutes()));
 		status.setVisibility(View.VISIBLE);
 		
-		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
-		for (Arrival arrival : stopboard.getArrivals()) {		
-			stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
-		}
-		
 		if (!stopboard.getArrivals().isEmpty()) {
+			final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
+			for (Arrival arrival : stopboard.getArrivals()) {		
+				stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
+			}
+			
 			final Arrival nextArrival = stopboard.getArrivals().get(0);
 			stopsList.announceForAccessibility("Next arrival " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
 					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext()));
+			
 		} else {
+			final TextView noExpectedDeparturesText = new TextView(getApplicationContext());
+			noExpectedDeparturesText.setText(getString(R.string.no_expected_arrivals));
+			stopsList.addView(noExpectedDeparturesText);
 			stopsList.announceForAccessibility(getString(R.string.no_expected_arrivals));
 		}
 		
 		loadMessages(selectedStop.getId());
 	}
-
+	
 	private View createArrivalView(LayoutInflater mInflater, Arrival arrival, Stop stop) {
 		final View arrivalView = mInflater.inflate(R.layout.arrival, null);		
 		final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
@@ -220,15 +224,8 @@ public class StopActivity extends Activity {
 			return;
 		}
 		
-		if (messages.isEmpty()) {
-			final TextView noExpectedDeparturesText = new TextView(getApplicationContext());
-			noExpectedDeparturesText.setText(getString(R.string.no_expected_arrivals));
-			stopsList.addView(noExpectedDeparturesText);
-			
-		} else {
-			for (Message message : messages) {
-				stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
-			}
+		for (Message message : messages) {
+			stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
 		}
 		
 		final TextView creditText = new TextView(getApplicationContext());
