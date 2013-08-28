@@ -101,7 +101,10 @@ public class AlertsActivity extends Activity {
 		}
 		
 		
-		final String alertsEffectingYourStopsMessage = "There are " + messages.size() + " " + getString(R.string.alerts_effecting_your_stops);	// TODO plural
+		final String alertsEffectingYourStopsMessage = messages.size() == 1 ? 
+				"There are " + messages.size() + " " + getString(R.string.alerts_effecting_your_stops) :
+				"There is 1 " + getString(R.string.alerts_effecting_your_stops);
+				
 		status.setText(alertsEffectingYourStopsMessage);
 		status.setVisibility(View.VISIBLE);
 		status.announceForAccessibility(alertsEffectingYourStopsMessage);
