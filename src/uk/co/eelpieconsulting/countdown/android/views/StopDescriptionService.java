@@ -52,6 +52,7 @@ public class StopDescriptionService {
 			if (distanceTo > 0 && distanceTo < 1000) {
 				description.append(NEW_LINE);
 				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
+				
 				if (location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
 					final Stop selectedStop = (Stop) location.getExtras().getSerializable("stop");
 					description.append(" from " + StopDescriptionService.makeStopTitle(selectedStop) + "\n\n");

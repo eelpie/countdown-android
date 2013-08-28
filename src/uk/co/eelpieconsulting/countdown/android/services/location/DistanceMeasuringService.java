@@ -2,20 +2,23 @@ package uk.co.eelpieconsulting.countdown.android.services.location;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import android.location.Location;
 
 public class DistanceMeasuringService {
 	
-	private static DecimalFormat LAT_LONG_FORMAT = new DecimalFormat("0.0000"); 
+	private final static DecimalFormat LAT_LONG_FORMAT = new DecimalFormat("0.0000");
+
+	private final static BearingLabelService bearingLabelService = new BearingLabelService();
 	
 	public static String distanceToStopDescription(Location location, Stop stop) {
 		final String distanceTo = roundDistanceBasedOnLocationAccuracy(location, distanceTo(location, stop));
-		final String bearing = Float.toString(DistanceMeasuringService.bearingTo(location, KnownStopLocationProviderService.makeLocationForSelectedStop(stop)));
-		return distanceTo + " metres (" + bearing + " degrees)";
+		final float bearing = DistanceMeasuringService.bearingTo(location, KnownStopLocationProviderService.makeLocationForSelectedStop(stop));
+		return distanceTo + " metres " + bearingLabelService.bearingLabelFor(bearing).toLowerCase(Locale.ENGLISH);
 	}
-
+	
 	public static Stop findClosestOf(List<Stop> stops, Location location) {
 		Float closestDistance = null;
 		Stop closestStop = null;
