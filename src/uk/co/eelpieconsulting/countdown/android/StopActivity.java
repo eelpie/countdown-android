@@ -190,7 +190,16 @@ public class StopActivity extends Activity {
 		LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 		for (Arrival arrival : stopboard.getArrivals()) {		
 			stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
-		}		
+		}
+		
+		if (!stopboard.getArrivals().isEmpty()) {
+			final Arrival nextArrival = stopboard.getArrivals().get(0);
+			stopsList.announceForAccessibility("Next arrival " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
+					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext()));
+		} else {
+			stopsList.announceForAccessibility(getString(R.string.no_expected_arrivals));
+		}
+		
 		loadMessages(selectedStop.getId());
 	}
 
@@ -241,6 +250,10 @@ public class StopActivity extends Activity {
 		protected StopBoard doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
+				try {
+					Thread.sleep(1000);	// TODO pause to make accessibility annoucements play nice
+				} catch (InterruptedException e) {					
+				}
 				return arrivalsService.getStopBoard(stopId);
 			} catch (ContentNotAvailableException e) {
 				this.exception = e;
