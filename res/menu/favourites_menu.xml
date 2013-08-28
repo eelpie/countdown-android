@@ -1,23 +1,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
     <item
         android:id="@+id/nearby"
         android:icon="@drawable/ic_action_locate"
         android:showAsAction="ifRoom"
         android:title="Near by">
     </item>
-    <item
-        android:id="@+id/alerts"
-        android:title="Alerts">
-    </item>
+    
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_action_search"
         android:showAsAction="ifRoom"
         android:title="Search">
     </item>
+    
+    <item
+        android:id="@+id/alerts"
+      	android:icon="@drawable/ic_action_alerts"
+        android:showAsAction="ifRoom"
+        android:title="Alerts">
+    </item>
+    
     <item
         android:id="@+id/about"
+        android:icon="@drawable/ic_action_about"
+        android:showAsAction="ifRoom"  
         android:title="About">
     </item>
 </menu>
