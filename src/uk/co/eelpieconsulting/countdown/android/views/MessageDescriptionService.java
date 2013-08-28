@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -18,7 +19,7 @@ public class MessageDescriptionService {
 
 	private static final String MESSAGE_START_DATE_FORMAT = "dd MMMM, ha";
 	
-	private static DateFormat dateFormatter = new SimpleDateFormat(MESSAGE_START_DATE_FORMAT);
+	private static DateFormat dateFormatter = new SimpleDateFormat(MESSAGE_START_DATE_FORMAT, Locale.ENGLISH);
 
 	private static StopNameComparator stopNameComparator = new StopNameComparator();
 	
@@ -36,9 +37,10 @@ public class MessageDescriptionService {
 	
 	public static String makeMessageDescription(Message message, List<Stop> stops) {
 		final StringBuilder output = new StringBuilder();
-		appendCommaSeperatedStopNames(stops, output);
-		output.append(": ");
-		
+		if (!stops.isEmpty()) {
+			appendCommaSeperatedStopNames(stops, output);
+			output.append("; ");
+		}
 		output.append(dateFormatter.format(new Date(message.getStartDate())));
 		output.append(": ");
 		output.append(message.getMessage());
