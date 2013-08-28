@@ -11,8 +11,9 @@ public class DistanceMeasuringService {
 	private static DecimalFormat LAT_LONG_FORMAT = new DecimalFormat("0.0000"); 
 	
 	public static String distanceToStopDescription(Location location, Stop stop) {
-		final float distanceTo = distanceTo(location, stop);
-		return roundDistanceBasedOnLocationAccuracy(location, distanceTo);
+		final String distanceTo = roundDistanceBasedOnLocationAccuracy(location, distanceTo(location, stop));
+		final String bearing = Float.toString(DistanceMeasuringService.bearingTo(location, KnownStopLocationProviderService.makeLocationForSelectedStop(stop)));
+		return distanceTo + " metres (" + bearing + " degrees)";
 	}
 
 	public static Stop findClosestOf(List<Stop> stops, Location location) {
@@ -30,7 +31,7 @@ public class DistanceMeasuringService {
 		return closestStop;
 	}
 	
-	public static float distanceTo(Location location, Stop stop) {
+	public static float distanceTo(Location location, Stop stop) {	// TODO stops probably shouldn't be mentioned in this class.
 		return distanceBetween(location.getLatitude(), location.getLongitude(), stop.getLatitude(), stop.getLongitude());		
 	}
 	
@@ -38,6 +39,14 @@ public class DistanceMeasuringService {
 		return distanceBetween(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());	
 	}
 	
+	public static float bearingTo(Location location, Location destination) {
+		float degreesEastOfNorth = location.bearingTo(destination);
+		if (degreesEastOfNorth < 0) {
+			return degreesEastOfNorth + 360;
+		}
+		return degreesEastOfNorth;				
+	}
+ 	
 	public static String makeLocationDescription(Location location) {	// TODO move to view factory
 		final String description = roundLatLong(location.getLatitude()) + ", " + roundLatLong(location.getLongitude());
 		return makeLocationDescription(description, location);		

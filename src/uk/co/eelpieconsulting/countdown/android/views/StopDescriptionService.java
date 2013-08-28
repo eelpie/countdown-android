@@ -54,9 +54,10 @@ public class StopDescriptionService {
 				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
 				if (location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
 					final Stop selectedStop = (Stop) location.getExtras().getSerializable("stop");
-					description.append(" metres away from " + StopDescriptionService.makeStopTitle(selectedStop) + "\n\n");					 
+					description.append(" from " + StopDescriptionService.makeStopTitle(selectedStop) + "\n\n");
+					
 				} else {
-					description.append(" metres away\n\n");
+					description.append("\n\n");
 				}
 			}
 		}
