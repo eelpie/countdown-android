@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class MessageDescriptionService {
 
-	private static final String MESSAGE_START_DATE_FORMAT = "dd MMMM, kk:mm a";
+	private static final String MESSAGE_START_DATE_FORMAT = "dd MMMM, ha";
 	
 	private static DateFormat dateFormatter = new SimpleDateFormat(MESSAGE_START_DATE_FORMAT);
 
