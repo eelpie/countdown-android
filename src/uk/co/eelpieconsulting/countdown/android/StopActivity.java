@@ -193,9 +193,7 @@ public class StopActivity extends Activity {
 				stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
 			}
 			
-			final Arrival nextArrival = stopboard.getArrivals().get(0);
-			stopsList.announceForAccessibility("Next arrival " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
-					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext()));
+			stopsList.announceForAccessibility(composeAccessibleArrivalsMessage(stopboard));
 			
 		} else {
 			final TextView noExpectedDeparturesText = new TextView(getApplicationContext());
@@ -205,6 +203,16 @@ public class StopActivity extends Activity {
 		}
 		
 		loadMessages(selectedStop.getId());
+	}
+
+	private String composeAccessibleArrivalsMessage(StopBoard stopboard) {
+		final Arrival nextArrival = stopboard.getArrivals().get(0);
+		String arrivalsMessage = stopboard.getArrivals().size() > 1 ? 
+				stopboard.getArrivals().size() + " expected arrivals. Next " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
+					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext()) :
+				stopboard.getArrivals().size() + " expected arrival. " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
+					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext());
+		return arrivalsMessage;
 	}
 	
 	private View createArrivalView(LayoutInflater mInflater, Arrival arrival, Stop stop) {
