@@ -83,7 +83,8 @@ public class SearchActivity extends Activity {
 		status.setText("Found " + stops.size() + " " + (stops.size() != 1 ? "stops" : "stop"));
 		status.setVisibility(View.VISIBLE);
 				
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null);
+		Stop nearestStop = null;	// TODO potentially implement nearest stop?
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, nearestStop);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);			
 		}

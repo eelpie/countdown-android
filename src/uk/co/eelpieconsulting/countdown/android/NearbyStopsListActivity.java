@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.List;
+
 import uk.co.eelpieconsulting.buses.client.model.StopsNear;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
@@ -164,7 +166,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			status.setVisibility(View.GONE);
 		}
 		
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, null);
 		for (Stop stop : stopsNear.getStops()) {
 			final boolean isTheNearThisStopItself = selectedStop != null && selectedStop.equals(stop);
 			if (!isTheNearThisStopItself) {

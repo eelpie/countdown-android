@@ -59,7 +59,8 @@ public class RouteStopsActivity extends Activity {
         	location = KnownStopLocationProviderService.makeLocationForSelectedStop(selectedStop);
         }
                 
-        setTitle(selectedRoute.getRoute() + " towards " + selectedRoute.getTowards());
+        final String title = selectedRoute.getRoute() + " towards " + selectedRoute.getTowards();
+        setTitle(title);
 		
 		status.setText("Loading route stops");
 		status.setVisibility(View.VISIBLE);
@@ -85,8 +86,9 @@ public class RouteStopsActivity extends Activity {
 		
 		Log.i(TAG, "Found " + stops.size() + " stops");		
 		status.setVisibility(View.GONE);
-				
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location);
+
+		final Stop nearestStop = DistanceMeasuringService.findClosestOf(stops, location);		
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, nearestStop);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);
 		}
