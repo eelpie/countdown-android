@@ -6,11 +6,13 @@ import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.daos.FavouriteStopsDAO;
+import uk.co.eelpieconsulting.countdown.android.services.NearestFavouriteStopService;
 import uk.co.eelpieconsulting.countdown.android.services.StopNameComparator;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +21,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class FavouritesActivity extends Activity {
+	
+	private static final String TAG = "FavouritesActivity";
 
 	private FavouriteStopsDAO favouriteStopsDAO;
 	private StopNameComparator stopNameComparator;
@@ -28,15 +32,27 @@ public class FavouritesActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stopslist);        
+
+        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
+        stopNameComparator = new StopNameComparator();
         
+        setContentView(R.layout.stopslist);        
         setTitle(getString(R.string.favourites));
         
-        favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());
-		stopNameComparator = new StopNameComparator();
-        
         status = (TextView) findViewById(R.id.status);
-		stopsList = (ListView) findViewById(R.id.list);
+        stopsList = (ListView) findViewById(R.id.list);
+        
+        final boolean wasCalledFromStartup = this.getIntent().getExtras() != null && this.getIntent().getExtras().get("startup") != null;
+        if (wasCalledFromStartup) {
+        	final Stop selectedStop = new NearestFavouriteStopService().selectNearestFavouriteStopBasedOnLastKnownLocation(getApplicationContext());
+        	if (selectedStop != null) {
+        		Log.d(TAG, "Redirecting user to closest favourite stop on application startup");
+        		final Intent intent = new Intent(this, StopActivity.class);
+        		intent.putExtra("stop", selectedStop);
+        		this.startActivity(intent);
+        		return;
+        	}
+        }
     }
 	
 	@Override
