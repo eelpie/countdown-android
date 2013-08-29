@@ -51,7 +51,7 @@ public class StopDescriptionService {
 		StringBuilder description = new StringBuilder(makeStopDescription(stop, showRouteNumbers));
 		if (location != null) {
 			final float distanceTo = DistanceMeasuringService.distanceTo(location, stop);
-			if (distanceTo > 0 && distanceTo < 1000) {
+			if (distanceTo > 0) {
 				description.append(NEW_LINE);
 				description.append(DistanceMeasuringService.distanceToStopDescription(location, stop));
 				

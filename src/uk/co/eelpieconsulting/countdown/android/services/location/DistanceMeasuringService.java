@@ -10,13 +10,19 @@ import android.location.Location;
 public class DistanceMeasuringService {
 	
 	private final static DecimalFormat LAT_LONG_FORMAT = new DecimalFormat("0.0000");
+	private final static DecimalFormat NO_DECIMAL_PLACES_FORMAT = new DecimalFormat("0");
 
 	private final static BearingLabelService bearingLabelService = new BearingLabelService();
 	
 	public static String distanceToStopDescription(Location location, Stop stop) {
-		final String distanceTo = roundDistanceBasedOnLocationAccuracy(location, distanceTo(location, stop));
+		final int distanceTo = roundDistanceBasedOnLocationAccuracy(location, distanceTo(location, stop));
+		String distanceLabel = Integer.toString(distanceTo) + " metres";
+		if (distanceTo > 1000) {
+			double roundToPlusKilometers = roundToPlusKilometers(distanceTo);
+			distanceLabel = "Over "  + NO_DECIMAL_PLACES_FORMAT.format(roundToPlusKilometers) + " km";
+		}
 		final float bearing = DistanceMeasuringService.bearingTo(location, KnownStopLocationProviderService.makeLocationForSelectedStop(stop));
-		return distanceTo + " metres " + bearingLabelService.bearingLabelFor(bearing).toLowerCase(Locale.ENGLISH);
+		return distanceLabel + " " + bearingLabelService.bearingLabelFor(bearing).toLowerCase(Locale.ENGLISH);
 	}
 	
 	public static Stop findClosestOf(List<Stop> stops, Location location) {
@@ -67,21 +73,20 @@ public class DistanceMeasuringService {
 		return LAT_LONG_FORMAT.format(value);
 	}
 	
-	private static String roundDistanceBasedOnLocationAccuracy(
-			Location location, final float distanceTo) {
+	private static int roundDistanceBasedOnLocationAccuracy(Location location, final float distanceTo) {
 		if (location.hasAccuracy()) {
 			float accuracy = location.getAccuracy();
 			if (accuracy <= 20) {
-				return Integer.toString(roundToPlusMinus1(distanceTo));
+				return roundToPlusMinus1(distanceTo);
 			}
 			if (accuracy <= 200) {
-				return Integer.toString(roundToPlusMinus10(distanceTo));
+				return roundToPlusMinus10(distanceTo);
 			}			
 			if (accuracy > 200) {
-				return Integer.toString(roundToPlusMinus100(distanceTo));
+				return roundToPlusMinus100(distanceTo);
 			}
 		}	
-		return Integer.toString(roundToPlusMinus10(distanceTo));
+		return roundToPlusMinus10(distanceTo);
 	}
 
 	private static int roundToPlusMinus1(final float distanceTo) {
@@ -94,6 +99,10 @@ public class DistanceMeasuringService {
 
 	private static int roundToPlusMinus100(final float distanceTo) {
 		return Math.round((distanceTo / 100)) * 100;
+	}
+	
+	private static double roundToPlusKilometers(final float distanceTo) {
+		return Math.floor((distanceTo / 1000));
 	}
 
 	private static float distanceBetween(double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
