@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.eelpieconsulting.countdown.android"
-    android:versionCode="27"
-    android:versionName="1.25" >
+    android:versionCode="28"
+    android:versionName="1.30" >
 
 	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="18" />
 		
@@ -21,14 +21,11 @@
             </intent-filter>      	    
         </activity>
 
-       	<activity android:name="FavouritesActivity" android:uiOptions="splitActionBarWhenNarrow"></activity>        
-        
+       	<activity android:name="FavouritesActivity" android:uiOptions="splitActionBarWhenNarrow"></activity>
+       	        
         <activity android:name="StopActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
         <activity android:name="NearbyActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>        
-        <activity android:name="AlertsActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
-        <activity android:name="AboutActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
-        
-         <activity android:name=".SearchActivity" android:uiOptions="splitActionBarWhenNarrow">
+      	<activity android:name="SearchActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -36,8 +33,10 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        
-        <activity android:name="RouteActivity"></activity>
+        <activity android:name="AlertsActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
+        <activity android:name="AboutActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
+                
+        <activity android:name="RouteActivity" android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName="FavouritesActivity"></activity>
              	
         <activity android:name=".activities.maps.NearbyMapActivity"></activity>           	
      	<activity android:name=".RouteStopsActivity"></activity>        
@@ -46,7 +45,7 @@
         <activity android:name="NearbyRoutesListActivity"></activity>
         <activity android:name="NearThisStopActivity"  android:uiOptions="splitActionBarWhenNarrow" android:parentActivityName=".StopActivity" ></activity>
            	
-     	<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
+     	<meta-data android:name="android.app.default_searchable" android:value="SearchActivity" />
                        
        	<receiver android:name=".widgets.ArrivalsWidget" android:label="@string/widget_name">
         	<intent-filter>
