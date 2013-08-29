@@ -163,8 +163,11 @@ public class NearbyRoutesListActivity extends Activity implements LocationListen
 		}
 		
 		if (!location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
-			status.setText(getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(routesNear.getLocation(), location));
+			final String nearbyRoutesMessage = getString(R.string.routes_near) + " " + DistanceMeasuringService.makeLocationDescription(routesNear.getLocation(), location);
+			status.setText(nearbyRoutesMessage);
 			status.setVisibility(View.VISIBLE);
+			status.announceForAccessibility(nearbyRoutesMessage);
+
 		} else {
 			status.setVisibility(View.GONE);
 		}

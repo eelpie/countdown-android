@@ -160,8 +160,11 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		}
 		
 		if (!location.getProvider().equals(KnownStopLocationProviderService.KNOWN_STOP_LOCATION)) {
-			status.setText(getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(stopsNear.getLocation(), location));
+			final String stopsNearMessage = getString(R.string.stops_near) + " " + DistanceMeasuringService.makeLocationDescription(stopsNear.getLocation(), location);
+			status.setText(stopsNearMessage);
 			status.setVisibility(View.VISIBLE);
+			status.announceForAccessibility(stopsNearMessage);
+			
 		} else {
 			status.setVisibility(View.GONE);
 		}
