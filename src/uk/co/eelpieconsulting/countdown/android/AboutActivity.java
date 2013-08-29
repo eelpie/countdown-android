@@ -1,6 +1,9 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import uk.co.eelpieconsulting.buses.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.buses.client.model.FileInformation;
@@ -24,7 +27,10 @@ public class AboutActivity extends Activity {
 		
 	private static final String TAG = "AboutActivity";
 
+	private static final String MESSAGE_START_DATE_FORMAT = "dd MMMM, ha";
 	private static final String ABOUT_ARTICLES_FEED_URL = "http://eelpieconsulting.co.uk/category/development/buses/feed/rss";
+
+	private static final DateFormat dateFormatter = new SimpleDateFormat(MESSAGE_START_DATE_FORMAT, Locale.ENGLISH);
 	
 	private AboutArticlesService aboutArticlesService;
 	
@@ -76,7 +82,7 @@ public class AboutActivity extends Activity {
 		final FileInformation sourceInformation = sourceFileInformation.get(0);
 		final TextView sourcesTextView = (TextView) findViewById(R.id.sources);
 		sourcesTextView.setText("Stops data file information: " + sourceInformation.getName() + 
-				" imported on " + sourceInformation.getDate() + 
+				" imported on " + dateFormatter.format(sourceInformation.getDate()) + 
 				" (md5 checksum: " + sourceInformation.getMd5() + ")");
 		sourcesTextView.setVisibility(View.VISIBLE);
 	}

@@ -16,7 +16,9 @@
             android:background="#fff"
             android:padding="0px"
             android:src="@drawable/buses"
-            android:visibility="visible" />
+            android:visibility="visible" 
+            android:contentDescription="Photograph of London buses"
+            />
 
         <TextView
             android:id="@+id/status"
