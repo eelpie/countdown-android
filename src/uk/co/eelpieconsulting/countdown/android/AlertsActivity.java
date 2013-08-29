@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -138,11 +139,18 @@ public class AlertsActivity extends Activity {
 			}
 			
 			try {
-				try {
-					Thread.sleep(1000);	// TODO accessiblity message is not correctly announced if this method returns too quickly
-				} catch (InterruptedException e) {					
+				final long start = new Date().getTime();
+				
+				final List<MultiStopMessage> stopMessages = messageService.getStopMessages(stopIds);
+				
+				while (new Date().getTime() < (start + 1000)) {
+					try {
+						Thread.sleep(100);	// TODO pause to make accessibility annoucements play nice
+					} catch (InterruptedException e) {					
+					}					
 				}
-				return messageService.getStopMessages(stopIds);
+				
+				return stopMessages;
 				
 			} catch (ContentNotAvailableException e) {
 				Log.w(TAG, "Messages could not be fetched: Cause: " + e.getMessage());

@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.countdown.android;
 
+import java.util.Date;
 import java.util.List;
 
 import uk.co.eelpieconsulting.buses.client.model.Arrival;
@@ -255,11 +256,18 @@ public class StopActivity extends Activity {
 		protected StopBoard doInBackground(Integer... params) {
 			final int stopId = params[0];
 			try {
-				try {
-					Thread.sleep(1000);	// TODO pause to make accessibility annoucements play nice
-				} catch (InterruptedException e) {					
+				final long start = new Date().getTime();
+				
+				final StopBoard stopBoard = arrivalsService.getStopBoard(stopId);
+				
+				while (new Date().getTime() < (start + 1000)) {
+					try {
+						Thread.sleep(100);	// TODO pause to make accessibility annoucements play nice
+					} catch (InterruptedException e) {					
+					}					
 				}
-				return arrivalsService.getStopBoard(stopId);
+				
+				return stopBoard;
 			} catch (ContentNotAvailableException e) {
 				this.exception = e;
 				Log.w(TAG, "Arrivals data was not available: " + e.getMessage());
