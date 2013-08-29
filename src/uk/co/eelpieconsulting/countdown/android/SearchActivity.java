@@ -7,10 +7,14 @@ import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
 import uk.co.eelpieconsulting.countdown.android.services.ContentNotAvailableException;
 import uk.co.eelpieconsulting.countdown.android.services.StopsService;
 import uk.co.eelpieconsulting.countdown.android.services.caching.StopsCache;
+import uk.co.eelpieconsulting.countdown.android.services.location.DistanceMeasuringService;
+import uk.co.eelpieconsulting.countdown.android.services.location.LocationService;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -22,7 +26,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends Activity implements LocationListener {
 
 	private static final String TAG = "SearchActivity";
 	
@@ -30,6 +34,8 @@ public class SearchActivity extends Activity {
 	private ListView stopsList;
 
 	private FetchSearchResultsTask fetchSearchResultsTask;
+
+	private Location location;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,21 @@ public class SearchActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		super.onResume();		
+		super.onResume();
+		
+		location = null;
+		try {
+			LocationService.registerForLocationUpdates(getApplicationContext(), this);						
+			final Location bestLastKnownLocation = LocationService.getRecentBestLastKnownLocation(getApplicationContext());
+			if (bestLastKnownLocation != null) {
+				location = bestLastKnownLocation;
+			}				
+			
+		} catch (NoProvidersException e) {
+			status.setText(getString(R.string.no_location_providers));
+			status.setVisibility(View.VISIBLE);
+		}
+		
 		status.setVisibility(View.GONE);
 		stopsList.setVisibility(View.GONE);
 		
@@ -71,6 +91,7 @@ public class SearchActivity extends Activity {
 		if (fetchSearchResultsTask != null && fetchSearchResultsTask.getStatus().equals(Status.RUNNING)) {
 			fetchSearchResultsTask.cancel(true);
 		}
+		LocationService.turnOffLocationUpdates(this.getApplicationContext(), this);
 	}
 	
 	private void showStops(List<Stop> stops) {
@@ -84,7 +105,9 @@ public class SearchActivity extends Activity {
 		status.setVisibility(View.VISIBLE);
 				
 		Stop nearestStop = null;	// TODO potentially implement nearest stop?
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, nearestStop, true);
+		
+		final Location searchLocation = LocationService.isAccurateEnoughForNearbyRoutes(location) ? location : null;		
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, searchLocation, nearestStop, true);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);			
 		}
@@ -136,6 +159,26 @@ public class SearchActivity extends Activity {
 		protected void onPostExecute(List<Stop> stops) {
 			showStops(stops);
 		}
+	}
+
+	public void onLocationChanged(Location location) {
+		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
+		this.location = location;	 // TODO redraw
+	}
+
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
