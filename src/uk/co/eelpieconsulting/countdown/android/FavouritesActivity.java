@@ -105,7 +105,7 @@ public class FavouritesActivity extends Activity {
 	}
 	
 	private void showStops(List<Stop> stops) {
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, null);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, null, true);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);
 		}

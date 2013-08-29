@@ -84,7 +84,7 @@ public class SearchActivity extends Activity {
 		status.setVisibility(View.VISIBLE);
 				
 		Stop nearestStop = null;	// TODO potentially implement nearest stop?
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, nearestStop);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, null, nearestStop, true);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);			
 		}

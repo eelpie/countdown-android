@@ -88,7 +88,7 @@ public class RouteStopsActivity extends Activity {
 		status.setVisibility(View.GONE);
 
 		final Stop nearestStop = DistanceMeasuringService.findClosestOf(stops, location);		
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, nearestStop);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, nearestStop, false);
 		for (Stop stop : stops) {
 			stopsListAdapter.add(stop);
 		}

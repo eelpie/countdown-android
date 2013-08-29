@@ -15,13 +15,15 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 	private final Activity activity;
 	private final Location location;
 	private final Stop nearestStop;
+	private final boolean showRouteNumbers;
 	
-	public StopsListAdapter(Context context, int viewResourceId, Activity activity, Location location, Stop nearestStop) {
+	public StopsListAdapter(Context context, int viewResourceId, Activity activity, Location location, Stop nearestStop, boolean showRouteNumbers) {
 		super(context, viewResourceId);
 		this.context = context;
 		this.activity = activity;
 		this.location = location;
 		this.nearestStop = nearestStop;
+		this.showRouteNumbers = showRouteNumbers;
 	}
 	
 	@Override
@@ -32,12 +34,18 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 		}
 		
 		final Stop stop = getItem(position);
-		String stopDescription = StopDescriptionService.makeStopDescription(stop, location) + "\n\n";
+		String stopDescription = StopDescriptionService.makeStopDescription(stop, location, true) + "\n\n";
+		if (stop.equals(nearestStop)) {
+			stopDescription = "Nearest stop" + "\n" + stopDescription;
+		}
+		
+		String stopContentDescription = StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers) + "\n\n";
 		if (stop.equals(nearestStop)) {
 			stopDescription = "Nearest stop" + "\n" + stopDescription;
 		}
 		
 		view.setText(stopDescription);
+		view.setContentDescription(stopContentDescription);
 		view.setOnClickListener(new StopClicker(activity, stop));
 		return view;		
 	}

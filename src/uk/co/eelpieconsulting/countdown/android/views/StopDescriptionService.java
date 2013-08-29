@@ -22,7 +22,7 @@ public class StopDescriptionService {
 
 	public static TextView makeStopView(Stop stop, Context context, Activity activity) {
 		final TextView stopTextView = new TextView(context);
-		stopTextView.setText(StopDescriptionService.makeStopDescription(stop));
+		stopTextView.setText(StopDescriptionService.makeStopDescription(stop, true));
 		stopTextView.setOnClickListener(new StopClicker(activity, stop));
 		return stopTextView;
 	}
@@ -33,7 +33,7 @@ public class StopDescriptionService {
 		return articleTextView;
 	}
 		
-	public static String makeStopDescription(Stop stop) {
+	public static String makeStopDescription(Stop stop, boolean showRouteNumbers) {
 		final StringBuilder description = new StringBuilder(makeStopTitle(stop));
 		description.append(NEW_LINE);
 		if (stop.getTowards() != null) {
@@ -41,12 +41,14 @@ public class StopDescriptionService {
 			description.append(stop.getTowards());
 			description.append(NEW_LINE);
 		}
-		description.append(routesDescription(stop.getRoutes()));	
+		if (showRouteNumbers) {
+			description.append(routesDescription(stop.getRoutes()));
+		}
 		return description.toString();
 	}
 	
-	public static String makeStopDescription(Stop stop, Location location) {
-		StringBuilder description = new StringBuilder(makeStopDescription(stop));
+	public static String makeStopDescription(Stop stop, Location location, boolean showRouteNumbers) {
+		StringBuilder description = new StringBuilder(makeStopDescription(stop, showRouteNumbers));
 		if (location != null) {
 			final float distanceTo = DistanceMeasuringService.distanceTo(location, stop);
 			if (distanceTo > 0 && distanceTo < 1000) {
@@ -77,7 +79,7 @@ public class StopDescriptionService {
 		return routesDescription.toString().trim();
 	}
 	
-	public static String secondsToMinutes(long estimatedWait, Context context) {
+	public static String secondsToMinutes(long estimatedWait, Context context) {	// TODO Needs the context? No static getString?
 		final long minutes = estimatedWait / 60;
 		if (minutes == 0) {
 			return  context.getString(R.string.due);
