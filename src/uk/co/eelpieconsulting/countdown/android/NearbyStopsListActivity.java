@@ -169,7 +169,7 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 			status.setVisibility(View.GONE);
 		}
 		
-		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, null);
+		final StopsListAdapter stopsListAdapter = new StopsListAdapter(getApplicationContext(), R.layout.stoprow, this, location, null, true);
 		for (Stop stop : stopsNear.getStops()) {
 			final boolean isTheNearThisStopItself = selectedStop != null && selectedStop.equals(stop);
 			if (!isTheNearThisStopItself) {
