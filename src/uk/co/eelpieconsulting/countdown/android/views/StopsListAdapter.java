@@ -39,7 +39,10 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 			stopDescription = "Nearest stop" + "\n" + stopDescription;
 		}
 		
-		final String stopContentDescription = StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers);
+		String stopContentDescription = StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers) + "\n\n";
+		if (stop.equals(nearestStop)) {
+			stopContentDescription = "Nearest stop" + "\n" + stopContentDescription;
+		}
 		
 		view.setText(stopDescription);
 		view.setContentDescription(stopContentDescription);
