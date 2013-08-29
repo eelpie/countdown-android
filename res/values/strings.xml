@@ -29,7 +29,7 @@
    	<string name="search_hint">Stop name or identifer</string>
    	<string name="no_favourites_warning">No favourite stops set. Use near by or search to locate stops you are interested in.</string>
    	<string name="search">Search</string>
-   	<string name="loading_messages">Loading messages</string> 
+   	<string name="loading_messages">Loading alerts</string> 
    	<string name="could_not_load_messages">Could not load alerts</string>
    	<string name="alerts_effecting_your_stops">alerts effecting your favourite stops.</string>
   	<string name="stop">stop</string>
