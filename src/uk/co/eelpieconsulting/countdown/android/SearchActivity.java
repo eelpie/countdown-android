@@ -12,6 +12,7 @@ import uk.co.eelpieconsulting.countdown.android.services.location.LocationServic
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,9 +22,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 public class SearchActivity extends Activity implements LocationListener {
@@ -47,6 +48,13 @@ public class SearchActivity extends Activity implements LocationListener {
 		
 		status = (TextView) findViewById(R.id.status);
 		stopsList = (ListView) findViewById(R.id.list);
+		
+		handleIntent(getIntent());
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		handleIntent(intent);
 	}
 	
 	@Override
@@ -66,10 +74,11 @@ public class SearchActivity extends Activity implements LocationListener {
 			status.setVisibility(View.VISIBLE);
 		}
 		
-		status.setVisibility(View.GONE);
-		stopsList.setVisibility(View.GONE);
-		
-		final Intent intent = getIntent();
+		//status.setVisibility(View.GONE);
+		//stopsList.setVisibility(View.GONE);		
+	}
+
+	private void handleIntent(final Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			
@@ -120,17 +129,12 @@ public class SearchActivity extends Activity implements LocationListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.search_menu, menu);
+		
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		
 		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.favourites:
-			this.startActivity(new Intent(this, FavouritesActivity.class));
-			return true;
-		}
-		return false;
 	}
 	
 	private class FetchSearchResultsTask extends AsyncTask<String, Integer, List<Stop>> {
@@ -160,7 +164,7 @@ public class SearchActivity extends Activity implements LocationListener {
 			showStops(stops);
 		}
 	}
-
+	
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
 		this.location = location;	 // TODO redraw

@@ -130,22 +130,4 @@ public class RouteStopsActivity extends Activity {
 		
 	}
 	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.favourites:
-			this.startActivity(new Intent(this, FavouritesActivity.class));
-			return true;	
-			
-		case R.id.alerts:
-			this.startActivity(new Intent(this, AlertsActivity.class));
-			return true;
-			
-		case R.id.search:
-			this.startActivity(new Intent(this, SearchActivity.class));
-			return true;
-		}
-		return false;
-	}
-	
 }

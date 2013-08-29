@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.countdown.android;
 
-import java.util.List;
-
 import uk.co.eelpieconsulting.buses.client.model.StopsNear;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.countdown.android.api.ApiFactory;
@@ -15,14 +13,12 @@ import uk.co.eelpieconsulting.countdown.android.services.location.LocationServic
 import uk.co.eelpieconsulting.countdown.android.views.StopDescriptionService;
 import uk.co.eelpieconsulting.countdown.android.views.StopsListAdapter;
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -87,24 +83,6 @@ public class NearbyStopsListActivity extends Activity implements LocationListene
 		if (fetchNearbyStopsTask != null && fetchNearbyStopsTask.getStatus().equals(Status.RUNNING)) {
 			fetchNearbyStopsTask.cancel(true);
 		}	
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.favourites:
-			this.startActivity(new Intent(this, FavouritesActivity.class));
-			return true;	
-			
-		case R.id.alerts:
-			this.startActivity(new Intent(this, AlertsActivity.class));
-			return true;
-			
-		case R.id.search:
-			this.startActivity(new Intent(this, SearchActivity.class));
-			return true;
-		}
-		return false;
 	}
 	
 	public void onLocationChanged(Location location) {
