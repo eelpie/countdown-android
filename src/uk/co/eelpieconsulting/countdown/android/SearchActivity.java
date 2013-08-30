@@ -72,10 +72,7 @@ public class SearchActivity extends Activity implements LocationListener {
 		} catch (NoProvidersException e) {
 			status.setText(getString(R.string.no_location_providers));
 			status.setVisibility(View.VISIBLE);
-		}
-		
-		//status.setVisibility(View.GONE);
-		//stopsList.setVisibility(View.GONE);		
+		}		
 	}
 
 	private void handleIntent(final Intent intent) {
@@ -166,7 +163,7 @@ public class SearchActivity extends Activity implements LocationListener {
 	}
 	
 	public void onLocationChanged(Location location) {
-		Log.i(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
+		Log.d(TAG, "Handset location update received: " + DistanceMeasuringService.makeLocationDescription(location));
 		this.location = location;	 // TODO redraw
 	}
 
