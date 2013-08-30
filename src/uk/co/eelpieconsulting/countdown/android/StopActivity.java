@@ -240,10 +240,8 @@ public class StopActivity extends Activity {
 			arrivalsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
 		}
 		
-		final TextView creditText = new TextView(getApplicationContext());
-		creditText.setText(getString(R.string.tfl_credit));
-		creditText.setPadding(3, 0, 3, 0);	// TODO points
-		arrivalsList.addView(creditText);
+		final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
+		arrivalsList.addView(mInflater.inflate(R.layout.datacredit, null));
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {
