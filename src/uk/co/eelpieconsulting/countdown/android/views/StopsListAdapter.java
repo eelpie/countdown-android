@@ -30,7 +30,7 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {	
-		TextView view = (TextView) convertView;
+		View view = convertView;
 		if (view == null) {
 			view = inflateNewStopRowView();
 		}
@@ -40,25 +40,36 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 		return view;		
 	}
 
-	private void populateStopView(TextView view, final Stop stop) {
-		String stopDescription = StopDescriptionService.makeStopDescription(stop, location, true) + "\n\n";
-		if (stop.equals(nearestStop)) {
-			stopDescription = "Nearest stop" + "\n" + stopDescription;
-		}
-		
+	private void populateStopView(View view, final Stop stop) {
+		final boolean isNearestStop = stop.equals(nearestStop);
+
+		final String stopDescription = StopDescriptionService.makeStopDescription(stop, location, true) + "\n\n";		
 		String stopContentDescription = StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers) + "\n\n";
-		if (stop.equals(nearestStop)) {
+		if (isNearestStop) {
 			stopContentDescription = "Nearest stop" + "\n" + stopContentDescription;
 		}
 		
-		view.setText(stopDescription);
-		view.setContentDescription(stopContentDescription);
+		final TextView nearestStop = (TextView) view.findViewById(R.id.nearestStop);		
+		nearestStop.setText("Nearest stop");
+		if (isNearestStop) {
+			nearestStop.setVisibility(View.VISIBLE);
+		} else {
+			nearestStop.setVisibility(View.GONE);
+		}
+		
+		final TextView stopName = (TextView) view.findViewById(R.id.stopName);	
+		stopName.setText(StopDescriptionService.makeStopTitle(stop));		
+		
+		final TextView body = (TextView) view.findViewById(R.id.body);		
+		body.setText(stopDescription);
+		
+		view.setContentDescription(stopContentDescription);		
 		view.setOnClickListener(new StopClicker(activity, stop));
 	}
 
-	private TextView inflateNewStopRowView() {
+	private View inflateNewStopRowView() {
 		final LayoutInflater mInflater = LayoutInflater.from(context);
-		return (TextView) mInflater.inflate(R.layout.stoprow, null);
+		return mInflater.inflate(R.layout.stoprow, null);
 	}
 	
 }

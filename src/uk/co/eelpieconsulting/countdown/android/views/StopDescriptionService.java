@@ -34,8 +34,7 @@ public class StopDescriptionService {
 	}
 		
 	public static String makeStopDescription(Stop stop, boolean showRouteNumbers) {
-		final StringBuilder description = new StringBuilder(makeStopTitle(stop));
-		description.append(NEW_LINE);
+		final StringBuilder description = new StringBuilder();
 		if (stop.getTowards() != null) {
 			description.append("Towards ");
 			description.append(stop.getTowards());
