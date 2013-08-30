@@ -46,7 +46,7 @@ public class StopActivity extends Activity {
 	private ArrivalsService arrivalsService;
 	
 	private TextView status;
-	private LinearLayout stopsList;
+	private LinearLayout arrivalsList;
 	private Menu menu;
 
 	private Stop selectedStop;
@@ -65,7 +65,7 @@ public class StopActivity extends Activity {
         favouriteStopsDAO = FavouriteStopsDAO.get(this.getApplicationContext());        
         selectedStop = null;
         
-		stopsList = (LinearLayout) findViewById(R.id.stopsList);
+		arrivalsList = (LinearLayout) findViewById(R.id.stopsList);
 		
 		messageService = new MessageService(ApiFactory.getApi(getApplicationContext()), new MessageCache(getApplicationContext()), new SeenMessagesDAO(getApplicationContext()), getApplicationContext());
 		
@@ -166,7 +166,7 @@ public class StopActivity extends Activity {
 	}
 	
 	private void loadArrivals(int stopId) {
-		stopsList.removeAllViews();
+		arrivalsList.removeAllViews();
 		
 		fetchArrivalsTask = new FetchArrivalsTask(arrivalsService);
 		fetchArrivalsTask.execute(stopId);
@@ -191,16 +191,16 @@ public class StopActivity extends Activity {
 		if (!stopboard.getArrivals().isEmpty()) {
 			final LayoutInflater mInflater = LayoutInflater.from(this.getApplicationContext());
 			for (Arrival arrival : stopboard.getArrivals()) {		
-				stopsList.addView(createArrivalView(mInflater, arrival, selectedStop));
+				arrivalsList.addView(createArrivalView(mInflater, arrival, selectedStop));
 			}
 			
-			stopsList.announceForAccessibility(composeAccessibleArrivalsMessage(stopboard));
+			arrivalsList.announceForAccessibility(composeAccessibleArrivalsMessage(stopboard));
 			
 		} else {
 			final TextView noExpectedDeparturesText = new TextView(getApplicationContext());
 			noExpectedDeparturesText.setText(getString(R.string.no_expected_arrivals));
-			stopsList.addView(noExpectedDeparturesText);
-			stopsList.announceForAccessibility(getString(R.string.no_expected_arrivals));
+			arrivalsList.addView(noExpectedDeparturesText);
+			arrivalsList.announceForAccessibility(getString(R.string.no_expected_arrivals));
 		}
 		
 		loadMessages(selectedStop.getId());
@@ -221,8 +221,11 @@ public class StopActivity extends Activity {
 		final TextView routeTextView = (TextView) arrivalView.findViewById(R.id.routeName);
 		routeTextView.setText(arrival.getRoute().getRoute());			
 		
-		final TextView bodyTextView = (TextView) arrivalView.findViewById(R.id.body);
-		bodyTextView.setText(arrival.getRoute().getTowards() + "\n" + StopDescriptionService.secondsToMinutes(arrival.getEstimatedWait(), getApplicationContext()));
+		final TextView towardsTextView = (TextView) arrivalView.findViewById(R.id.towards);
+		towardsTextView.setText(arrival.getRoute().getTowards());
+
+		final TextView dueTextView = (TextView) arrivalView.findViewById(R.id.due);
+		dueTextView.setText(StopDescriptionService.secondsToMinutes(arrival.getEstimatedWait(), getApplicationContext()));
 		
 		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop, null));
 		return arrivalView;
@@ -234,12 +237,13 @@ public class StopActivity extends Activity {
 		}
 		
 		for (Message message : messages) {
-			stopsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
+			arrivalsList.addView(MessageDescriptionService.makeStopDescription(message, getApplicationContext()));	
 		}
 		
 		final TextView creditText = new TextView(getApplicationContext());
 		creditText.setText(getString(R.string.tfl_credit));
-		stopsList.addView(creditText);
+		creditText.setPadding(3, 0, 3, 0);	// TODO points
+		arrivalsList.addView(creditText);
 	}
 	
 	private class FetchArrivalsTask extends AsyncTask<Integer, Integer, StopBoard> {

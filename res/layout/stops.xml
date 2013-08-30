@@ -10,6 +10,8 @@
         android:text=""
         android:paddingTop="2pt"        
         android:paddingBottom="2pt"
+        android:paddingLeft="3pt"
+        android:paddingRight="3pt"
         android:visibility="gone" />
         
      <TextView
@@ -29,7 +31,6 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent"
 	        android:orientation="vertical" >
-
 	    </LinearLayout>
     </ScrollView>
 
