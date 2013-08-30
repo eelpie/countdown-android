@@ -38,7 +38,7 @@ public class RoutesListAdapter extends ArrayAdapter<Route> {
 		final TextView routeTextView = (TextView) view.findViewById(R.id.routeName);
 		routeTextView.setText(route.getRoute());			
 		
-		final TextView bodyTextView = (TextView) view.findViewById(R.id.body);
+		final TextView bodyTextView = (TextView) view.findViewById(R.id.towards);
 		bodyTextView.setText(context.getString(R.string.towards) + " " + route.getTowards());
 		
 		view.setOnClickListener(new RouteClicker(activity, route, selectedStop, location));
