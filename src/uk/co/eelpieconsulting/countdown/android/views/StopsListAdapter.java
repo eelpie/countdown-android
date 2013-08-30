@@ -1,9 +1,11 @@
 package uk.co.eelpieconsulting.countdown.android.views;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
+import uk.co.eelpieconsulting.countdown.android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -30,10 +32,15 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 	public View getView(int position, View convertView, ViewGroup parent) {	
 		TextView view = (TextView) convertView;
 		if (view == null) {
-			view = new TextView(context);
+			view = inflateNewStopRowView();
 		}
 		
 		final Stop stop = getItem(position);
+		populateStopView(view, stop);
+		return view;		
+	}
+
+	private void populateStopView(TextView view, final Stop stop) {
 		String stopDescription = StopDescriptionService.makeStopDescription(stop, location, true) + "\n\n";
 		if (stop.equals(nearestStop)) {
 			stopDescription = "Nearest stop" + "\n" + stopDescription;
@@ -47,7 +54,11 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 		view.setText(stopDescription);
 		view.setContentDescription(stopContentDescription);
 		view.setOnClickListener(new StopClicker(activity, stop));
-		return view;		
+	}
+
+	private TextView inflateNewStopRowView() {
+		final LayoutInflater mInflater = LayoutInflater.from(context);
+		return (TextView) mInflater.inflate(R.layout.stoprow, null);
 	}
 	
 }
