@@ -101,10 +101,8 @@ public class AlertsActivity extends Activity {
 			return;
 		}
 		
-		
-		final String alertsEffectingYourStopsMessage = messages.size() == 1 ? 
-				"There are " + messages.size() + " " + getString(R.string.alerts_effecting_your_stops) :
-				"There is 1 " + getString(R.string.alerts_effecting_your_stops);
+		final String alertsEffectingYourStopsMessage = messages.size() == 1 ? "There is 1 " + getString(R.string.alerts_effecting_your_stops) : 
+			"There are " + messages.size() + " " + getString(R.string.alerts_effecting_your_stops);
 				
 		status.setText(alertsEffectingYourStopsMessage);
 		status.setVisibility(View.VISIBLE);
