@@ -81,8 +81,7 @@ public class StopActivity extends Activity {
 		super.onResume();
 		Log.i(TAG, "Resuming with selected stop: " + selectedStop);
 		
-		if (selectedStop != null) {
-		
+		if (selectedStop != null) {		
 			status.setText("Loading arrivals for stop: " + StopDescriptionService.makeStopTitle(selectedStop));
 			status.setVisibility(View.VISIBLE);
 			loadArrivals(selectedStop.getId());
@@ -209,7 +208,7 @@ public class StopActivity extends Activity {
 	private String composeAccessibleArrivalsMessage(StopBoard stopboard) {
 		final Arrival nextArrival = stopboard.getArrivals().get(0);
 		String arrivalsMessage = stopboard.getArrivals().size() > 1 ? 
-				stopboard.getArrivals().size() + " expected arrivals. Next " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
+				stopboard.getArrivals().size() + " expected arrivals. Next expected arrival " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
 					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext()) :
 				stopboard.getArrivals().size() + " expected arrival. " + nextArrival.getRoute().getRoute() + "\n" + nextArrival.getRoute().getTowards() + "\n" 
 					+ StopDescriptionService.secondsToMinutes(nextArrival.getEstimatedWait(), getApplicationContext());
@@ -225,9 +224,12 @@ public class StopActivity extends Activity {
 		towardsTextView.setText(arrival.getRoute().getTowards());
 
 		final TextView dueTextView = (TextView) arrivalView.findViewById(R.id.due);
-		dueTextView.setText(StopDescriptionService.secondsToMinutes(arrival.getEstimatedWait(), getApplicationContext()));
+		final String estimatedWait = StopDescriptionService.secondsToMinutes(arrival.getEstimatedWait(), getApplicationContext());
+		dueTextView.setText(estimatedWait);
 		
+		arrivalView.setContentDescription(arrival.getRoute().getRoute() + "\n" + arrival.getRoute().getTowards() + "\n" + estimatedWait);		
 		arrivalView.setOnClickListener(new RouteClicker(this, arrival.getRoute(), stop, null));
+		
 		return arrivalView;
 	}
 	
@@ -307,7 +309,7 @@ public class StopActivity extends Activity {
 		@Override
 		protected void onPostExecute(List<MultiStopMessage> messages) {
 			renderMessages(messages);
-		}		
+		}
 	}
 	
 }

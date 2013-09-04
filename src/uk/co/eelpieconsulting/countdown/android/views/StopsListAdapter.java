@@ -42,9 +42,10 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 
 	private void populateStopView(View view, final Stop stop) {
 		final boolean isNearestStop = stop.equals(nearestStop);
-
+		
+		final String stopTitle = StopDescriptionService.makeStopTitle(stop);
 		final String stopDescription = StopDescriptionService.makeStopDescription(stop, location, true) + "\n\n";		
-		String stopContentDescription = StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers) + "\n\n";
+		String stopContentDescription = stopTitle + "\n" + StopDescriptionService.makeStopDescription(stop, location, showRouteNumbers) + "\n\n";
 		if (isNearestStop) {
 			stopContentDescription = "Nearest stop" + "\n" + stopContentDescription;
 		}
@@ -58,7 +59,7 @@ public class StopsListAdapter extends ArrayAdapter<Stop> {
 		}
 		
 		final TextView stopName = (TextView) view.findViewById(R.id.stopName);	
-		stopName.setText(StopDescriptionService.makeStopTitle(stop));		
+		stopName.setText(stopTitle);		
 		
 		final TextView body = (TextView) view.findViewById(R.id.body);		
 		body.setText(stopDescription);
