@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Bus stops</string>
    	<string name="about">About</string>
-  	<string name="about_text">This application was developed by Eel Pie Consulting Limited.\n\nStops, route and estimated arrival data is supplied by Transport for London.\n\n</string>   	
+  	<string name="about_text">This application was developed by Eel Pie Consulting Limited.\n\nStops, route and estimated arrival data is supplied by Transport for London.\n\nThis application is open source software. Source code is available at https://github.com/eelpie/countdown-android\n\n</string>   	
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
     <string name="due">due</string>
