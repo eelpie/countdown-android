@@ -14,3 +14,6 @@ Attempts to geocode phone location latitude/longitudes into understandable nearb
 
 - Attempts to correct potentially confusing abbreviations used in the source data.
 ie. 'Hounslow Bus St' reads as 'Hounslow Bus Street' to the Android screen reader.
+
+The app received a highly commended award in Transport for London's 2013 accessible app competition.
+https://www.tfl.gov.uk/info-for/media/press-releases/2013/december/tfl-announce-winners-of-accessible-app-competition
