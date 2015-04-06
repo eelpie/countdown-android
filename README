@@ -1,19 +1,23 @@
+An Android app for Transport for London's bus arrival time system with an accessibility focus.
+
 Accessibility considerations
 
 - High contrast text
 White text on black. Respects Android large text accessibility option.
+
+- Tested with sensible screen reader behaviour
 
 - Minimal use of menus
 Attempts to avoid the use of the extra menu items dialog; all functions should be directly clickable.
 Application opens on the arrivals screen for user's nearest favourite stop if the devices late known location is available.
 
 - Favours textual representation of stop lists
-Defaults to rendering nearly stops in list form rather than on a map.
+Defaults to rendering nearby stops in list form rather than on a map.
 Tries to assist visually impaired users to visualise the relationship between stops by providing distance and direction information.
-Attempts to geocode phone location latitude/longitudes into understandable nearby street name.
+Attempts to geocode phone location latitude/longitudes into understandable nearby street names.
 
 - Attempts to correct potentially confusing abbreviations used in the source data.
-ie. 'Hounslow Bus St' reads as 'Hounslow Bus Street' to the Android screen reader.
+ie. 'Hounslow Bus St' is corrected to 'Hounslow Bus Street' before been presented to the Android screen reader.
 
-The app received a highly commended award in Transport for London's 2013 accessible app competition.
+This app received a highly commended award in Transport for London's 2013 accessible app competition.
 https://www.tfl.gov.uk/info-for/media/press-releases/2013/december/tfl-announce-winners-of-accessible-app-competition
