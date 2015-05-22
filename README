@@ -21,3 +21,6 @@ ie. 'Hounslow Bus St' is corrected to 'Hounslow Bus Street' before been presente
 
 This app received a highly commended award in Transport for London's 2013 accessible app competition.
 https://www.tfl.gov.uk/info-for/media/press-releases/2013/december/tfl-announce-winners-of-accessible-app-competition
+
+Depends on Android MapView Balloons:
+https://github.com/jgilfelt/android-mapviewballoons.git
